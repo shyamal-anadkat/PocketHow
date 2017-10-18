@@ -70,13 +70,13 @@ public class PageDetailActivity extends AppCompatActivity {
                 "&rvprop=content" +
                 "&format=json" +
                 "&pageids=262356";
-        final Playground playground = new Playground();
+        final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
 
-        //testing
-        new Thread(new Runnable(){
-            public void run()
-            {
-                playground.parseJsonFromURL(url);
+        //***testing***//
+        new Thread(new Runnable() {
+            public void run() {
+                phWikihowFetches.getJSONFromURL(url);
+                phWikihowFetches.fetchPagesFromCategory("Physics", 10);
             }
         }).start();
     }
