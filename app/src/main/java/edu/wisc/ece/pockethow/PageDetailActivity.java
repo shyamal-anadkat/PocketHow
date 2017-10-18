@@ -62,6 +62,18 @@ public class PageDetailActivity extends AppCompatActivity {
                     .add(R.id.page_detail_container, fragment)
                     .commit();
         }
+
+
+        final String url = "https://www.wikihow.com/api.php?action=query&prop=revisions&rvprop=content&format=json&pageids=262356";
+        final Playground playground = new Playground();
+
+        //testing
+        new Thread(new Runnable(){
+            public void run()
+            {
+                playground.parseJsonFromURL(url);
+            }
+        }).start();
     }
 
     @Override
