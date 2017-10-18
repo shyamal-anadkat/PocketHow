@@ -64,7 +64,12 @@ public class PageDetailActivity extends AppCompatActivity {
         }
 
 
-        final String url = "https://www.wikihow.com/api.php?action=query&prop=revisions&rvprop=content&format=json&pageids=262356";
+        final String url = "https://www.wikihow.com/api.php?" +
+                "action=query" +
+                "&prop=revisions" +
+                "&rvprop=content" +
+                "&format=json" +
+                "&pageids=262356";
         final Playground playground = new Playground();
 
         //testing

@@ -68,10 +68,16 @@ public class Playground {
         Log.e(TAG, "Response from url: " + jsonStr);
         if(jsonStr != null){
             try {
-                //JSONObject jsonObject = new JSONObject(jsonStr);
-                //JSONArray pages = jsonObject.getJSONArray("query");
-                //System.out.print(pages.toString());
-                //Log.e(TAG, jsonStr);
+                JSONObject jsonObject = new JSONObject(jsonStr);
+                JSONObject response = jsonObject.getJSONObject("query");
+                JSONObject pages = response.getJSONObject("pages");
+
+                JSONObject page = pages.getJSONObject("262356");
+                JSONArray revisions = page.getJSONArray("revisions");
+                JSONObject firstRev = revisions.getJSONObject(0);
+                String content = firstRev.get("*").toString();
+
+                Log.e(TAG, content);
 
 
             } catch(Exception je) {
