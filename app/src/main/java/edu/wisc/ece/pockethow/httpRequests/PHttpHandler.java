@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.httpRequests;
 
 /**
  * Created by zosta on 10/15/2017.
