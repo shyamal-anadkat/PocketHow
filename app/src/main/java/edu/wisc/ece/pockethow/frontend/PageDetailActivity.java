@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.frontend;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+
+import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 /**
  * An activity representing a single Page detail screen. This

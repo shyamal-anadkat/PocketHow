@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.frontend;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import edu.wisc.ece.pockethow.dummy.DummyContent;
+import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dummyContent.DummyContent;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 /* Author: Shyamal Anadkat */
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.httpRequests;
 
 import android.util.Log;
 
@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,10 +19,11 @@ import java.util.List;
 
 public class PHWikihowFetches {
 
+    public PHWikihowFetches() {}
     static final String TAG = PHWikihowFetches.class.getSimpleName();
 
     @Deprecated
-    String fetchFromURLToStringResponse(String url_in) {
+    public String fetchFromURLToStringResponse(String url_in) {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
 
@@ -63,7 +63,7 @@ public class PHWikihowFetches {
 
 
     /* Fetch the list of PageIds given the Category and numPages to limit fetch to */
-    List<String> fetchPagesFromCategory(String category, int numPages) {
+    public List<String> fetchPagesFromCategory(String category, int numPages) {
         ArrayList<String> pageIds = new ArrayList<>();
         final String categoryFetchURL = "https://www.wikihow.com/api.php?" +
                 "action=query&format=json" +
@@ -91,7 +91,7 @@ public class PHWikihowFetches {
     }
 
     /* SAMPLE - WIP */
-    JSONObject getJSONFromURL(String url_in) {
+    public JSONObject getJSONFromURL(String url_in) {
         PHttpHandler ph = new PHttpHandler();
         String jsonStr = ph.makeServiceCall(url_in);
         JSONObject jsonObject = null;

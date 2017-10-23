@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow.dummy;
+package edu.wisc.ece.pockethow.dummyContent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
