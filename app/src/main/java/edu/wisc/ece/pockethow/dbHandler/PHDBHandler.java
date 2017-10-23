@@ -14,7 +14,6 @@ public class PHDBHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "PocketHow.db";
     private static final int DATABASE_VERSION = 1;
 
-
     //ARTICLE TABLE
     public static final String TABLE_PHARTICLE = "articles";
     public static final String COLUMN_ID = "page_id";
