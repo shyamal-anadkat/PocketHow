@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.frontend;
 
 import android.app.Activity;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -9,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import edu.wisc.ece.pockethow.dummy.DummyContent;
+import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dummyContent.DummyContent;
 
 /**
  * A fragment representing a single Page detail screen.
