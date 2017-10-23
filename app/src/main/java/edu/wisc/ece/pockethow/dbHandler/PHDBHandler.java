@@ -21,14 +21,17 @@ public class PHDBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_CONTENT = "content";
 
     private static final String PHARTICLE_TABLE_CREATE =
-            "CREATE TABLE " + TABLE_PHARTICLE + " (" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY," +
-                    COLUMN_TITLE + " TEXT," +
-                    COLUMN_CONTENT + " TEXT)";
+            "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts3(" +
+                    COLUMN_ID + " INTEGER PRIMARY KEY NOT NULL," +
+                    COLUMN_TITLE + " TEXT NOT NULL," +
+                    COLUMN_CONTENT + " TEXT NOT NULL)";
 
     private static final String PHARTICLE_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_PHARTICLE;
 
+
+    private static final String PHARTICLE_TABLE_ADD_DOCUMENT_PREFIX =
+            "INSERT INTO " + TABLE_PHARTICLE + "(" + COLUMN_ID  + ", " + COLUMN_TITLE + ", " + COLUMN_CONTENT;
 
     //CATEGORY TABLE
     public static final String TABLE_CATEGORY_TO_PAGE = "";
@@ -51,4 +54,10 @@ public class PHDBHandler extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
+
+    public void addItem(String columnTitle, String columnContent)
+    {
+        
+    }
+
 }
