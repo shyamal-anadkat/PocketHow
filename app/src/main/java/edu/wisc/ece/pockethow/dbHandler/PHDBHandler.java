@@ -4,6 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+
+import java.sql.Date;
 
 /**
  * Created by zosta on 10/23/2017.
@@ -19,11 +23,13 @@ public class PHDBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "page_id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_CONTENT = "content";
+    public static final String COLUMN_ARTICLE_LASTACCESS = "last_access";
 
     private static final String PHARTICLE_TABLE_CREATE =
             "CREATE TABLE " + TABLE_PHARTICLE + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY," +
                     COLUMN_TITLE + " TEXT," +
+                    COLUMN_ARTICLE_LASTACCESS + " DATETIME," +
                     COLUMN_CONTENT + " TEXT)";
 
     private static final String PHARTICLE_TABLE_DELETE =
@@ -33,7 +39,8 @@ public class PHDBHandler extends SQLiteOpenHelper {
     //CATEGORY TABLE
     public static final String TABLE_CATEGORY_TO_PAGE = "";
     public static final String COLUMN_CATEGORY = "category";
-    public static final String COLUMN_PAGEID = "page_id";
+    public static final String COLUMN_PAGEIDLIST = "page_id";
+    public static final DateTime COLUMN_CATEGORY_LASTACCESS = new DateTime();
 
     public PHDBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
