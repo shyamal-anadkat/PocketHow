@@ -11,6 +11,7 @@ import android.util.Log;
 import org.joda.time.DateTime;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
@@ -62,7 +63,7 @@ public class DbOperations {
         database.insert(PHDBHandler.TABLE_PHARTICLE, null, contentValues);
         return phArticle;
     }
-    public PHArticle getArticle(String searchWord)
+    public ArrayList<PHArticle> getArticle(String searchWord)
     {
         /*Alternative method: issue, may not use the "MATCH" which is unique to the FTS3 and FTS4
         query (boolean distinct,
@@ -85,23 +86,30 @@ public class DbOperations {
         /*
         execSQL() cannot be used for SELECT operations
         */
+        ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
         String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " MATCH ?'";
         String[] selectionArgs = { searchWord };
         Cursor cursor = database.rawQuery(searchCmd, selectionArgs);
-        Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_ID));
-        String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-        String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
-        String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            // do what you need with the cursor here
 
 
-        try {
-            Date date = dateFormat.parse(dateTimeString);
-            cursor.close();
-            return new PHArticle(columnID, columnTitle, columnContent, new DateTime(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
+            Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_ID));
+            String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+            String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+            String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+
+
+            try {
+                Date date = dateFormat.parse(dateTimeString);
+                cursor.close();
+                articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, new DateTime(date)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("Error: we should never reach this point");
-        return new PHArticle();
+        return articleArrayList;
     }
 }
