@@ -34,14 +34,9 @@ public class PHDBHandler extends SQLiteOpenHelper {
     private static final String PHARTICLE_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_PHARTICLE;
 
-
-    private static final String PHARTICLE_TABLE_ADD_DOCUMENT_PREFIX =
-            "INSERT INTO " + TABLE_PHARTICLE + "(" + COLUMN_ID  + ", " + COLUMN_TITLE + ", " + COLUMN_CONTENT;
-
     //CATEGORY TABLE
     public static final String TABLE_CATEGORY_TO_PAGE = "";
     public static final String COLUMN_CATEGORY = "category";
-    public static final String COLUMN_PAGEID = "page_id";
     public static final String COLUMN_PAGEIDLIST = "page_id";
     public static final DateTime COLUMN_CATEGORY_LASTACCESS = new DateTime();
 
@@ -62,9 +57,5 @@ public class PHDBHandler extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addItem(String columnTitle, String columnContent)
-    {
-        
-    }
 
 }
