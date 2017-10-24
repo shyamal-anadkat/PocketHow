@@ -103,13 +103,12 @@ public class DbOperations {
 
             try {
                 Date date = dateFormat.parse(dateTimeString);
-                cursor.close();
                 articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, new DateTime(date)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Error: we should never reach this point");
+        cursor.close();
         return articleArrayList;
     }
 }
