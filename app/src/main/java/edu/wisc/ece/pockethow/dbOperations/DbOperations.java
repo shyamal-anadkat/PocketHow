@@ -108,10 +108,13 @@ public class DbOperations {
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
         //String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_TITLE + " MATCH ? OR " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
         //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
-        String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " MATCH ?";
+        //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " LIKE ?";
 
-        String[] selectionArgs = { searchWord };
-        Cursor cursor = database.rawQuery(searchCmd, selectionArgs);
+        String[] requestedColumns = new String[] { PHDBHandler.COLUMN_ID,PHDBHandler.COLUMN_TITLE,PHDBHandler.COLUMN_CONTENT,PHDBHandler.COLUMN_ARTICLE_LASTACCESS };
+
+        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns , PHDBHandler.COLUMN_TITLE + " OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
+            new String[] { "%"+searchWord+"%" }, null, null, null,
+            null);
 
 /*
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>(); //ArrayList that will be returned as output

@@ -42,6 +42,7 @@ public class dbTester extends AppCompatActivity {
 
                 searchString = editText.getText().toString();
                 ArrayList<PHArticle> articleArrayList = dbOperations.getArticle(searchString);
+                FOLKS.clear();
                 for(int i = 0; i < articleArrayList.size(); i++)
                 {
                     officialArticleList.add(articleArrayList.get(i));
