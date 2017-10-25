@@ -5,11 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.icu.text.SimpleDateFormat;
 import android.util.Log;
 
 import org.joda.time.DateTime;
 
+import java.nio.DoubleBuffer;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,14 +57,27 @@ public class DbOperations {
         dbHandler.close();
     }
 
+    //TODO: addArticle crashes the app
     public PHArticle addArticle(PHArticle phArticle) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PHDBHandler.COLUMN_ID, phArticle.getID());
         contentValues.put(PHDBHandler.COLUMN_TITLE, phArticle.getTitle());
         contentValues.put(PHDBHandler.COLUMN_CONTENT, phArticle.getContent());
+        //StringBuffer buffer = new StringBuffer("howdy");
+        Timestamp timestamp = phArticle.getLastAccess();
+        String timestampString = timestamp.toString();
+
+        //dateFormat.format(dateTime); //TODO: bug source
+        //contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS, buffer);
+        /*
         contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS,
                 dateFormat.format(phArticle.getLastAccess()));
-        database.insert(PHDBHandler.TABLE_PHARTICLE, null, contentValues);
+                */
+        contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS, timestampString);
+        if (database.insert(PHDBHandler.TABLE_PHARTICLE, null, contentValues) == -1)
+        {
+            Log.d("DbOperations", "database insert failed");
+        }
         return phArticle;
     }
     public ArrayList<PHArticle> getArticle(String searchWord)
@@ -86,11 +103,26 @@ public class DbOperations {
         /*
         execSQL() cannot be used for SELECT operations
         */
+
+
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
-        String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " MATCH ?'";
+        //String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_TITLE + " MATCH ? OR " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
+        String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
+
         String[] selectionArgs = { searchWord };
         Cursor cursor = database.rawQuery(searchCmd, selectionArgs);
 
+/*
+        ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>(); //ArrayList that will be returned as output
+        String[] columnsToOutput = new String[] {PHDBHandler.COLUMN_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
+        String selection = PHDBHandler.COLUMN_TITLE + "MATCH ?";
+        String[] selectionArgs = new String[] {searchWord + "*"};
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables(PHDBHandler.TABLE_PHARTICLE);
+        Cursor cursor = builder.query(dbHandler.getReadableDatabase(),
+                columnsToOutput, selection, selectionArgs, null, null, null);
+
+*/
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // do what you need with the cursor here
 
@@ -99,15 +131,16 @@ public class DbOperations {
             String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
             String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
             String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-
+            Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
             try {
                 Date date = dateFormat.parse(dateTimeString);
-                articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, new DateTime(date)));
+                articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
+
         cursor.close();
         return articleArrayList;
     }

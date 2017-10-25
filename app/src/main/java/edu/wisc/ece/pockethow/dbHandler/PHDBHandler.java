@@ -29,7 +29,8 @@ public class PHDBHandler extends SQLiteOpenHelper {
             "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts3(" +
                     COLUMN_ID + " INTEGER PRIMARY KEY NOT NULL," +
                     COLUMN_TITLE + " TEXT NOT NULL," +
-                    COLUMN_CONTENT + " TEXT NOT NULL)";
+                    COLUMN_CONTENT + " TEXT NOT NULL, " +
+                    COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL);";
 
     private static final String PHARTICLE_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_PHARTICLE;
@@ -45,6 +46,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(PHARTICLE_TABLE_DELETE);
         db.execSQL(PHARTICLE_TABLE_CREATE);
     }
 
