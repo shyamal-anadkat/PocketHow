@@ -107,7 +107,8 @@ public class DbOperations {
 
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
         //String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_TITLE + " MATCH ? OR " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
-        String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
+        //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
+        String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " MATCH ?";
 
         String[] selectionArgs = { searchWord };
         Cursor cursor = database.rawQuery(searchCmd, selectionArgs);
