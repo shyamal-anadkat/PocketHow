@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
@@ -16,6 +19,7 @@ public class searchActivity extends AppCompatActivity {
     Button button;
     SearchView searchView;
     private DbOperations dbOperations;
+    TextView loadingTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,11 +27,14 @@ public class searchActivity extends AppCompatActivity {
 
         button = (Button) findViewById(R.id.searchButton);
         searchView = (SearchView) findViewById(R.id.searchView);
+        loadingTextView = (TextView) findViewById(R.id.textViewLoading);
         dbOperations = new DbOperations(this); //this is a context
+
         dbOperations.open();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchView.getQuery().toString());
                 intent.putExtra("message", searchView.getQuery().toString());
@@ -41,6 +48,7 @@ public class searchActivity extends AppCompatActivity {
     {
         super.onResume();
         dbOperations.open();
+        loadingTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override
