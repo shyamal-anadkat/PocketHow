@@ -12,7 +12,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import java.sql.Timestamp;
+
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
+import edu.wisc.ece.pockethow.dbOperations.DbOperations;
+import edu.wisc.ece.pockethow.dbOperations.dbTester;
+import edu.wisc.ece.pockethow.entity.PHArticle;
+import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 /**
@@ -75,6 +82,12 @@ public class PageDetailActivity extends AppCompatActivity {
                 "&format=json" +
                 "&pageids=262356";
         final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
+        DbOperations dbOperations;
+        dbOperations = new DbOperations(this);
+        dbOperations.open();
+        dbOperations.addCategoryToPageID(new PHCategory(2, "physics", "3455, 4565", null));
+        Log.e("DB TESTING", dbOperations.getPageIds("physics"));
+        dbOperations.close();
 
         //***testing***//
         new Thread(new Runnable() {

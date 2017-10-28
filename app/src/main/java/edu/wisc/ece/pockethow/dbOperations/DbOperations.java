@@ -20,6 +20,8 @@ import java.util.Date;
 
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
+import edu.wisc.ece.pockethow.entity.PHCategory;
+import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 /**
  * Created by zosta on 10/23/2017.
@@ -27,10 +29,9 @@ import edu.wisc.ece.pockethow.entity.PHArticle;
 
 
 public class DbOperations {
+
     // set the format to sql date time
     public final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-
     public static final String TAG = "DB_OPERATIONS";
 
     SQLiteOpenHelper dbHandler;
@@ -41,10 +42,17 @@ public class DbOperations {
     }
 
     private static final String[] allArticleColumns = {
-            PHDBHandler.COLUMN_ID,
+            PHDBHandler.COLUMN_CATEGORY_ID,
             PHDBHandler.COLUMN_TITLE,
             PHDBHandler.COLUMN_CONTENT,
             PHDBHandler.COLUMN_ARTICLE_LASTACCESS
+    };
+
+    private static final String[] allCategoryToPageIDColumns = {
+            PHDBHandler.COLUMN_CATEGORY,
+            PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST,
+            PHDBHandler.COLUMN_CATEGORY_ID,
+            PHDBHandler.COLUMN_CATEGORY_LASTACCESS
     };
 
     public void open() {
@@ -57,31 +65,48 @@ public class DbOperations {
         dbHandler.close();
     }
 
-    //TODO: addArticle crashes the app
+
+    public PHCategory addCategoryToPageID(PHCategory category) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY, category.getCategory());
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY_ID, category.getId());
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST, category.getPageIdList());
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, "");
+
+        if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
+            Log.e("DbOperations", "PHCategory: database insert failed");
+        }
+
+        return category;
+    }
+
     public PHArticle addArticle(PHArticle phArticle) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PHDBHandler.COLUMN_ID, phArticle.getID());
+        contentValues.put(PHDBHandler.COLUMN_PHARTICLE_ID, phArticle.getID());
         contentValues.put(PHDBHandler.COLUMN_TITLE, phArticle.getTitle());
         contentValues.put(PHDBHandler.COLUMN_CONTENT, phArticle.getContent());
-        //StringBuffer buffer = new StringBuffer("howdy");
         Timestamp timestamp = phArticle.getLastAccess();
-        String timestampString = timestamp.toString();
-
-        //dateFormat.format(dateTime); //TODO: bug source
-        //contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS, buffer);
-        /*
-        contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS,
-                dateFormat.format(phArticle.getLastAccess()));
-                */
-        contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS, timestampString);
-        if (database.insert(PHDBHandler.TABLE_PHARTICLE, null, contentValues) == -1)
-        {
-            Log.d("DbOperations", "database insert failed");
+        contentValues.put(PHDBHandler.COLUMN_ARTICLE_LASTACCESS, timestamp.toString());
+        if (database.insert(PHDBHandler.TABLE_PHARTICLE, null, contentValues) == -1) {
+            Log.e("DbOperations", "PHArticle - database insert failed");
         }
         return phArticle;
     }
-    public ArrayList<PHArticle> getArticle(String searchWord)
-    {
+
+    public String getPageIds(String category) {
+        Cursor cursor = database.query(true,
+                PHDBHandler.TABLE_CATEGORY_TO_PAGEID, allCategoryToPageIDColumns,
+                PHDBHandler.COLUMN_CATEGORY + "=?", new String[]{category},
+                null,
+                null,
+                null,
+                null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        return cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST));
+    }
+
+    public ArrayList<PHArticle> getArticle(String searchWord) {
         /*Alternative method: issue, may not use the "MATCH" which is unique to the FTS3 and FTS4
         query (boolean distinct,
                 String table,
@@ -110,11 +135,16 @@ public class DbOperations {
         //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
         //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " LIKE ?";
 
-        String[] requestedColumns = new String[] { PHDBHandler.COLUMN_ID,PHDBHandler.COLUMN_TITLE,PHDBHandler.COLUMN_CONTENT,PHDBHandler.COLUMN_ARTICLE_LASTACCESS };
 
-        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns , PHDBHandler.COLUMN_TITLE + " OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
-            new String[] { "%"+searchWord+"%" }, null, null, null,
-            null);
+        Cursor cursor = database.query(true,
+                PHDBHandler.TABLE_PHARTICLE,
+                allArticleColumns,
+                PHDBHandler.COLUMN_TITLE + " OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
+                new String[]{"%" + searchWord + "%"},
+                null,
+                null,
+                null,
+                null);
 
 /*
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>(); //ArrayList that will be returned as output
@@ -131,7 +161,7 @@ public class DbOperations {
             // do what you need with the cursor here
 
 
-            Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_ID));
+            Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
             String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
             String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
             String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
