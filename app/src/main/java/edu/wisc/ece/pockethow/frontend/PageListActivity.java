@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 
@@ -49,7 +50,13 @@ public class PageListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         String searchStr = bundle.getString("message");
+        if(searchStr == null)
+        {
+            searchStr = "";
+        }
         Log.d("PageListActivity", searchStr);
+        //ImageButton imageButton = (ImageButton) findViewById(R.id.searchImageButton);
+        //imageButton.setVisibility(View.VISIBLE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
