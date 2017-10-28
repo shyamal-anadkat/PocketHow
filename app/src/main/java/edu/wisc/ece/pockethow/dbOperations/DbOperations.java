@@ -42,7 +42,7 @@ public class DbOperations {
     }
 
     private static final String[] allArticleColumns = {
-            PHDBHandler.COLUMN_CATEGORY_ID,
+            PHDBHandler.COLUMN_PHARTICLE_ID, //Do we want to add a Column_category filed to article?
             PHDBHandler.COLUMN_TITLE,
             PHDBHandler.COLUMN_CONTENT,
             PHDBHandler.COLUMN_ARTICLE_LASTACCESS
