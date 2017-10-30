@@ -18,7 +18,7 @@ import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 public class searchActivity extends AppCompatActivity {
     Button button;
     SearchView searchView;
-    private DbOperations dbOperations;
+    //private DbOperations dbOperations;
     TextView loadingTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +27,12 @@ public class searchActivity extends AppCompatActivity {
 
         button = (Button) findViewById(R.id.searchButton);
         searchView = (SearchView) findViewById(R.id.searchView);
-        loadingTextView = (TextView) findViewById(R.id.textViewLoading);
-        dbOperations = new DbOperations(this); //this is a context
+        searchView.setSubmitButtonEnabled(true);
 
-        dbOperations.open();
+        loadingTextView = (TextView) findViewById(R.id.textViewLoading);
+        //dbOperations = new DbOperations(this); //this is a context
+
+        //dbOperations.open();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,12 +44,44 @@ public class searchActivity extends AppCompatActivity {
                 //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
             }
         });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadingTextView.setVisibility(View.VISIBLE);
+                Intent intent = new Intent(searchActivity.this, PageListActivity.class);
+                Log.d("searchActivity", searchView.getQuery().toString());
+                intent.putExtra("message", searchView.getQuery().toString());
+                startActivity(intent);
+                //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        /*
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadingTextView.setVisibility(View.VISIBLE);
+                Intent intent = new Intent(searchActivity.this, PageListActivity.class);
+                Log.d("searchActivity", searchView.getQuery().toString());
+                intent.putExtra("message", searchView.getQuery().toString());
+                startActivity(intent);
+                //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
+            }
+        });
+        */
     }
     @Override
     protected void onResume()
     {
         super.onResume();
-        dbOperations.open();
+        //dbOperations.open();
         loadingTextView.setVisibility(View.INVISIBLE);
     }
 
@@ -55,7 +89,7 @@ public class searchActivity extends AppCompatActivity {
     protected void onStop()
     {
         super.onStop();
-        dbOperations.close();
+        //dbOperations.close();
     }
 
 }

@@ -30,7 +30,10 @@
 
         </activity>
 
-        <activity android:name=".dbOperations.dbTester" />
+        <activity android:name=".dbOperations.dbTester">
+
+
+        </activity>
         <activity android:name=".frontend.searchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

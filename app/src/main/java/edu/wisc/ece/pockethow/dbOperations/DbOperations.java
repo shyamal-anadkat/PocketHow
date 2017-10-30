@@ -42,7 +42,7 @@ public class DbOperations {
     }
 
     private static final String[] allArticleColumns = {
-            PHDBHandler.COLUMN_CATEGORY_ID,
+            PHDBHandler.COLUMN_PHARTICLE_ID, //Do we want to add a Column_category filed to article?
             PHDBHandler.COLUMN_TITLE,
             PHDBHandler.COLUMN_CONTENT,
             PHDBHandler.COLUMN_ARTICLE_LASTACCESS
@@ -135,7 +135,7 @@ public class DbOperations {
         //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
         //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " LIKE ?";
 
-
+/*
         Cursor cursor = database.query(true,
                 PHDBHandler.TABLE_PHARTICLE,
                 allArticleColumns,
@@ -145,7 +145,12 @@ public class DbOperations {
                 null,
                 null,
                 null);
+                */
+        String[] requestedColumns = new String[] { PHDBHandler.COLUMN_PHARTICLE_ID,PHDBHandler.COLUMN_TITLE,PHDBHandler.COLUMN_CONTENT,PHDBHandler.COLUMN_ARTICLE_LASTACCESS };
 
+        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns , PHDBHandler.COLUMN_TITLE + " LIKE ? OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
+                new String[] { "%"+searchWord+"%" }, null, null, null,
+                null);
 /*
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>(); //ArrayList that will be returned as output
         String[] columnsToOutput = new String[] {PHDBHandler.COLUMN_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};

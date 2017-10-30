@@ -79,7 +79,7 @@ public class dbTester extends AppCompatActivity {
         );
 
         dbOperations.addArticle(new PHArticle(4, "cream cheese", "hi", new Timestamp(System.currentTimeMillis())));
-
+        dbOperations.addArticle(new PHArticle(5, "title", "content", new Timestamp(System.currentTimeMillis())));
     }
 
   /*  @Override
