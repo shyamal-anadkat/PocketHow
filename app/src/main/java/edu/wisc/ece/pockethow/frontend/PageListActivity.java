@@ -23,6 +23,7 @@ import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 import edu.wisc.ece.pockethow.dummyContent.DummyContent;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class PageListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     DbOperations dbOperations;
     String searchStr;
-    ArrayList<PHArticle> searchResults;
+    ArrayList<PHArticle> searchResults = new ArrayList<>(); //PHArticle arraylist to store the results of search query;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +73,9 @@ public class PageListActivity extends AppCompatActivity {
             }
         });
 
-        View recyclerView = findViewById(R.id.page_list);
+        final View recyclerView = findViewById(R.id.page_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
 
         if (findViewById(R.id.page_detail_container) != null) {
             // The detail container view will be present only in the
@@ -84,7 +85,6 @@ public class PageListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
         dbOperations = new DbOperations(this);
-        searchResults = new ArrayList<>(); //PHArticle arraylist to store the results of search query
         final SearchView searchView = (SearchView) findViewById(R.id.pageListSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -121,25 +121,21 @@ public class PageListActivity extends AppCompatActivity {
         //dbOperations.open();
         //TODO: might not even be necessary
 
-        Thread openDbOperationsThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        dbOperations.open();
 
-                dbOperations.open();
-                searchResults.clear();
-                searchResults = dbOperations.getArticle(searchStr);
-                //solely for testing purposes
-                if (searchResults.size() == 0)
-                {
-                    Log.d("PageListActivity", "retrieved 0 articles");
-                }
-                for (int i = 0; i < searchResults.size(); i++)
-                {
-                    Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
-                }
-            }
-        });
-        openDbOperationsThread.start();
+        searchResults.clear();
+        searchResults = dbOperations.getArticle(searchStr);
+        //solely for testing purposes
+        if (searchResults.size() == 0)
+        {
+            Log.d("PageListActivity", "retrieved 0 articles");
+        }
+        for (int i = 0; i < searchResults.size(); i++)
+        {
+            Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
+        }
+        setupRecyclerView((RecyclerView) recyclerView);
+
 
     }
 
