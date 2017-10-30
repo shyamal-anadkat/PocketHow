@@ -3,6 +3,7 @@ package edu.wisc.ece.pockethow.httpRequests;
 
 import android.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.*;
 
 import java.io.BufferedReader;
@@ -19,7 +20,9 @@ import java.util.List;
 
 public class PHWikihowFetches {
 
-    public PHWikihowFetches() {}
+    public PHWikihowFetches() {
+    }
+
     static final String TAG = PHWikihowFetches.class.getSimpleName();
 
     @Deprecated
@@ -90,6 +93,21 @@ public class PHWikihowFetches {
         return pageIds;
     }
 
+
+    public String categoryListToDelimString(List<String> in) {
+        String idList = in.toString();
+        return idList.substring(1, idList.length() - 1).replace(", ", ",");
+    }
+
+
+    public String getFetchURLFromPageIds(List<String> ids) {
+        String appendIDs = StringUtils.join(ids, "|");
+        String retURL = "https://www.wikihow.com/api.php?action=query" +
+                "&prop=revisions&rvprop=content&format=json" +
+                "&pageids=" + appendIDs;
+        return retURL;
+    }
+
     /* SAMPLE - WIP */
     public JSONObject getJSONFromURL(String url_in) {
         PHttpHandler ph = new PHttpHandler();
@@ -99,11 +117,6 @@ public class PHWikihowFetches {
         if (jsonStr != null) {
             try {
                 jsonObject = new JSONObject(jsonStr);
-                //JSONObject pages = jsonObject.getJSONObject("query").getJSONObject("pages");
-                //JSONObject page = pages.getJSONObject("262356");
-                //JSONArray revisions = page.getJSONArray("revisions");
-                //JSONObject firstRev = revisions.getJSONObject(0);
-                //String content = firstRev.get("*").toString();
             } catch (Exception je) {
                 je.printStackTrace();
             }
@@ -111,4 +124,6 @@ public class PHWikihowFetches {
         }
         return jsonObject;
     }
+
+
 }

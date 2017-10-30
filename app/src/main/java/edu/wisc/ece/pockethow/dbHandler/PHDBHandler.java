@@ -26,7 +26,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
 
     public static final String PHARTICLE_TABLE_CREATE =
             "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts3(" +
-                    COLUMN_PHARTICLE_ID + " INTEGER PRIMARY KEY NOT NULL," +
+                    COLUMN_PHARTICLE_ID + " INTEGER PRIMARY KEY autoincrement," +
                     COLUMN_TITLE + " TEXT NOT NULL," +
                     COLUMN_CONTENT + " TEXT NOT NULL, " +
                     COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL);";

@@ -12,7 +12,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import org.json.JSONObject;
+
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
 
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
@@ -75,25 +79,31 @@ public class PageDetailActivity extends AppCompatActivity {
         }
 
 
-        final String url = "https://www.wikihow.com/api.php?" +
-                "action=query" +
-                "&prop=revisions" +
-                "&rvprop=content" +
-                "&format=json" +
-                "&pageids=262356";
-        final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
-        DbOperations dbOperations;
+        //*****ONLY FOR TESTING PURPOSES*****//
+
+        final DbOperations dbOperations;
         dbOperations = new DbOperations(this);
-        dbOperations.open();
-        dbOperations.addCategoryToPageID(new PHCategory(2, "physics", "3455, 4565", null));
-        Log.e("DB TESTING", dbOperations.getPageIds("physics"));
-        dbOperations.close();
+        this.deleteDatabase("PocketHow.db");
 
         //***testing***//
         new Thread(new Runnable() {
             public void run() {
-                phWikihowFetches.getJSONFromURL(url);
-                phWikihowFetches.fetchPagesFromCategory("Physics", 10);
+                final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
+
+                dbOperations.open();
+
+                List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 5);
+                dbOperations.addCategoryToPageID(new PHCategory(2, "Travel"
+                        , phWikihowFetches.categoryListToDelimString(testIDs),
+                        null));
+
+                Log.i("DetailActivity", dbOperations.getPageIds("Travel"));
+
+                dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                        (phWikihowFetches.getFetchURLFromPageIds
+                                (testIDs)));
+                dbOperations.close();
+
             }
         }).start();
     }
