@@ -10,6 +10,8 @@ import android.icu.text.SimpleDateFormat;
 import android.util.Log;
 
 import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.nio.DoubleBuffer;
 import java.sql.Time;
@@ -17,6 +19,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
@@ -107,61 +110,13 @@ public class DbOperations {
     }
 
     public ArrayList<PHArticle> getArticle(String searchWord) {
-        /*Alternative method: issue, may not use the "MATCH" which is unique to the FTS3 and FTS4
-        query (boolean distinct,
-                String table,
-                String[] columns,
-                String selection,
-                String[] selectionArgs,
-                String groupBy,
-                String having,
-                String orderBy,
-                String limit)
-         */
-        /*String[] columns = new String[2];
-        columns[0] = PHDBHandler.COLUMN_TITLE;
-        columns[1] = PHDBHandler.COLUMN_CONTENT;
-        String[] selectionArgs = new String[1];
-        selectionArgs[0] = searchWord;
-        Cursor cursor = query(true, PHDBHandler.TABLE_PHARTICLE, columns, PHDBHandler.COLUMN_TITLE, selectionArgs);
-        */
-        /*
-        execSQL() cannot be used for SELECT operations
-        */
-
 
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
-        //String searchCmd = "SELECT * FROM " + PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_TITLE + " MATCH ? OR " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
-        //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.COLUMN_CONTENT + " MATCH ?";
-        //String searchCmd = "SELECT * FROM " +  PHDBHandler.TABLE_PHARTICLE + " WHERE " + PHDBHandler.TABLE_PHARTICLE + " LIKE ?";
+        String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
-/*
-        Cursor cursor = database.query(true,
-                PHDBHandler.TABLE_PHARTICLE,
-                allArticleColumns,
-                PHDBHandler.COLUMN_TITLE + " OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
-                new String[]{"%" + searchWord + "%"},
-                null,
-                null,
-                null,
+        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, PHDBHandler.COLUMN_TITLE + " LIKE ? OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
+                new String[]{"%" + searchWord + "%"}, null, null, null,
                 null);
-                */
-        String[] requestedColumns = new String[] { PHDBHandler.COLUMN_PHARTICLE_ID,PHDBHandler.COLUMN_TITLE,PHDBHandler.COLUMN_CONTENT,PHDBHandler.COLUMN_ARTICLE_LASTACCESS };
-
-        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns , PHDBHandler.COLUMN_TITLE + " LIKE ? OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
-                new String[] { "%"+searchWord+"%" }, null, null, null,
-                null);
-/*
-        ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>(); //ArrayList that will be returned as output
-        String[] columnsToOutput = new String[] {PHDBHandler.COLUMN_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
-        String selection = PHDBHandler.COLUMN_TITLE + "MATCH ?";
-        String[] selectionArgs = new String[] {searchWord + "*"};
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(PHDBHandler.TABLE_PHARTICLE);
-        Cursor cursor = builder.query(dbHandler.getReadableDatabase(),
-                columnsToOutput, selection, selectionArgs, null, null, null);
-
-*/
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // do what you need with the cursor here
 
@@ -183,4 +138,40 @@ public class DbOperations {
         cursor.close();
         return articleArrayList;
     }
+
+
+    public void parsePagesAndPopulateDB(JSONObject jsonObject) {
+        if (jsonObject != null) {
+
+            try {
+                JSONObject pages = jsonObject.getJSONObject("query").getJSONObject("pages");
+                Iterator<?> keys = pages.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+
+                    if (pages.get(key) instanceof JSONObject) {
+                        JSONObject page = pages.getJSONObject(key);
+                        JSONArray revisions = page.getJSONArray("revisions");
+                        String title = page.getString("title");
+                        JSONObject firstRev = revisions.getJSONObject(0);
+                        String content = firstRev.get("*").toString();
+
+                        PHArticle phArticle = new PHArticle(0, title,
+                                content,
+                                new Timestamp(System.currentTimeMillis()));
+                        addArticle(phArticle);
+                        Log.i(TAG, title);
+                        Log.i(TAG, content);
+                    }
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
 }
