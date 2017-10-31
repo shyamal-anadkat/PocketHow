@@ -1,9 +1,11 @@
 package edu.wisc.ece.pockethow.frontend;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.dummyContent.DummyContent;
+import edu.wisc.ece.pockethow.entity.PHArticle;
 
 /**
  * A fragment representing a single Page detail screen.
@@ -30,6 +33,7 @@ public class PageDetailFragment extends Fragment {
      */
     private DummyContent.DummyItem mItem;
 
+   private String content;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -46,7 +50,8 @@ public class PageDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             //mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
+             Bundle bundle = getArguments();
+             content = bundle.getString(ARG_ITEM_ID);
             Activity activity = this.getActivity();
             /*CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
@@ -60,11 +65,15 @@ public class PageDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.page_detail, container, false);
 
+        if(content != null) {
+            ((TextView) rootView.findViewById(R.id.page_detail)).setText(content);
+        }
+        /*
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.page_detail)).setText(mItem.details);
+            //((TextView) rootView.findViewById(R.id.page_detail)).setText(mItem.details);
         }
-
+*/
         return rootView;
     }
 }

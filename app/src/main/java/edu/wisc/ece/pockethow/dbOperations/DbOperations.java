@@ -61,6 +61,7 @@ public class DbOperations {
     public void open() {
         Log.i(TAG, "DB Opened");
         database = dbHandler.getWritableDatabase();
+        Log.d("DbOperations", database.getPath());
     }
 
     public void close() {
