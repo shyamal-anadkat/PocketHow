@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 import edu.wisc.ece.pockethow.dummyContent.DummyContent;
 import edu.wisc.ece.pockethow.entity.PHArticle;
@@ -107,6 +108,7 @@ public class PageListActivity extends AppCompatActivity {
                                 Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
                             }
                         }
+
                     }
                 }).start();
                 return false;
@@ -152,6 +154,7 @@ public class PageListActivity extends AppCompatActivity {
             mValues = items;
         }
 
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
@@ -159,11 +162,12 @@ public class PageListActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
+        //called when you press search
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(Long.toString(mValues.get(position).getID()));
-            holder.mContentView.setText(mValues.get(position).getContent());
+            holder.mIdView.setText(Long.toString(mValues.get(position).getID())); //
+            holder.mContentView.setText(mValues.get(position).getTitle()); //defines the title displayed
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -179,8 +183,10 @@ public class PageListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, PageDetailActivity.class);
-                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
-
+                        //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
+                        //TODO: send the content of the selected article
+                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, holder.mItem.getContent());
+                        //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                         context.startActivity(intent);
                     }
                 }
@@ -192,6 +198,7 @@ public class PageListActivity extends AppCompatActivity {
             return mValues.size();
         }
 
+        //the view that lists the titles of the results
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
