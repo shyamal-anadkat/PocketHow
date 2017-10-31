@@ -6,14 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import edu.wisc.ece.pockethow.R;
-import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 
 public class searchActivity extends AppCompatActivity {
     Button button;
@@ -25,8 +21,8 @@ public class searchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        button = (Button) findViewById(R.id.searchButton);
-        searchView = (SearchView) findViewById(R.id.searchView);
+        button = (Button) findViewById(R.id.main_search_btn);
+        searchView = (SearchView) findViewById(R.id.main_search_bar);
         searchView.setSubmitButtonEnabled(true);
 
         loadingTextView = (TextView) findViewById(R.id.textViewLoading);

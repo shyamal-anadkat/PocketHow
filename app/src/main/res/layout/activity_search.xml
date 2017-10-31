@@ -8,7 +8,7 @@
     tools:context="edu.wisc.ece.pockethow.frontend.searchActivity">
 
     <Button
-        android:id="@+id/searchButton"
+        android:id="@+id/main_search_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -20,23 +20,27 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.518" />
+        app:layout_constraintVertical_bias="0.586" />
 
     <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="368dp"
+        android:id="@+id/main_search_bar"
+        android:layout_width="367dp"
         android:layout_height="54dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.382" />
+        app:layout_constraintVertical_bias="0.407" />
 
     <TextView
         android:id="@+id/textViewLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Loading"
+        android:text="Loading..."
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,7 +48,20 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.215" />
+        app:layout_constraintVertical_bias="0.894" />
+
+    <ImageView
+        android:id="@+id/main_logo"
+        android:layout_width="120dp"
+        android:layout_height="119dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/main_search_bar"
+        app:layout_constraintEnd_toEndOf="@+id/main_search_btn"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="@+id/main_search_btn"
+        app:srcCompat="@mipmap/ic_launcher_round" />
 
 
 </android.support.constraint.ConstraintLayout>

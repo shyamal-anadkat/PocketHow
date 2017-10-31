@@ -8,15 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import org.joda.time.DateTime;
-
-import java.io.File;
-import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.entity.PHArticle;
@@ -34,7 +28,7 @@ public class dbTester extends AppCompatActivity {
         setContentView(R.layout.activity_db_tester);
 
         final EditText editText = (EditText) findViewById(R.id.plain_text_input);
-        Button searchButton = (Button) findViewById(R.id.searchButton);
+        Button searchButton = (Button) findViewById(R.id.main_search_btn);
         ListView listView = (ListView) findViewById(R.id.listView);
         dbOperations = new DbOperations(this); //this is a context
         searchButton.setOnClickListener(new View.OnClickListener() {
