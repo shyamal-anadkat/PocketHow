@@ -5,13 +5,25 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
+import edu.wisc.ece.pockethow.dbOperations.DbOperations;
+import edu.wisc.ece.pockethow.dbOperations.dbTester;
+import edu.wisc.ece.pockethow.entity.PHArticle;
+import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 /**
@@ -39,10 +51,10 @@ public class PageDetailActivity extends AppCompatActivity {
         });
 
         // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
+        /*ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        }*/
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -65,23 +77,6 @@ public class PageDetailActivity extends AppCompatActivity {
                     .add(R.id.page_detail_container, fragment)
                     .commit();
         }
-
-
-        final String url = "https://www.wikihow.com/api.php?" +
-                "action=query" +
-                "&prop=revisions" +
-                "&rvprop=content" +
-                "&format=json" +
-                "&pageids=262356";
-        final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
-
-        //***testing***//
-        new Thread(new Runnable() {
-            public void run() {
-                phWikihowFetches.getJSONFromURL(url);
-                phWikihowFetches.fetchPagesFromCategory("Physics", 10);
-            }
-        }).start();
     }
 
     @Override

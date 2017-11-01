@@ -9,15 +9,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
+import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 import edu.wisc.ece.pockethow.dummyContent.DummyContent;
+import edu.wisc.ece.pockethow.entity.PHArticle;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,16 +43,28 @@ public class PageListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-
+    DbOperations dbOperations;
+    String searchStr;
+    ArrayList<PHArticle> searchResults = new ArrayList<>(); //PHArticle arraylist to store the results of search query;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        //setSupportActionBar(toolbar);
+        //toolbar.setTitle(getTitle());
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        searchStr = bundle.getString("message");
+        if(searchStr == null)
+        {
+            searchStr = "";
+        }
+        Log.d("PageListActivity", "Search for: " + searchStr);
+        //ImageButton imageButton = (ImageButton) findViewById(R.id.searchImageButton);
+        //imageButton.setVisibility(View.VISIBLE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,9 +74,9 @@ public class PageListActivity extends AppCompatActivity {
             }
         });
 
-        View recyclerView = findViewById(R.id.page_list);
+        final View recyclerView = findViewById(R.id.page_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
 
         if (findViewById(R.id.page_detail_container) != null) {
             // The detail container view will be present only in the
@@ -65,20 +85,75 @@ public class PageListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+        dbOperations = new DbOperations(this);
+        final SearchView searchView = (SearchView) findViewById(R.id.pageListSearchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //make DB query
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchStr = searchView.getQuery().toString();
+                        searchResults.clear();
+                        searchResults = dbOperations.getArticle(searchStr);
+                        //solely for testing purposes
+                        Log.d("PageListActivity", "Search for: " + searchStr);
+                        if (searchResults.size() == 0)
+                        {
+                            Log.d("PageListActivity", "retrieved 0 articles");
+                        }
+                        else {
+                            for (int i = 0; i < searchResults.size(); i++) {
+                                Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
+                            }
+                        }
+
+                    }
+                }).start();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        searchView.setSubmitButtonEnabled(true);
+        //dbOperations.open();
+        //TODO: might not even be necessary
+
+        dbOperations.open();
+
+        searchResults.clear();
+        searchResults = dbOperations.getArticle(searchStr);
+        //solely for testing purposes
+        if (searchResults.size() == 0)
+        {
+            Log.d("PageListActivity", "retrieved 0 articles");
+        }
+        for (int i = 0; i < searchResults.size(); i++)
+        {
+            Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
+        }
+        setupRecyclerView((RecyclerView) recyclerView);
+
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(searchResults));
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<PHArticle> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<PHArticle> items) {
             mValues = items;
         }
+
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -87,18 +162,19 @@ public class PageListActivity extends AppCompatActivity {
             return new ViewHolder(view);
         }
 
+        //called when you press search
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(Long.toString(mValues.get(position).getID())); //
+            holder.mContentView.setText(mValues.get(position).getTitle()); //defines the title displayed
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(PageDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
                         PageDetailFragment fragment = new PageDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -107,8 +183,10 @@ public class PageListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, PageDetailActivity.class);
-                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
+                        //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
+                        //TODO: send the content of the selected article
+                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, holder.mItem.getContent());
+                        //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                         context.startActivity(intent);
                     }
                 }
@@ -120,11 +198,12 @@ public class PageListActivity extends AppCompatActivity {
             return mValues.size();
         }
 
+        //the view that lists the titles of the results
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public PHArticle mItem;
 
             public ViewHolder(View view) {
                 super(view);

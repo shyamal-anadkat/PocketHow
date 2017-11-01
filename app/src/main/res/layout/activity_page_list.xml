@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+
+        <SearchView
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="match_parent"
+            android:id="@+id/pageListSearchView"/>
 
     </android.support.design.widget.AppBarLayout>
+
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -27,7 +28,8 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/page_list" />
+        <include layout="@layout/page_list"/>
+
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
