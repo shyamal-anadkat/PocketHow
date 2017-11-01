@@ -77,35 +77,6 @@ public class PageDetailActivity extends AppCompatActivity {
                     .add(R.id.page_detail_container, fragment)
                     .commit();
         }
-
-
-        //*****ONLY FOR TESTING PURPOSES*****//
-
-        final DbOperations dbOperations;
-        dbOperations = new DbOperations(this);
-        this.deleteDatabase("PocketHow.db");
-
-        //***testing***//
-        new Thread(new Runnable() {
-            public void run() {
-                final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
-
-                dbOperations.open();
-
-                List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 5);
-                dbOperations.addCategoryToPageID(new PHCategory(2, "Travel"
-                        , phWikihowFetches.categoryListToDelimString(testIDs),
-                        null));
-
-                Log.i("DetailActivity", dbOperations.getPageIds("Travel"));
-
-                dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                        (phWikihowFetches.getFetchURLFromPageIds
-                                (testIDs)));
-                dbOperations.close();
-
-            }
-        }).start();
     }
 
     @Override
