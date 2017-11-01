@@ -147,6 +147,7 @@ public class DbOperations {
             try {
                 JSONObject pages = jsonObject.getJSONObject("query").getJSONObject("pages");
                 Iterator<?> keys = pages.keys();
+                int pageId = 0;
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
 
@@ -157,12 +158,13 @@ public class DbOperations {
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
 
-                        PHArticle phArticle = new PHArticle(0, title,
+                        PHArticle phArticle = new PHArticle(pageId, title,
                                 content,
                                 new Timestamp(System.currentTimeMillis()));
                         addArticle(phArticle);
                         Log.i(TAG, title);
                         Log.i(TAG, content);
+                        pageId++;
                     }
                 }
 
