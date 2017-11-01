@@ -115,9 +115,16 @@ public class DbOperations {
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
         String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
-        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, PHDBHandler.COLUMN_TITLE + " LIKE ? OR " + PHDBHandler.COLUMN_CONTENT + " LIKE ?",
-                new String[]{"%" + searchWord + "%"}, null, null, null,
+
+        Log.i(TAG, "SEARCH WORD: "+searchWord);
+        String selection = PHDBHandler.COLUMN_TITLE +
+                " LIKE ? ";
+        String [] selArgs = new String[]{"%" + searchWord + "%"};
+
+        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, selection,
+                selArgs, null, null, null,
                 null);
+
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // do what you need with the cursor here
 
