@@ -27,7 +27,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.wisc.ece.pockethow.frontend.PageListActivity" />
         </activity>
-        <activity android:name=".dbOperations.dbTester"><intent-filter>
+        <activity android:name=".LuceneS"><intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
