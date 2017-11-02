@@ -166,7 +166,7 @@ public class PageListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(Long.toString(mValues.get(position).getID())); //
+            holder.mIdView.setText(Long.toString(position)); 
             holder.mContentView.setText(mValues.get(position).getTitle()); //defines the title displayed
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
