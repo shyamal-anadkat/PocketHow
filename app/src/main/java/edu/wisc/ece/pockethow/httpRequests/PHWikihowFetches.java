@@ -105,6 +105,7 @@ public class PHWikihowFetches {
         String retURL = "https://www.wikihow.com/api.php?action=query" +
                 "&prop=revisions&rvprop=content&format=json" +
                 "&pageids=" + appendIDs;
+        //Log.i(TAG, re)
         return retURL;
     }
 

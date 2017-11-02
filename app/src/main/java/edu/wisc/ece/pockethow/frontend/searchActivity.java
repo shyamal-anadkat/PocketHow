@@ -80,9 +80,14 @@ public class searchActivity extends AppCompatActivity {
 
                         dbOperations.open();
 
-                        List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 20);
+                        List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 100);
                         dbOperations.addCategoryToPageID(new PHCategory(2, "Travel"
                                 , phWikihowFetches.categoryListToDelimString(testIDs),
+                                null));
+
+                        List<String> testIDs1 = phWikihowFetches.fetchPagesFromCategory("Physics", 100);
+                        dbOperations.addCategoryToPageID(new PHCategory(3, "Physics"
+                                , phWikihowFetches.categoryListToDelimString(testIDs1),
                                 null));
 
                         Log.i("DetailActivity", dbOperations.getPageIds("Travel"));
@@ -90,6 +95,10 @@ public class searchActivity extends AppCompatActivity {
                         dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
+
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (testIDs1)));
                         dbOperations.close();
 
                     }

@@ -116,14 +116,28 @@ public class DbOperations {
         String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
 
-        Log.i(TAG, "SEARCH WORD: "+searchWord);
+        Log.i(TAG, "SEARCH WORD: " + searchWord);
         String selection = PHDBHandler.COLUMN_TITLE +
-                " LIKE ? ";
-        String [] selArgs = new String[]{"%" + searchWord + "%"};
+                " LIKE ? OR " + PHDBHandler.COLUMN_TITLE + " LIKE ? OR "
+                + PHDBHandler.COLUMN_TITLE + " LIKE ? ";
 
-        Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, selection,
-                selArgs, null, null, null,
-                null);
+        String[] selArgs = new String[]{"%" + searchWord + "%",
+                searchWord + "%",
+                "%" + searchWord};
+
+
+        //Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, selection,
+        //        selArgs, null, null, null,
+        //       null);
+        Cursor cursor;
+        String searchQuery = "'*" + searchWord + "*'";
+        if (searchWord == "" || searchWord == null || searchWord.isEmpty()) {
+            cursor = database.rawQuery("select * from "
+                    + PHDBHandler.TABLE_PHARTICLE, null);
+        } else {
+            cursor = database.rawQuery("select * from "
+                    + PHDBHandler.TABLE_PHARTICLE + " where title match " + searchQuery, null);
+        }
 
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             // do what you need with the cursor here

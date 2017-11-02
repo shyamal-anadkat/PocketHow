@@ -38,7 +38,7 @@ public class PHttpHandler {
         } catch (ProtocolException e) {
             Log.e(TAG, "ProtocolException: " + e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.getMessage());
+            Log.e(TAG, "IOException: " + e.getStackTrace().toString());
         } catch (Exception e) {
             Log.e(TAG, "Exception: " + e.getMessage());
         }
