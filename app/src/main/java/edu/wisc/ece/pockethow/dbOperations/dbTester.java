@@ -2,6 +2,7 @@ package edu.wisc.ece.pockethow.dbOperations;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +41,7 @@ public class dbTester extends AppCompatActivity {
                 FOLKS.clear();
                 for (int i = 0; i < articleArrayList.size(); i++) {
                     officialArticleList.add(articleArrayList.get(i));
-                    FOLKS.add(articleArrayList.get(i).getTitle());
+                    FOLKS.add(articleArrayList.get(i).getContent());
                 }
                 mAdapter.notifyDataSetChanged();
             }
@@ -60,8 +61,19 @@ public class dbTester extends AppCompatActivity {
         //PHArticle is fine
 
         //open is fine
+
         this.deleteDatabase("PocketHow.db");
         dbOperations.open();
+
+
+        PHArticle p1 = new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) [[Image: chicken]]is a type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011.[1] Humans keep chickens primarily as a source of food, consuming both their meat and their eggs.\n" +
+                "Genetic studies have pointed to multiple maternal origins in Southeast Asia, East Asia,[2] and South Asia, but with the clade found in the Americas, Europe, the Middle East and Africa originating in the Indian subcontinent. From India, the domesticated chicken was imported to Lydia in western Asia Minor, and to Greece by the fifth century BC.[3] Fowl had been known in Egypt since the mid-15th century BC, with the \"bird that gives birth every day\" having come to Egypt from the land between Syria and Shinar, Babylonia, according to the annals of Thutmose III.", new Timestamp(System.currentTimeMillis()));
+
+        dbOperations.addArticleToWashRack(p1);
+        dbOperations.pageCleaner();
+
+
+/*
         dbOperations.addArticle(new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) is a type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011.[1] Humans keep chickens primarily as a source of food, consuming both their meat and their eggs.\n" +
                 "Genetic studies have pointed to multiple maternal origins in Southeast Asia, East Asia,[2] and South Asia, but with the clade found in the Americas, Europe, the Middle East and Africa originating in the Indian subcontinent. From India, the domesticated chicken was imported to Lydia in western Asia Minor, and to Greece by the fifth century BC.[3] Fowl had been known in Egypt since the mid-15th century BC, with the \"bird that gives birth every day\" having come to Egypt from the land between Syria and Shinar, Babylonia, according to the annals of Thutmose III.", new Timestamp(System.currentTimeMillis())));
         dbOperations.addArticle(new PHArticle(2, "pig", "A pig is any of the animals in the genus Sus, within the even-toed ungulate family Suidae. Pigs include the domestic pig and its ancestor, the common Eurasian wild boar (Sus scrofa), along with other species; related creatures outside the genus include the peccary, the babirusa, and the warthog. Pigs, like all suids, are native to the Eurasian and African continents. Juvenile pigs are known as piglets.[1] Pigs are highly social and intelligent animals.[2]\n" +
@@ -74,9 +86,10 @@ public class dbTester extends AppCompatActivity {
 
         dbOperations.addArticle(new PHArticle(4, "cream cheese", "hi", new Timestamp(System.currentTimeMillis())));
         dbOperations.addArticle(new PHArticle(5, "title", "content", new Timestamp(System.currentTimeMillis())));
+*/
     }
 
-  /*  @Override
+    @Override
     protected void onResume()
     {
         super.onResume();
@@ -89,6 +102,6 @@ public class dbTester extends AppCompatActivity {
         super.onStop();
         dbOperations.close();
     }
-*/
+
 
 }

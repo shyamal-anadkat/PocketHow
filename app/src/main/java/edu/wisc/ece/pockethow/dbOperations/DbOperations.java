@@ -40,6 +40,11 @@ public class DbOperations {
     SQLiteOpenHelper dbHandler;
     SQLiteDatabase database;
 
+    //*******
+    //for cleaning pages
+    public static ArrayList<PHArticle> washrack = new ArrayList<>();
+    //******
+
     public DbOperations(Context context) {
         dbHandler = new PHDBHandler(context);
     }
@@ -182,7 +187,11 @@ public class DbOperations {
                         PHArticle phArticle = new PHArticle(pageId, title,
                                 content,
                                 new Timestamp(System.currentTimeMillis()));
-                        addArticle(phArticle);
+                        //addArticle(phArticle);
+                        //Note: attempts to prettify the pages while this method is running creates unusable pages,
+                        //so add the pages to a global ArrayList, then parse the PHArticles' contents to clean them,
+                        //then add them to database.
+                        washrack.add(phArticle);
                         Log.i(TAG, title);
                         Log.i(TAG, content);
                         pageId++;
@@ -197,5 +206,63 @@ public class DbOperations {
         }
     }
 
+    public void pageCleaner()
+    {
+        //*************************
+        //TODO:
+        //Parse content to make it pretty and presentable
+
+        for(PHArticle phArticle: washrack)
+        {
+            String content = phArticle.getContent();
+            phArticle.setContent(stringCleaner(content));
+            addArticle(phArticle);
+        }
+        washrack.clear();
+        /*
+
+        */
+        //*****************
+    }
+    //Parse the content of the given PHArticle to prettify it up
+    public String stringCleaner(String content)
+    {
+        for (int i = 0; i < content.length(); i++)
+        {
+            //get rid of stub date
+            //ex: in article "Check in at the Royal National Hotel
+
+            //get ride of [[Image: ...]]
+            //for example: [[Image:Convince People You Are a local step1.jpg|center]]
+            if(content.charAt(i) == '[' && i+1 < content.length() && content.charAt(i+1) == '[')
+            {
+                String s1 = content.substring(i+2, i+2+("Image".length()));
+                if(s1.equals("Image"))
+                {
+                    int j = i+2+("Image".length());
+                    //find the first ']'
+                    while(j < content.length() && content.charAt(j) != ']')
+                    {
+                        j++;
+                    }
+                    j = j+2;
+                    //Log.d("Editing", "string = " + content.substring(i,j));
+                    String firstPart = content.substring(0,i);
+                    String secondPart = content.substring(j);
+                    content = firstPart.concat(secondPart);
+                }
+            }
+
+            //get rid of more stuff
+            //more parsing
+
+        }
+        return content;
+    }
+    //used only by dbTester
+    public void addArticleToWashRack(PHArticle phArticle)
+    {
+        washrack.add(phArticle);
+    }
 
 }

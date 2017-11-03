@@ -99,6 +99,7 @@ public class searchActivity extends AppCompatActivity {
                         dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs1)));
+                        dbOperations.pageCleaner();
                         dbOperations.close();
 
                     }
