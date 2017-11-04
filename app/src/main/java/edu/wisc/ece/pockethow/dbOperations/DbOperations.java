@@ -232,9 +232,72 @@ public class DbOperations {
             //get rid of stub date
             //ex: in article "Check in at the Royal National Hotel
 
+            //delete ref tags
+            //check the "being a drifter" page
+            if((i+"<ref>".length() < content.length()) && content.substring(i, i+"<ref>".length()).equals("<ref>"))
+            {
+                int j = i+"<ref>".length();
+                /*
+                while ((j+"</ref>".length() < content.length()) &&  !content.substring(j, j+"</ref>".length()).equals("</ref>") )
+                {
+                    j++;
+                }
+                */
+                char char1 = content.charAt(j);
+                while(j <  content.length() && content.charAt(j) != '>')
+                {
+                    j++;
+                    char1 = content.charAt(j);
+                }
+                /*
+                if(content.substring(j, j+"</ref>".length()).equals("</ref>"))
+                {
+                    String string1 = content.substring(0, i);
+                    String string2 = content.substring(j+"</ref>".length());
+                    content = string1 + string2;
+                }
+                */
+                if(content.charAt(j) == '>')
+                {
+                    j++;
+                    String string1 = content.substring(0, i);
+                    String string2 = content.substring(j);
+                    content = string1+string2;
+                }
+            }
+
+
+            /*
+            //delete everything that is in [[trash]]
+            int leftBracketNum = 0;
+            //int rightBracketNum = 0;
+            if(content.charAt(i) == '[')
+            {
+                leftBracketNum++;
+                int j = i+1;
+                while(leftBracketNum > 0)
+                {
+                    if(content.charAt(j) == '[')
+                    {
+                        leftBracketNum++;
+                    }
+                    else if(content.charAt(j) == ']')
+                    {
+                        leftBracketNum--;
+                    }
+                    j++;
+                }
+                String string1 = content.substring(0, i);
+                String string2 = content.substring(j);
+                string1 += "\n";
+                content = string1 + string2;
+            }
+            */
+            //{{reflist}}
+
             //get ride of [[Image: ...]]
             //for example: [[Image:Convince People You Are a local step1.jpg|center]]
-            if(content.charAt(i) == '[' && i+1 < content.length() && content.charAt(i+1) == '[')
+            if(i < content.length() && content.charAt(i) == '[' && i+1 < content.length() && content.charAt(i+1) == '[')
             {
                 String s1 = content.substring(i+2, i+2+("Image".length()));
                 if(s1.equals("Image"))

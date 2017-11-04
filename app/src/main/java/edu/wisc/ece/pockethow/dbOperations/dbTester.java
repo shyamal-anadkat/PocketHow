@@ -65,10 +65,13 @@ public class dbTester extends AppCompatActivity {
         this.deleteDatabase("PocketHow.db");
         dbOperations.open();
 
+        PHArticle p1 = new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref>type of domestic", new Timestamp(System.currentTimeMillis()));
 
-        PHArticle p1 = new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) [[Image: chicken]]is a type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011.[1] Humans keep chickens primarily as a source of food, consuming both their meat and their eggs.\n" +
+
+/*
+        PHArticle p1 = new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref>type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011.[1] Humans keep chickens primarily as a source of food, consuming both their meat and their eggs.\n" +
                 "Genetic studies have pointed to multiple maternal origins in Southeast Asia, East Asia,[2] and South Asia, but with the clade found in the Americas, Europe, the Middle East and Africa originating in the Indian subcontinent. From India, the domesticated chicken was imported to Lydia in western Asia Minor, and to Greece by the fifth century BC.[3] Fowl had been known in Egypt since the mid-15th century BC, with the \"bird that gives birth every day\" having come to Egypt from the land between Syria and Shinar, Babylonia, according to the annals of Thutmose III.", new Timestamp(System.currentTimeMillis()));
-
+*/
         dbOperations.addArticleToWashRack(p1);
         dbOperations.pageCleaner();
 
