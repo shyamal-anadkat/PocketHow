@@ -22,7 +22,9 @@ public class searchActivity extends AppCompatActivity {
     //private DbOperations dbOperations;
     TextView loadingTextView;
     Button populateButton;
+    String categoryStr;
 
+    static final String codeword = "catagory";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -38,7 +40,6 @@ public class searchActivity extends AppCompatActivity {
         populateButton = (Button) findViewById(R.id.populateDBbutton);
         loadingTextView = (TextView) findViewById(R.id.textViewLoading);
         //dbOperations = new DbOperations(this); //this is a context
-
         //dbOperations.open();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +80,7 @@ public class searchActivity extends AppCompatActivity {
                         final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
 
                         dbOperations.open();
-
+                        /*
                         List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 100);
                         dbOperations.addCategoryToPageID(new PHCategory(2, "Travel"
                                 , phWikihowFetches.categoryListToDelimString(testIDs),
@@ -99,6 +100,14 @@ public class searchActivity extends AppCompatActivity {
                         dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs1)));
+                         */
+                        List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
+                        dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
+                                , phWikihowFetches.categoryListToDelimString(testIDs),
+                                null));
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (testIDs)));
                         dbOperations.pageCleaner();
                         dbOperations.close();
 
@@ -121,6 +130,17 @@ public class searchActivity extends AppCompatActivity {
             }
         });
         */
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        categoryStr = bundle.getString(codeword);
+        if(categoryStr == null)
+        {
+            categoryStr = "";
+        }
+        if(!categoryStr.equals(""))
+        {
+            populateButton.performClick();
+        }
     }
 
     @Override

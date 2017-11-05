@@ -1,5 +1,7 @@
 package edu.wisc.ece.pockethow.frontend;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,8 +24,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         // each data item is just a string in this case
         //public CardCategory mCardView;
 
-        CardView cardView;
-        TextView textView;
+        final CardView cardView;
+        final TextView textView;
         public ViewHolder(View v)
         {
             super(v);
@@ -61,11 +63,22 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.textView.setText(mDataset[position]);
-
+        holder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, searchActivity.class);
+                //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
+                //send the content of the selected article
+                intent.putExtra(searchActivity.codeword, holder.textView.getText());
+                //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
+                context.startActivity(intent);
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
