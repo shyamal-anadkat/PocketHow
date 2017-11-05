@@ -29,11 +29,7 @@ import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
-/**
- * Created by zosta on 10/23/2017.
- */
-
-
+/*** PocketHow, (@C) 2017 ***/
 public class DbOperations {
 
     // set the format to sql date time
@@ -78,6 +74,12 @@ public class DbOperations {
     }
 
 
+    /**
+     * Add Category to CategoryToPageID schema
+     *
+     * @param category
+     * @return
+     */
     public PHCategory addCategoryToPageID(PHCategory category) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PHDBHandler.COLUMN_CATEGORY, category.getCategory());
@@ -105,6 +107,12 @@ public class DbOperations {
         return phArticle;
     }
 
+    /**
+     * Query PageIds for a particular Category
+     *
+     * @param category
+     * @return delim comma pageIds
+     */
     public String getPageIds(String category) {
         Cursor cursor = database.query(true,
                 PHDBHandler.TABLE_CATEGORY_TO_PAGEID, allCategoryToPageIDColumns,
@@ -118,42 +126,45 @@ public class DbOperations {
         return cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST));
     }
 
+    /**
+     * Query Article Results for Search Word
+     * Using MATCH Sqlite(FTS4) functionality and
+     * Fuzzy Search enhancements
+     *
+     * @param searchWord
+     * @return
+     */
     public ArrayList<PHArticle> getArticle(String searchWord) {
+        Cursor cursor, cursorAll;
         ArrayList<Long> pageIdList = new ArrayList<>();
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
-        String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
-
-        Log.i(TAG, Integer.toString(FuzzySearch.ratio("drift",
-                "drifting")));
         Log.i(TAG, "SEARCH WORD: " + searchWord);
+
+
+        //*** @Deprecated Selection and selArgs below ***//
         String selection = PHDBHandler.COLUMN_TITLE +
                 " LIKE ? OR " + PHDBHandler.COLUMN_TITLE + " LIKE ? OR "
                 + PHDBHandler.COLUMN_TITLE + " LIKE ? ";
-
         String[] selArgs = new String[]{"%" + searchWord + "%",
                 searchWord + "%",
                 "%" + searchWord};
 
 
-        Cursor cursor, cursorAll;
-
-
-        //FUZZY SEARCH START
+        //*****FUZZY SEARCH START*****//
         if (searchWord != null && searchWord != "" && searchWord.length() > 0) {
             cursorAll = database.rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
 
             for (cursorAll.moveToFirst(); !cursorAll.isAfterLast(); cursorAll.moveToNext()) {
+
                 // do what you need with the cursor here
-
-                String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-                Long columnID = cursorAll.getLong(cursorAll.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-                String columnContent = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
-                String dateTimeString = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-
-
                 try {
+                    String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+                    Long columnID = cursorAll.getLong(cursorAll.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
+                    String columnContent = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                    String dateTimeString = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                    Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+
                     Date date = dateFormat.parse(dateTimeString);
                     if (FuzzySearch.ratio(columnTitle, searchWord) > 60
                             || FuzzySearch.tokenSetRatio(columnTitle, searchWord) > 85 ||
@@ -161,19 +172,19 @@ public class DbOperations {
                             || FuzzySearch.partialRatio(columnTitle, searchWord) > 85
                             || FuzzySearch.tokenSortRatio(columnTitle, searchWord) > 85) {
 
-                        if(!pageIdList.contains(columnID)) {
+                        if (!pageIdList.contains(columnID)) {
                             pageIdList.add(columnID);
                             articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
                         }
                     }
-                } catch (ParseException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             cursorAll.close();
         }
-        //FUZZY SEARCH END
+        //*****FUZZY SEARCH END*****//
 
         String searchQuery = "'*" + searchWord + "*'";
         if (searchWord == "" || searchWord == null || searchWord.isEmpty() || searchWord.length() == 0) {
@@ -185,33 +196,36 @@ public class DbOperations {
         }
 
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+
             // do what you need with the cursor here
-
-
-            Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-            String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-            String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
-            String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-            Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-
             try {
+                Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
+                String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+                String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+
                 Date date = dateFormat.parse(dateTimeString);
-                if(!pageIdList.contains(columnID)) {
+                if (!pageIdList.contains(columnID)) {
                     PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
                     articleArrayList.add(ph);
                     pageIdList.add(columnID);
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         cursor.close();
-        //Set<PHArticle> removeDups = new LinkedHashSet<>(articleArrayList);
         return articleArrayList;
     }
 
 
+    /**
+     * Populate database with articles
+     *
+     * @param jsonObject
+     */
     public void parsePagesAndPopulateDB(JSONObject jsonObject) {
         if (jsonObject != null) {
 
@@ -253,9 +267,11 @@ public class DbOperations {
         }
     }
 
+    /**
+     * pageCleaner @TODO
+     */
     public void pageCleaner() {
         //*************************
-        //TODO:
         //Parse content to make it pretty and presentable
 
         for (PHArticle phArticle : washrack) {
@@ -264,13 +280,15 @@ public class DbOperations {
             addArticle(phArticle);
         }
         washrack.clear();
-        /*
-
-        */
-        //*****************
     }
 
-    //Parse the content of the given PHArticle to prettify it up
+
+    /**
+     * Parse the content of the given PHArticle to prettify it up
+     *
+     * @param content
+     * @return
+     */
     public String stringCleaner(String content) {
         for (int i = 0; i < content.length(); i++) {
             //get rid of stub date
@@ -281,14 +299,11 @@ public class DbOperations {
             //ex: "buy a scale" {{stub|date=2016-08-18}}
             //{{Stub|date=2014-04-12}}
 
-            if((i+1 < content.length()) && content.charAt(i) == '{' && content.charAt(i+1) == '{')
-            {
+            if ((i + 1 < content.length()) && content.charAt(i) == '{' && content.charAt(i + 1) == '{') {
                 int numUnmatchedBrackets = 2;
-                int j = i+1;
-                while(numUnmatchedBrackets > 0 && j < content.length())
-                {
-                    if(content.charAt(j) == '}')
-                    {
+                int j = i + 1;
+                while (numUnmatchedBrackets > 0 && j < content.length()) {
+                    if (content.charAt(j) == '}') {
                         numUnmatchedBrackets--;
                     }
                     j++;
@@ -296,7 +311,7 @@ public class DbOperations {
 
                 String string1 = content.substring(0, i);
                 String string2 = content.substring(j);
-                content = string1+string2;
+                content = string1 + string2;
 
             }
 
