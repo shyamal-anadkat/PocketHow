@@ -20,11 +20,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 /**
  * Created by zosta on 10/23/2017.
@@ -121,6 +124,8 @@ public class DbOperations {
         String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
 
+        Log.i(TAG, Integer.toString(FuzzySearch.ratio("drift",
+                "drifting")));
         Log.i(TAG, "SEARCH WORD: " + searchWord);
         String selection = PHDBHandler.COLUMN_TITLE +
                 " LIKE ? OR " + PHDBHandler.COLUMN_TITLE + " LIKE ? OR "
@@ -131,12 +136,43 @@ public class DbOperations {
                 "%" + searchWord};
 
 
-        //Cursor cursor = database.query(true, PHDBHandler.TABLE_PHARTICLE, requestedColumns, selection,
-        //        selArgs, null, null, null,
-        //       null);
-        Cursor cursor;
+        Cursor cursor, cursorAll;
+
+
+        //FUZZY SEARCH START
+        if (searchWord != null && searchWord != "" && searchWord.length() > 0) {
+            cursorAll = database.rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
+
+            for (cursorAll.moveToFirst(); !cursorAll.isAfterLast(); cursorAll.moveToNext()) {
+                // do what you need with the cursor here
+
+                String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+                Long columnID = cursorAll.getLong(cursorAll.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
+                String columnContent = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                String dateTimeString = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+
+
+                try {
+                    Date date = dateFormat.parse(dateTimeString);
+                    if (FuzzySearch.ratio(columnTitle, searchWord) > 60
+                            || FuzzySearch.tokenSetRatio(columnTitle, searchWord) > 85 ||
+                            FuzzySearch.weightedRatio(columnTitle, searchWord) > 85
+                            || FuzzySearch.partialRatio(columnTitle, searchWord) > 85
+                            || FuzzySearch.tokenSortRatio(columnTitle, searchWord) > 85) {
+                        articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            cursorAll.close();
+        }
+        //FUZZY SEARCH END
+
         String searchQuery = "'*" + searchWord + "*'";
-        if (searchWord == "" || searchWord == null || searchWord.isEmpty()) {
+        if (searchWord == "" || searchWord == null || searchWord.isEmpty() || searchWord.length() == 0) {
             cursor = database.rawQuery("select * from "
                     + PHDBHandler.TABLE_PHARTICLE, null);
         } else {
@@ -156,14 +192,16 @@ public class DbOperations {
 
             try {
                 Date date = dateFormat.parse(dateTimeString);
-                articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
+                articleArrayList.add(ph);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
         cursor.close();
-        return articleArrayList;
+        Set<PHArticle> removeDups = new LinkedHashSet<>(articleArrayList);
+        return new ArrayList<>(removeDups);
     }
 
 
@@ -206,14 +244,12 @@ public class DbOperations {
         }
     }
 
-    public void pageCleaner()
-    {
+    public void pageCleaner() {
         //*************************
         //TODO:
         //Parse content to make it pretty and presentable
 
-        for(PHArticle phArticle: washrack)
-        {
+        for (PHArticle phArticle : washrack) {
             String content = phArticle.getContent();
             phArticle.setContent(stringCleaner(content));
             addArticle(phArticle);
@@ -224,19 +260,17 @@ public class DbOperations {
         */
         //*****************
     }
+
     //Parse the content of the given PHArticle to prettify it up
-    public String stringCleaner(String content)
-    {
-        for (int i = 0; i < content.length(); i++)
-        {
+    public String stringCleaner(String content) {
+        for (int i = 0; i < content.length(); i++) {
             //get rid of stub date
             //ex: in article "Check in at the Royal National Hotel
 
             //delete ref tags
             //check the "being a drifter" page
-            if((i+"<ref>".length() < content.length()) && content.substring(i, i+"<ref>".length()).equals("<ref>"))
-            {
-                int j = i+"<ref>".length();
+            if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
+                int j = i + "<ref>".length();
                 /*
                 while ((j+"</ref>".length() < content.length()) &&  !content.substring(j, j+"</ref>".length()).equals("</ref>") )
                 {
@@ -244,8 +278,7 @@ public class DbOperations {
                 }
                 */
                 char char1 = content.charAt(j);
-                while(j <  content.length() && content.charAt(j) != '>')
-                {
+                while (j < content.length() && content.charAt(j) != '>') {
                     j++;
                     char1 = content.charAt(j);
                 }
@@ -257,12 +290,11 @@ public class DbOperations {
                     content = string1 + string2;
                 }
                 */
-                if(content.charAt(j) == '>')
-                {
+                if (content.charAt(j) == '>') {
                     j++;
                     String string1 = content.substring(0, i);
                     String string2 = content.substring(j);
-                    content = string1+string2;
+                    content = string1 + string2;
                 }
             }
 
@@ -297,20 +329,17 @@ public class DbOperations {
 
             //get ride of [[Image: ...]]
             //for example: [[Image:Convince People You Are a local step1.jpg|center]]
-            if(i < content.length() && content.charAt(i) == '[' && i+1 < content.length() && content.charAt(i+1) == '[')
-            {
-                String s1 = content.substring(i+2, i+2+("Image".length()));
-                if(s1.equals("Image"))
-                {
-                    int j = i+2+("Image".length());
+            if (i < content.length() && content.charAt(i) == '[' && i + 1 < content.length() && content.charAt(i + 1) == '[') {
+                String s1 = content.substring(i + 2, i + 2 + ("Image".length()));
+                if (s1.equals("Image")) {
+                    int j = i + 2 + ("Image".length());
                     //find the first ']'
-                    while(j < content.length() && content.charAt(j) != ']')
-                    {
+                    while (j < content.length() && content.charAt(j) != ']') {
                         j++;
                     }
-                    j = j+2;
+                    j = j + 2;
                     //Log.d("Editing", "string = " + content.substring(i,j));
-                    String firstPart = content.substring(0,i);
+                    String firstPart = content.substring(0, i);
                     String secondPart = content.substring(j);
                     content = firstPart.concat(secondPart);
                 }
@@ -322,9 +351,9 @@ public class DbOperations {
         }
         return content;
     }
+
     //used only by dbTester
-    public void addArticleToWashRack(PHArticle phArticle)
-    {
+    public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);
     }
 
