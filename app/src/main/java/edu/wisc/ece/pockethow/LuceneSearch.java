@@ -1,6 +1,6 @@
 package edu.wisc.ece.pockethow;
 
-/*
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -21,12 +21,9 @@ import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created by Cameron on 10/18/2017.
- */
-/*
+
 public class LuceneSearch {
-    public void runLucene(){
+    public static void runLucene(){
         try {
             Analyzer analyzer = new StandardAnalyzer();
 
@@ -63,4 +60,3 @@ public class LuceneSearch {
 
     }
 }
-*/
