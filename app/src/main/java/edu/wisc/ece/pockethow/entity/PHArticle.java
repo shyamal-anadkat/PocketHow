@@ -7,16 +7,13 @@ import org.joda.time.DateTime;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-/**
- * Created by zosta on 10/23/2017.
- */
 
 public class PHArticle {
     long _id;
     String _title;
     String _content;
-    //DateTime _lastAccess;
     Timestamp _timestamp;
+
     public PHArticle() {
     }
 
@@ -25,7 +22,6 @@ public class PHArticle {
         this._id = id;
         this._title = title;
         this._content = content;
-        //this._lastAccess = lastAccess;
         this._timestamp = timestamp;
     }
 
@@ -48,19 +44,14 @@ public class PHArticle {
     public String getContent() {
         return this._content;
     }
-/*
-    public DateTime getLastAccess() {
-        return this._lastAccess;
-    }
-*/
 
-    public Timestamp getLastAccess() { return this._timestamp;}
-   /*
-    public void setLastAccess(DateTime lastAccess) {
-        this._lastAccess = lastAccess;
+    public Timestamp getLastAccess() {
+        return this._timestamp;
     }
-*/
-   public void setLastAccess(Timestamp timestamp) { this._timestamp = timestamp;}
+
+    public void setLastAccess(Timestamp timestamp) {
+        this._timestamp = timestamp;
+    }
 
     public void setContent(String content) {
         this._content = content;
