@@ -119,7 +119,7 @@ public class DbOperations {
     }
 
     public ArrayList<PHArticle> getArticle(String searchWord) {
-
+        ArrayList<Long> pageIdList = new ArrayList<>();
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
         String[] requestedColumns = new String[]{PHDBHandler.COLUMN_PHARTICLE_ID, PHDBHandler.COLUMN_TITLE, PHDBHandler.COLUMN_CONTENT, PHDBHandler.COLUMN_ARTICLE_LASTACCESS};
 
@@ -160,7 +160,11 @@ public class DbOperations {
                             FuzzySearch.weightedRatio(columnTitle, searchWord) > 85
                             || FuzzySearch.partialRatio(columnTitle, searchWord) > 85
                             || FuzzySearch.tokenSortRatio(columnTitle, searchWord) > 85) {
-                        articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+
+                        if(!pageIdList.contains(columnID)) {
+                            pageIdList.add(columnID);
+                            articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                        }
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -192,16 +196,19 @@ public class DbOperations {
 
             try {
                 Date date = dateFormat.parse(dateTimeString);
-                PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
-                articleArrayList.add(ph);
+                if(!pageIdList.contains(columnID)) {
+                    PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
+                    articleArrayList.add(ph);
+                    pageIdList.add(columnID);
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
         cursor.close();
-        Set<PHArticle> removeDups = new LinkedHashSet<>(articleArrayList);
-        return new ArrayList<>(removeDups);
+        //Set<PHArticle> removeDups = new LinkedHashSet<>(articleArrayList);
+        return articleArrayList;
     }
 
 
@@ -211,14 +218,17 @@ public class DbOperations {
             try {
                 JSONObject pages = jsonObject.getJSONObject("query").getJSONObject("pages");
                 Iterator<?> keys = pages.keys();
-                int pageId = 0;
+
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
 
                     if (pages.get(key) instanceof JSONObject) {
                         JSONObject page = pages.getJSONObject(key);
                         JSONArray revisions = page.getJSONArray("revisions");
+                        Log.i(TAG, "page = " + page.toString());
                         String title = page.getString("title");
+                        Long pageId = page.getLong("pageid");
+                        Log.d(TAG, "pageid = " + pageId);
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
 
@@ -232,7 +242,6 @@ public class DbOperations {
                         washrack.add(phArticle);
                         Log.i(TAG, title);
                         Log.i(TAG, content);
-                        pageId++;
                     }
                 }
 
@@ -267,7 +276,32 @@ public class DbOperations {
             //get rid of stub date
             //ex: in article "Check in at the Royal National Hotel
 
+            //delete stub dates
+            //TODO
+            //ex: "buy a scale" {{stub|date=2016-08-18}}
+            //{{Stub|date=2014-04-12}}
+
+            if((i+1 < content.length()) && content.charAt(i) == '{' && content.charAt(i+1) == '{')
+            {
+                int numUnmatchedBrackets = 2;
+                int j = i+1;
+                while(numUnmatchedBrackets > 0 && j < content.length())
+                {
+                    if(content.charAt(j) == '}')
+                    {
+                        numUnmatchedBrackets--;
+                    }
+                    j++;
+                }
+
+                String string1 = content.substring(0, i);
+                String string2 = content.substring(j);
+                content = string1+string2;
+
+            }
+
             //delete ref tags
+            //TODO: NEEDS WORK, some tags are still being written
             //check the "being a drifter" page
             if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
                 int j = i + "<ref>".length();
