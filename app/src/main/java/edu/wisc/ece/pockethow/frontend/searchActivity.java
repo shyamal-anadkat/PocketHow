@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -48,7 +49,15 @@ public class searchActivity extends AppCompatActivity {
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchView.getQuery().toString());
                 intent.putExtra("message", searchView.getQuery().toString());
-                startActivity(intent);
+                if(dbOperations.isOpen())
+                {
+                    Toast.makeText(searchActivity.this, "Please wait, the database is loading",
+                            Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Log.d("searchActivity", "Done loading DB");
+                    startActivity(intent);
+                }
                 //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
             }
         });

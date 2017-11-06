@@ -298,39 +298,50 @@ public class DbOperations {
             //TODO
             //ex: "buy a scale" {{stub|date=2016-08-18}}
             //{{Stub|date=2014-04-12}}
+            boolean foundStub = false;
+            //do {
 
-            if ((i + 1 < content.length()) && content.charAt(i) == '{' && content.charAt(i + 1) == '{') {
-                int numUnmatchedBrackets = 2;
-                int j = i + 1;
-                while (numUnmatchedBrackets > 0 && j < content.length()) {
-                    if (content.charAt(j) == '}') {
-                        numUnmatchedBrackets--;
+
+                if ((i + 1 < content.length()) && content.charAt(i) == '{' && content.charAt(i + 1) == '{') {
+                    foundStub = true;
+                    int numUnmatchedBrackets = 2;
+                    int j = i + 1;
+                    while (numUnmatchedBrackets > 0 && j < content.length()) {
+                        if (content.charAt(j) == '}') {
+                            numUnmatchedBrackets--;
+                        }
+                        j++;
                     }
-                    j++;
+
+                    String string1 = content.substring(0, i);
+                    String string2 = content.substring(j);
+                    content = string1 + string2;
+
                 }
-
-                String string1 = content.substring(0, i);
-                String string2 = content.substring(j);
-                content = string1 + string2;
-
-            }
-
+                else
+                {
+                    foundStub = false;
+                }
+            //}while(foundStub);
             //delete ref tags
             //TODO: NEEDS WORK, some tags are still being written
             //check the "being a drifter" page
-            if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
-                int j = i + "<ref>".length();
+            boolean refTagFound = false;
+           // do {
+                if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
+                    int j = i + "<ref>".length();
+                    refTagFound = true;
                 /*
                 while ((j+"</ref>".length() < content.length()) &&  !content.substring(j, j+"</ref>".length()).equals("</ref>") )
                 {
                     j++;
                 }
                 */
-                char char1 = content.charAt(j);
-                while (j < content.length() && content.charAt(j) != '>') {
-                    j++;
-                    char1 = content.charAt(j);
-                }
+                    char char1 = content.charAt(j);
+                    while (j < content.length() && content.charAt(j) != '>') {
+                        j++;
+                        char1 = content.charAt(j);
+                    }
                 /*
                 if(content.substring(j, j+"</ref>".length()).equals("</ref>"))
                 {
@@ -339,14 +350,17 @@ public class DbOperations {
                     content = string1 + string2;
                 }
                 */
-                if (content.charAt(j) == '>') {
-                    j++;
-                    String string1 = content.substring(0, i);
-                    String string2 = content.substring(j);
-                    content = string1 + string2;
+                    if (content.charAt(j) == '>') {
+                        j++;
+                        String string1 = content.substring(0, i);
+                        String string2 = content.substring(j);
+                        content = string1 + string2;
+                    }
                 }
-            }
-
+                else {
+                    refTagFound = false;
+                }
+            //}while(refTagFound);
 
             /*
             //delete everything that is in [[trash]]
@@ -378,27 +392,43 @@ public class DbOperations {
 
             //get ride of [[Image: ...]]
             //for example: [[Image:Convince People You Are a local step1.jpg|center]]
-            if (i < content.length() && content.charAt(i) == '[' && i + 1 < content.length() && content.charAt(i + 1) == '[') {
-                String s1 = content.substring(i + 2, i + 2 + ("Image".length()));
-                if (s1.equals("Image")) {
-                    int j = i + 2 + ("Image".length());
-                    //find the first ']'
-                    while (j < content.length() && content.charAt(j) != ']') {
-                        j++;
-                    }
-                    j = j + 2;
-                    //Log.d("Editing", "string = " + content.substring(i,j));
-                    String firstPart = content.substring(0, i);
-                    String secondPart = content.substring(j);
-                    content = firstPart.concat(secondPart);
-                }
-            }
+            boolean imageTagFound = false;
+            //do {
 
+
+                if (i < content.length() && content.charAt(i) == '[' && i + 1 < content.length() && content.charAt(i + 1) == '[') {
+                    imageTagFound = true;
+                    String s1 = content.substring(i + 2, i + 2 + ("Image".length()));
+                    if (s1.equals("Image")) {
+                        int j = i + 2 + ("Image".length());
+                        //find the first ']'
+                        while (j < content.length() && content.charAt(j) != ']') {
+                            j++;
+                        }
+                        j = j + 2;
+                        //Log.d("Editing", "string = " + content.substring(i,j));
+                        String firstPart = content.substring(0, i);
+                        String secondPart = content.substring(j);
+                        content = firstPart.concat(secondPart);
+                    }
+                }
+                else
+                {
+                    imageTagFound = false;
+                }
+            //}while(imageTagFound);
             //get rid of more stuff
             //more parsing
 
         }
         return content;
+    }
+
+    public boolean isOpen()
+    {
+
+        return database.isOpen();
+
     }
 
     //used only by dbTester
