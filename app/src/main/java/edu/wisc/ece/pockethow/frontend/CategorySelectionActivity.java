@@ -4,7 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.Toast;
 
+import edu.wisc.ece.pockethow.ImageAdapter;
 import edu.wisc.ece.pockethow.R;
 
 public class CategorySelectionActivity extends AppCompatActivity {
@@ -23,18 +28,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_selection);
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        GridView gridview = (GridView) findViewById(R.id.gridview);
+        gridview.setAdapter(new ImageAdapter(this));
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // specify an adapter (see also next example)
-        mAdapter = new CardAdapter(categoryArray);
-        mRecyclerView.setAdapter(mAdapter);
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                Toast.makeText(CategorySelectionActivity.this, "" + position,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 }
