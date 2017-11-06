@@ -1,5 +1,7 @@
 package edu.wisc.ece.pockethow.frontend;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +44,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
                 Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+                Context context = gridView.getContext();
+                Toast.makeText(context, "This is my Toast message!",
+                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, searchActivity.class);
+                //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
+                //send the content of the selected article
+                String string = mAdapter.getItem(position);
+                intent.putExtra(searchActivity.codeword, mAdapter.getItem(position));
+                //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
+                context.startActivity(intent);
             }
         });
 
@@ -50,7 +62,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void prepareList()
     {
         listLabel = new ArrayList<String>();
-
+        /*
         listLabel.add("Arts");
         listLabel.add("Auto");
         listLabel.add("Education");
@@ -70,6 +82,29 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Travel");
         listLabel.add("Wikihow");
         listLabel.add("Work");
+        listLabel.add("Youth");
+        */
+
+        //This list corresponds to the Categories exactly, but it looks ugly
+        listLabel.add("Arts and Entertainment");
+        listLabel.add("Cars & Other Vehicles");
+        listLabel.add("Education and Communications");
+        listLabel.add("Computers and Electronics");
+        listLabel.add("Family Life");
+        listLabel.add("Finance and Business");
+        listLabel.add("Food and Entertaining");
+        listLabel.add("Home and Garden");
+        listLabel.add("Health");
+        listLabel.add("Hobbies and Crafts");
+        listLabel.add("Holidays and Traditions");
+        listLabel.add("Personal Care and Style");
+        listLabel.add("Pets and Animals");
+        listLabel.add("Relationships");
+        listLabel.add("Philosophy and Religion");
+        listLabel.add("Sports and Fitness");
+        listLabel.add("Travel");
+        listLabel.add("Wikihow");
+        listLabel.add("Work World");
         listLabel.add("Youth");
 
 
