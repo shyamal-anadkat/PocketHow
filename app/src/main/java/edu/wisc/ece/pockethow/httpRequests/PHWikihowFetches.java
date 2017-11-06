@@ -1,4 +1,3 @@
-/* Author: Shyamal Anadkat */
 package edu.wisc.ece.pockethow.httpRequests;
 
 import android.util.Log;
@@ -16,13 +15,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/*** Created by zosta on 10/15/2017.*/
+/*** PocketHow, (@C) 2017 ***/
 
+/**
+ * Handles outgoing get requests, specific to WIkiHow
+ */
 public class PHWikihowFetches {
 
     public PHWikihowFetches() {
     }
-
     static final String TAG = PHWikihowFetches.class.getSimpleName();
 
     @Deprecated
@@ -41,7 +42,7 @@ public class PHWikihowFetches {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 buffer.append(line + "\n");
-                Log.e(TAG, "Response:" + line);
+                Log.i(TAG, "Response:" + line);
             }
             return buffer.toString();
 
@@ -64,16 +65,38 @@ public class PHWikihowFetches {
         return null;
     }
 
-
-    /* Fetch the list of PageIds given the Category and numPages to limit fetch to */
-    public List<String> fetchPagesFromCategory(String category, int numPages) {
-        ArrayList<String> pageIds = new ArrayList<>();
-        final String categoryFetchURL = "https://www.wikihow.com/api.php?" +
+    /**
+     * Construct get URL for Category, given numPages to retrieve
+     *
+     * @param category
+     * @param numPages
+     * @return
+     */
+    private String getCategoryResponseURL(String category, int numPages) {
+        return "https://www.wikihow.com/api.php?" +
                 "action=query&format=json" +
                 "&list=categorymembers" +
                 "&cmtitle=Category%3A" + category +
                 "&cmlimit=" + numPages;
+    }
+
+
+    /**
+     * Fetch the list of PageIds given the Category and numPages to limit fetch to
+     *
+     * @param category
+     * @param numPages
+     * @return List of PageIds
+     */
+    public List<String> fetchPagesFromCategory(String category, int numPages) {
+
+        ArrayList<String> pageIds = new ArrayList<>(); //assuming no dups in api
+        final String categoryFetchURL = getCategoryResponseURL(category, numPages);
+
+        // edge cases, err handling
         if (category == null || category.isEmpty()) return null;
+
+        //make service call to get response as string
         String jsonStr = new PHttpHandler().makeServiceCall(categoryFetchURL);
         if (jsonStr != null) {
             try {
@@ -85,7 +108,8 @@ public class PHWikihowFetches {
                 for (int i = 0; i < categories.length(); i++) {
                     pageIds.add(categories.getJSONObject(i).get("pageid").toString());
                 }
-                Log.e(TAG, pageIds.toString());
+
+                Log.d(TAG, "pageIDs: " + pageIds.toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -94,22 +118,40 @@ public class PHWikihowFetches {
     }
 
 
+    /**
+     * Returns comma delim string
+     *
+     * @param in
+     * @return
+     */
     public String categoryListToDelimString(List<String> in) {
         String idList = in.toString();
         return idList.substring(1, idList.length() - 1).replace(", ", ",");
     }
 
 
+    /**
+     * Get fetch URL to retrieve pages for a list of PageIDs
+     *
+     * @param ids
+     * @return
+     */
     public String getFetchURLFromPageIds(List<String> ids) {
         String appendIDs = StringUtils.join(ids, "|");
         String retURL = "https://www.wikihow.com/api.php?action=query" +
                 "&prop=revisions&rvprop=content&format=json" +
                 "&pageids=" + appendIDs;
-        //Log.i(TAG, re)
         return retURL;
     }
 
-    /* SAMPLE - WIP */
+
+    /**
+     * Get JSONObj to work on from req. get url
+     * Makes service call
+     *
+     * @param url_in
+     * @return JSONObj
+     */
     public JSONObject getJSONFromURL(String url_in) {
         PHttpHandler ph = new PHttpHandler();
         String jsonStr = ph.makeServiceCall(url_in);
@@ -125,6 +167,4 @@ public class PHWikihowFetches {
         }
         return jsonObject;
     }
-
-
 }

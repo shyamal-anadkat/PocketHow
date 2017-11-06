@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 
+/**
+ * Temp test class in place as a playground to test enhancements
+ * Also helper class to test DB-Operation Classes
+ */
 public class dbTester extends AppCompatActivity {
     private ArrayAdapter<String> mAdapter;
     private ArrayList<String> FOLKS = new ArrayList<String>();
@@ -93,15 +97,13 @@ public class dbTester extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         dbOperations.open();
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
         dbOperations.close();
     }

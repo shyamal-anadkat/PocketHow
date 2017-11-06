@@ -1,8 +1,6 @@
 package edu.wisc.ece.pockethow.httpRequests;
 
-/**
- * Created by zosta on 10/15/2017.
- */
+/*** PocketHow, (@C) 2017 ***/
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -17,6 +15,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+/**
+ * Handles outgoing service calls, not specific to WikiHow.
+ */
 public class PHttpHandler {
 
     private static final String TAG = PHttpHandler.class.getSimpleName();
@@ -24,6 +25,8 @@ public class PHttpHandler {
     public PHttpHandler() {
     }
 
+    /*Returns the JSON Response from requested URL*/
+    /*Assumes device has internet access */
     public String makeServiceCall(String reqUrl) {
         String response = null;
         try {
@@ -33,6 +36,7 @@ public class PHttpHandler {
             // read the response
             InputStream in = new BufferedInputStream(conn.getInputStream());
             response = convertStreamToString(in);
+            Log.i(TAG, "Successfully made service call to reqUrl: " + reqUrl);
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {
@@ -45,12 +49,13 @@ public class PHttpHandler {
         return response;
     }
 
+    /*Buffer the Input Stream from Service Call Response to String*/
     @NonNull
     private String convertStreamToString(InputStream is) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
         String line;
         try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append('\n');
             }

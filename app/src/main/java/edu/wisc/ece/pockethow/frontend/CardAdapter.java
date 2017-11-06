@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.wisc.ece.pockethow.R;
 
@@ -71,12 +72,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
+                Toast.makeText(context, "This is my Toast message!",
+                        Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, searchActivity.class);
                 //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
                 //send the content of the selected article
                 intent.putExtra(searchActivity.codeword, holder.textView.getText());
                 //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                 context.startActivity(intent);
+
             }
         });
     }

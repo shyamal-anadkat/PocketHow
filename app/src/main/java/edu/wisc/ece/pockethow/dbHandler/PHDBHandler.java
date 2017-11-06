@@ -58,6 +58,9 @@ public class PHDBHandler extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         //db.execSQL(PHARTICLE_TABLE_DELETE);
@@ -65,6 +68,11 @@ public class PHDBHandler extends SQLiteOpenHelper {
         db.execSQL(TABLE_CATEGORY_TO_PAGEID_CREATE);
     }
 
+    /**
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
@@ -74,6 +82,11 @@ public class PHDBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
