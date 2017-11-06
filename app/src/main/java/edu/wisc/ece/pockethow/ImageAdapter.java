@@ -36,7 +36,7 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
+            imageView.setLayoutParams(new GridView.LayoutParams(125, 125));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
         } else {
@@ -49,16 +49,15 @@ public class ImageAdapter extends BaseAdapter {
 
     // references to our images
     private Integer[] mThumbIds = {
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7
+            R.drawable.arts_entertainment, R.drawable.automotive,
+            R.drawable.education, R.drawable.elec,
+            R.drawable.family, R.drawable.finance,
+            R.drawable.food, R.drawable.garden,
+            R.drawable.health, R.drawable.hobbies,
+            R.drawable.holidays, R.drawable.personal_care,
+            R.drawable.pets, R.drawable.relationships,
+            R.drawable.religion, R.drawable.sports,
+            R.drawable.travel, R.drawable.wikihow,
+            R.drawable.work, R.drawable.youth
     };
 }
