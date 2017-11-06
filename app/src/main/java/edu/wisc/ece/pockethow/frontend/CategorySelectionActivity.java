@@ -4,37 +4,96 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import edu.wisc.ece.pockethow.ImageAdapter;
 import edu.wisc.ece.pockethow.R;
 
 public class CategorySelectionActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    //private ArrayList<String> categoryArray = new ArrayList<>();
-    public final String categoryTravel = "Travel";
-    public final String categoryHealth = "Health";
-    public final String categoryCars = "Cars and Other Vehicles";
+    private GridviewAdapter mAdapter;
+    private ArrayList<String> listLabel;
+    private ArrayList<Integer> listIcon;
 
-    private String[] categoryArray = new String[]{ categoryCars, categoryHealth, categoryTravel};
+    private GridView gridView;
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_selection);
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        prepareList();
 
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        // prepared arraylist and passed it to the Adapter class
+        mAdapter = new GridviewAdapter(this,listLabel, listIcon);
 
-        // specify an adapter (see also next example)
-        mAdapter = new CardAdapter(categoryArray);
-        mRecyclerView.setAdapter(mAdapter);
+        // Set custom adapter to gridview
+        gridView = (GridView) findViewById(R.id.gridView1);
+        gridView.setAdapter(mAdapter);
+
+        // Implement On Item click listener
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
+
+    public void prepareList()
+    {
+        listLabel = new ArrayList<String>();
+
+        listLabel.add("Arts");
+        listLabel.add("Auto");
+        listLabel.add("Education");
+        listLabel.add("Electronics");
+        listLabel.add("Family");
+        listLabel.add("Finance");
+        listLabel.add("Food");
+        listLabel.add("Garden");
+        listLabel.add("Health");
+        listLabel.add("Hobbies");
+        listLabel.add("Holidays");
+        listLabel.add("Personal Care");
+        listLabel.add("Pets");
+        listLabel.add("Relationships");
+        listLabel.add("Religion");
+        listLabel.add("Sports");
+        listLabel.add("Travel");
+        listLabel.add("Wikihow");
+        listLabel.add("Work");
+        listLabel.add("Youth");
+
+
+        listIcon = new ArrayList<Integer>();
+        listIcon.add(R.drawable.arts_entertainment);
+        listIcon.add(R.drawable.automotive);
+        listIcon.add(R.drawable.education);
+        listIcon.add(R.drawable.elec);
+        listIcon.add(R.drawable.family);
+        listIcon.add(R.drawable.finance);
+        listIcon.add(R.drawable.food);
+        listIcon.add(R.drawable.garden);
+        listIcon.add(R.drawable.health);
+        listIcon.add(R.drawable.hobbies);
+        listIcon.add(R.drawable.holidays);
+        listIcon.add(R.drawable.personal_care);
+        listIcon.add(R.drawable.pets);
+        listIcon.add(R.drawable.relationships);
+        listIcon.add(R.drawable.religion);
+        listIcon.add(R.drawable.sports);
+        listIcon.add(R.drawable.travel);
+        listIcon.add(R.drawable.wikihow);
+        listIcon.add(R.drawable.work);
+        listIcon.add(R.drawable.youth);
+    }
+
 }
