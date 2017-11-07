@@ -274,12 +274,21 @@ public class DbOperations {
         //*************************
         //Parse content to make it pretty and presentable
 
+        long time = System.currentTimeMillis();
+
+        //begin SQL transaction to make sequential SQL statements faster
+        //Cuts the run time by half. from 1099 milliseconds to 513 milliseconds for Arts and Entertainment
+        database.execSQL("BEGIN TRANSACTION");
         for (PHArticle phArticle : washrack) {
             String content = phArticle.getContent();
             phArticle.setContent(stringCleaner(content));
             addArticle(phArticle);
         }
+        //end SQL transaction
+        database.execSQL("END TRANSACTION");
         washrack.clear();
+        long time2 = System.currentTimeMillis();
+        Log.d(TAG, "Time in milliseconds = " + Long.toString(time2 - time));
     }
 
 

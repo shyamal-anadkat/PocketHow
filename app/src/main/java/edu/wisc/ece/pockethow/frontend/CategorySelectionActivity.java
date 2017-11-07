@@ -21,7 +21,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private GridviewAdapter mAdapter;
     private ArrayList<String> listLabel;
     private ArrayList<Integer> listIcon;
-
+    private ArrayList<String> selectedCategories = new ArrayList<>();
     private GridView gridView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +51,17 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
                 //send the content of the selected article
                 String string = mAdapter.getItem(position);
-                intent.putExtra(searchActivity.codeword, mAdapter.getItem(position));
+                //intent.putExtra(searchActivity.codeword, mAdapter.getItem(position));
+
+                /*********temporary*/
+                selectedCategories.add(string);
+                /**********temporary*/
+                intent.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
                 //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                 context.startActivity(intent);
+                /**********temporary*/
+                selectedCategories.clear();
+                /*******temporary*/
             }
         });
 
