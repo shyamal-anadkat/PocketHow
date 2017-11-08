@@ -70,7 +70,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void prepareList()
     {
         listLabel = new ArrayList<String>();
-        /*
+        
         listLabel.add("Arts");
         listLabel.add("Auto");
         listLabel.add("Education");
@@ -91,9 +91,10 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Wikihow");
         listLabel.add("Work");
         listLabel.add("Youth");
-        */
+
 
         //This list corresponds to the Categories exactly, but it looks ugly
+        /*
         listLabel.add("Arts and Entertainment");
         listLabel.add("Cars & Other Vehicles");
         listLabel.add("Education and Communications");
@@ -114,6 +115,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Wikihow");
         listLabel.add("Work World");
         listLabel.add("Youth");
+        */
 
 
         listIcon = new ArrayList<Integer>();
