@@ -69,7 +69,7 @@ public class dbTester extends AppCompatActivity {
         this.deleteDatabase("PocketHow.db");
         dbOperations.open();
 
-        PHArticle p1 = new PHArticle(1, "chicken", "The chicken (Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref>type of domestic", new Timestamp(System.currentTimeMillis()));
+        PHArticle p1 = new PHArticle(1, "chicken", "The chicken {{Stub|date=2014-04-12}}(Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref><ref> ref </ref>type of domestic<ref></ref>", new Timestamp(System.currentTimeMillis()));
 
 
 /*

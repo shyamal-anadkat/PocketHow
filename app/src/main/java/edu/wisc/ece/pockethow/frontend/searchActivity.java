@@ -10,6 +10,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wisc.ece.pockethow.R;
@@ -23,9 +24,10 @@ public class searchActivity extends AppCompatActivity {
     //private DbOperations dbOperations;
     TextView loadingTextView;
     Button populateButton;
-    String categoryStr;
+    //String categoryStr;
 
     static final String codeword = "catagory";
+    ArrayList<String> categoryArrayList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -90,26 +92,6 @@ public class searchActivity extends AppCompatActivity {
 
                         dbOperations.open();
                         /*
-                        List<String> testIDs = phWikihowFetches.fetchPagesFromCategory("Travel", 100);
-                        dbOperations.addCategoryToPageID(new PHCategory(2, "Travel"
-                                , phWikihowFetches.categoryListToDelimString(testIDs),
-                                null));
-
-                        List<String> testIDs1 = phWikihowFetches.fetchPagesFromCategory("Physics", 100);
-                        dbOperations.addCategoryToPageID(new PHCategory(3, "Physics"
-                                , phWikihowFetches.categoryListToDelimString(testIDs1),
-                                null));
-
-                        Log.i("DetailActivity", dbOperations.getPageIds("Travel"));
-
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (testIDs)));
-
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (testIDs1)));
-                         */
                         List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
                         dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
                                 , phWikihowFetches.categoryListToDelimString(testIDs),
@@ -117,8 +99,20 @@ public class searchActivity extends AppCompatActivity {
                         dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
+                                        */
+                        for(String categoryStr: categoryArrayList)
+                        {
+                            List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
+                            dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
+                                    , phWikihowFetches.categoryListToDelimString(testIDs),
+                                    null));
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (testIDs)));
+                        }
                         dbOperations.pageCleaner();
                         dbOperations.close();
+                        categoryArrayList.clear();
 
                     }
                 }).start();
@@ -141,12 +135,19 @@ public class searchActivity extends AppCompatActivity {
         */
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
+        /*
         categoryStr = bundle.getString(codeword);
         if(categoryStr == null)
         {
             categoryStr = "";
         }
         if(!categoryStr.equals(""))
+        {
+            populateButton.performClick();
+        }
+        */
+        categoryArrayList = bundle.getStringArrayList(codeword);
+        if(categoryArrayList.size() > 0)
         {
             populateButton.performClick();
         }
