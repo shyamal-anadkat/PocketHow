@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,37 +23,35 @@ import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 public class searchActivity extends AppCompatActivity {
     Button button;
-    SearchView searchView;
+    EditText searchEditText;
     //private DbOperations dbOperations;
     TextView loadingTextView;
-    Button populateButton;
+    //Button populateButton;
     //String categoryStr;
 
     static final String codeword = "catagory";
     ArrayList<String> categoryArrayList = new ArrayList<>();
+
+    final DbOperations dbOperations = new DbOperations(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        final DbOperations dbOperations;
-        dbOperations = new DbOperations(this);
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
         button = (Button) findViewById(R.id.main_search_btn);
-        searchView = (SearchView) findViewById(R.id.main_search_bar);
-        searchView.setSubmitButtonEnabled(true);
-        populateButton = (Button) findViewById(R.id.populateDBbutton);
+        searchEditText = (EditText) findViewById(R.id.main_search_bar);
         loadingTextView = (TextView) findViewById(R.id.textViewLoading);
-        //dbOperations = new DbOperations(this); //this is a context
-        //dbOperations.open();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                Log.d("searchActivity", searchView.getQuery().toString());
-                intent.putExtra("message", searchView.getQuery().toString());
+                Log.d("searchActivity", searchEditText.getText().toString());
+                intent.putExtra("message", searchEditText.getText().toString());
                 if(dbOperations.isOpen())
                 {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
@@ -64,33 +65,22 @@ public class searchActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                loadingTextView.setVisibility(View.VISIBLE);
-                Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                Log.d("searchActivity", searchView.getQuery().toString());
-                intent.putExtra("message", searchView.getQuery().toString());
-                startActivity(intent);
-                //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
-                return true;
-            }
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        categoryArrayList = bundle.getStringArrayList(codeword);
+        populateDB();
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
 
-        populateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteDatabase("PocketHow.db");
-                new Thread(new Runnable() {
-                    public void run() {
-                        final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
 
-                        dbOperations.open();
+    }
+    public void populateDB()
+    {
+        deleteDatabase("PocketHow.db");
+        new Thread(new Runnable() {
+            public void run() {
+                final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
+
+                dbOperations.open();
                         /*
                         List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
                         dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
@@ -100,59 +90,23 @@ public class searchActivity extends AppCompatActivity {
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
                                         */
-                        for(String categoryStr: categoryArrayList)
-                        {
-                            List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
-                            dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
-                                    , phWikihowFetches.categoryListToDelimString(testIDs),
-                                    null));
-                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                    (phWikihowFetches.getFetchURLFromPageIds
-                                            (testIDs)));
-                        }
-                        dbOperations.pageCleaner();
-                        dbOperations.close();
-                        categoryArrayList.clear();
-
-                    }
-                }).start();
+                for(String categoryStr: categoryArrayList)
+                {
+                    List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
+                    dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
+                            , phWikihowFetches.categoryListToDelimString(testIDs),
+                            null));
+                    dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                            (phWikihowFetches.getFetchURLFromPageIds
+                                    (testIDs)));
+                }
+                dbOperations.pageCleaner();
+                dbOperations.close();
+                categoryArrayList.clear();
 
             }
-        });
-
-        /*
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingTextView.setVisibility(View.VISIBLE);
-                Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                Log.d("searchActivity", searchView.getQuery().toString());
-                intent.putExtra("message", searchView.getQuery().toString());
-                startActivity(intent);
-                //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
-            }
-        });
-        */
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        /*
-        categoryStr = bundle.getString(codeword);
-        if(categoryStr == null)
-        {
-            categoryStr = "";
-        }
-        if(!categoryStr.equals(""))
-        {
-            populateButton.performClick();
-        }
-        */
-        categoryArrayList = bundle.getStringArrayList(codeword);
-        if(categoryArrayList.size() > 0)
-        {
-            populateButton.performClick();
-        }
+        }).start();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -165,5 +119,7 @@ public class searchActivity extends AppCompatActivity {
         super.onStop();
         //dbOperations.close();
     }
+
+
 
 }

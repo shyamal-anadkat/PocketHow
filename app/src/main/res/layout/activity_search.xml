@@ -22,20 +22,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.586" />
 
-    <SearchView
+    <EditText
         android:id="@+id/main_search_bar"
         android:layout_width="367dp"
         android:layout_height="54dp"
-        android:iconifiedByDefault="false"
-        android:queryHint="Search"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.407" />
-
     <TextView
         android:id="@+id/textViewLoading"
         android:layout_width="wrap_content"
@@ -62,18 +58,6 @@
         app:layout_constraintHorizontal_bias="0.85"
         app:layout_constraintStart_toStartOf="@+id/main_search_btn"
         app:srcCompat="@mipmap/ic_launcher_round" />
-
-    <Button
-        android:id="@+id/populateDBbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Populate DB"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="330dp"
-        app:layout_constraintBottom_toTopOf="@+id/main_search_bar"
-        app:layout_constraintEnd_toEndOf="@+id/main_search_btn"
-        app:layout_constraintHorizontal_bias="0.85"
-        app:layout_constraintStart_toStartOf="@+id/main_search_btn" />
 
 
 </android.support.constraint.ConstraintLayout>
