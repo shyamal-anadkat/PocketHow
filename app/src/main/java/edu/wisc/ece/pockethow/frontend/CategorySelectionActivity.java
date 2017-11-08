@@ -45,8 +45,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     long arg3) {
                 Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
                 Context context = gridView.getContext();
-                Toast.makeText(context, "This is my Toast message!",
-                        Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, searchActivity.class);
                 //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
                 //send the content of the selected article
