@@ -15,13 +15,12 @@ import java.util.ArrayList;
 
 import edu.wisc.ece.pockethow.ImageAdapter;
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.entity.CategoryIcon;
 
 public class CategorySelectionActivity extends AppCompatActivity {
 
     private GridviewAdapter mAdapter;
-    private ArrayList<String> listLabel;
-    private ArrayList<Integer> listIcon;
-    private ArrayList<String> selectedCategories = new ArrayList<>();
+    private ArrayList<CategoryIcon> listCategories;
     private GridView gridView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         prepareList();
 
         // prepared arraylist and passed it to the Adapter class
-        mAdapter = new GridviewAdapter(this,listLabel, listIcon);
+        mAdapter = new GridviewAdapter(this,listCategories);
 
         // Set custom adapter to gridview
         gridView = (GridView) findViewById(R.id.gridView1);
@@ -43,25 +42,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
                 Context context = gridView.getContext();
-                Toast.makeText(context, "This is my Toast message!",
-                        Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(context, searchActivity.class);
-                //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
-                //send the content of the selected article
-                String string = mAdapter.getItem(position);
-                //intent.putExtra(searchActivity.codeword, mAdapter.getItem(position));
 
-                /*********temporary*/
-                selectedCategories.add(string);
-                /**********temporary*/
-                intent.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
-                //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
-                context.startActivity(intent);
-                /**********temporary*/
-                selectedCategories.clear();
-                /*******temporary*/
+                mAdapter.getItem(position).toggleChecked();
+
             }
         });
 
@@ -69,76 +54,28 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
     public void prepareList()
     {
-        listLabel = new ArrayList<String>();
-        
-        listLabel.add("Arts");
-        listLabel.add("Auto");
-        listLabel.add("Education");
-        listLabel.add("Electronics");
-        listLabel.add("Family");
-        listLabel.add("Finance");
-        listLabel.add("Food");
-        listLabel.add("Garden");
-        listLabel.add("Health");
-        listLabel.add("Hobbies");
-        listLabel.add("Holidays");
-        listLabel.add("Personal Care");
-        listLabel.add("Pets");
-        listLabel.add("Relationships");
-        listLabel.add("Religion");
-        listLabel.add("Sports");
-        listLabel.add("Travel");
-        listLabel.add("Wikihow");
-        listLabel.add("Work");
-        listLabel.add("Youth");
+        listCategories = new ArrayList<CategoryIcon>();
 
-
-        //This list corresponds to the Categories exactly, but it looks ugly
-        /*
-        listLabel.add("Arts and Entertainment");
-        listLabel.add("Cars & Other Vehicles");
-        listLabel.add("Education and Communications");
-        listLabel.add("Computers and Electronics");
-        listLabel.add("Family Life");
-        listLabel.add("Finance and Business");
-        listLabel.add("Food and Entertaining");
-        listLabel.add("Home and Garden");
-        listLabel.add("Health");
-        listLabel.add("Hobbies and Crafts");
-        listLabel.add("Holidays and Traditions");
-        listLabel.add("Personal Care and Style");
-        listLabel.add("Pets and Animals");
-        listLabel.add("Relationships");
-        listLabel.add("Philosophy and Religion");
-        listLabel.add("Sports and Fitness");
-        listLabel.add("Travel");
-        listLabel.add("Wikihow");
-        listLabel.add("Work World");
-        listLabel.add("Youth");
-        */
-
-
-        listIcon = new ArrayList<Integer>();
-        listIcon.add(R.drawable.arts_entertainment);
-        listIcon.add(R.drawable.automotive);
-        listIcon.add(R.drawable.education);
-        listIcon.add(R.drawable.elec);
-        listIcon.add(R.drawable.family);
-        listIcon.add(R.drawable.finance);
-        listIcon.add(R.drawable.food);
-        listIcon.add(R.drawable.garden);
-        listIcon.add(R.drawable.health);
-        listIcon.add(R.drawable.hobbies);
-        listIcon.add(R.drawable.holidays);
-        listIcon.add(R.drawable.personal_care);
-        listIcon.add(R.drawable.pets);
-        listIcon.add(R.drawable.relationships);
-        listIcon.add(R.drawable.religion);
-        listIcon.add(R.drawable.sports);
-        listIcon.add(R.drawable.travel);
-        listIcon.add(R.drawable.wikihow);
-        listIcon.add(R.drawable.work);
-        listIcon.add(R.drawable.youth);
+        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts"));
+        listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));
+        listCategories.add(new CategoryIcon(R.drawable.education,"Education"));
+        listCategories.add(new CategoryIcon(R.drawable.elec,"Electronics"));
+        listCategories.add(new CategoryIcon(R.drawable.family,"Family"));
+        listCategories.add(new CategoryIcon(R.drawable.finance,"Finance"));
+        listCategories.add(new CategoryIcon(R.drawable.food,"Food"));
+        listCategories.add(new CategoryIcon(R.drawable.garden,"Garden"));
+        listCategories.add(new CategoryIcon(R.drawable.health,"Health"));
+        listCategories.add(new CategoryIcon(R.drawable.hobbies,"Hobbies"));
+        listCategories.add(new CategoryIcon(R.drawable.holidays,"Holidays"));
+        listCategories.add(new CategoryIcon(R.drawable.personal_care,"Personal Care"));
+        listCategories.add(new CategoryIcon(R.drawable.pets,"Pets"));
+        listCategories.add(new CategoryIcon(R.drawable.relationships,"Relationships"));
+        listCategories.add(new CategoryIcon(R.drawable.religion,"Religion"));
+        listCategories.add(new CategoryIcon(R.drawable.sports,"Sports"));
+        listCategories.add(new CategoryIcon(R.drawable.travel,"Travel"));
+        listCategories.add(new CategoryIcon(R.drawable.wikihow,"Wikihow"));
+        listCategories.add(new CategoryIcon(R.drawable.work,"Work"));
+        listCategories.add(new CategoryIcon(R.drawable.youth,"Youth"));
     }
 
 }
