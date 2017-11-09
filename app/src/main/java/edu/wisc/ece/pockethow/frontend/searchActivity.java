@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class searchActivity extends AppCompatActivity {
     EditText searchEditText;
     //private DbOperations dbOperations;
     TextView loadingTextView;
+    ImageButton imageButton;
     //Button populateButton;
     //String categoryStr;
 
@@ -64,6 +66,27 @@ public class searchActivity extends AppCompatActivity {
                 //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
             }
         });
+
+        imageButton = (ImageButton) findViewById(R.id.imageButton);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+                                               loadingTextView.setVisibility(View.VISIBLE);
+                                               Intent intent = new Intent(searchActivity.this, PageListActivity.class);
+                                               Log.d("searchActivity", searchEditText.getText().toString());
+                                               intent.putExtra("message", searchEditText.getText().toString());
+                                               if(dbOperations.isOpen())
+                                               {
+                                                   Toast.makeText(searchActivity.this, "Please wait, the database is loading",
+                                                           Toast.LENGTH_LONG).show();
+                                               }
+                                               else {
+                                                   Log.d("searchActivity", "Done loading DB");
+                                                   startActivity(intent);
+                                               }
+                                           }
+                                       }
+        );
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
