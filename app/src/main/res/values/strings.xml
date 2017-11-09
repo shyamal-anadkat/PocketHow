@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">PocketHow</string>
-    <!--<string name="title_page_detail">Page Detail</string>-->
+    <string name="splash_name">POCKET HOW</string>
+    <string name="title_page_detail">Page Detail</string>
 </resources>
