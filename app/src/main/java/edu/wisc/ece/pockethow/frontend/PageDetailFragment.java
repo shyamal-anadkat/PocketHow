@@ -1,6 +1,7 @@
 package edu.wisc.ece.pockethow.frontend;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
@@ -27,13 +28,16 @@ public class PageDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM_TITLE = "item_title";
 
     /**
      * The dummy content this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
 
-   private String content;
+    private String content;
+    private String title;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -50,8 +54,9 @@ public class PageDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             //mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-             Bundle bundle = getArguments();
-             content = bundle.getString(ARG_ITEM_ID);
+            Bundle bundle = getArguments();
+            content = bundle.getString(ARG_ITEM_ID);
+            title = bundle.getString(ARG_ITEM_TITLE);
             Activity activity = this.getActivity();
             /*CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
@@ -65,8 +70,13 @@ public class PageDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.page_detail, container, false);
 
-        if(content != null) {
+        if (content != null) {
             ((TextView) rootView.findViewById(R.id.page_detail)).setText(content);
+        }
+
+        //String title = rootView.getResources().getString(R.string.title_page_detail);
+        if (title != null && title.length() > 0) {
+            this.getActivity().setTitle(title);
         }
         /*
         // Show the dummy content as text in a TextView.
