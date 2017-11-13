@@ -119,9 +119,13 @@ public class searchActivity extends AppCompatActivity {
                     dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
                             , phWikihowFetches.categoryListToDelimString(testIDs),
                             null));
-                    dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                            (phWikihowFetches.getFetchURLFromPageIds
-                                    (testIDs)));
+
+                    for(int i = 0; i < testIDs.size(); i = i + 50) {
+                        List<String> temp = new ArrayList<>(testIDs.subList(i, i+50));
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (temp)));
+                    }
                 }
                 dbOperations.pageCleaner();
                 dbOperations.close();
