@@ -25,21 +25,21 @@
             android:name=".frontend.PageListActivity"
             android:label="Page List" />
         <activity android:name=".dbOperations.dbTester" />
-        <activity android:name=".frontend.searchActivity">
-
-        </activity>
-
-        <activity android:name=".frontend.SplashScreen" android:theme="@style/SplashTheme">
-
+        <activity android:name=".frontend.searchActivity"></activity>
+        <activity
+            android:name=".frontend.SplashScreen"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity android:name=".frontend.CategorySelectionActivity"/>
-
+        <activity android:name=".frontend.CategorySelectionActivity" />
+        <activity
+            android:name=".frontend.SideNavigationActivity"
+            android:label="@string/title_activity_side_navigation"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
