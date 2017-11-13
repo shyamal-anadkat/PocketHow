@@ -53,7 +53,7 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchEditText.getText().toString());
-                intent.putExtra("message", searchEditText.getText().toString());
+                intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
                 if(dbOperations.isOpen())
                 {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
@@ -71,19 +71,7 @@ public class searchActivity extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View v) {
-                                               loadingTextView.setVisibility(View.VISIBLE);
-                                               Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                                               Log.d("searchActivity", searchEditText.getText().toString());
-                                               intent.putExtra("message", searchEditText.getText().toString());
-                                               if(dbOperations.isOpen())
-                                               {
-                                                   Toast.makeText(searchActivity.this, "Please wait, the database is loading",
-                                                           Toast.LENGTH_LONG).show();
-                                               }
-                                               else {
-                                                   Log.d("searchActivity", "Done loading DB");
-                                                   startActivity(intent);
-                                               }
+                                               button.performClick();
                                            }
                                        }
         );
@@ -121,12 +109,23 @@ public class searchActivity extends AppCompatActivity {
                             null));
 
                     for(int i = 0; i < testIDs.size(); i = i + 50) {
-                        List<String> temp = new ArrayList<>(testIDs.subList(i, i+50));
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (temp)));
+                        if(i+50 < testIDs.size())
+                        {
+                            List<String> temp = new ArrayList<>(testIDs.subList(i, i+50));
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (temp)));
+                        }
+                        else
+                        {
+                            List<String> temp = new ArrayList<>(testIDs.subList(i,testIDs.size()));
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (temp)));
+                        }
                     }
                 }
+                dbOperations.populateSearchWordTable();
                 dbOperations.pageCleaner();
                 dbOperations.close();
                 categoryArrayList.clear();

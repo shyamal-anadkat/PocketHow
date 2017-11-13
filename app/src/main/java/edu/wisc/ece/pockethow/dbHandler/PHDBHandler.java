@@ -52,7 +52,18 @@ public class PHDBHandler extends SQLiteOpenHelper {
     private static final String CATEGORY_TO_PAGEID_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_CATEGORY_TO_PAGEID;
     //*******************************************************//
-
+    /*****SEARCH WORDS TABLE***/
+    public static final String searchWordColumn = "searchWord";
+    public static final String searchWordTable = "searchwordTempTable";
+    public static final String extraColumn = "extraColumn";
+    /*String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
+            + "("
+            + searchWordColumn + " VARCHAR PRIMARY KEY, " + extraColumn + " VARCHAR );";*/
+    String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
+            + "("
+            + searchWordColumn + " VARCHAR PRIMARY KEY);";
+    String TABLE_SEARCH_WORD_DELETE = "DROP TABLE IF EXISTS " + searchWordTable;
+    //******//
 
     public PHDBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -66,6 +77,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
         //db.execSQL(PHARTICLE_TABLE_DELETE);
         db.execSQL(PHARTICLE_TABLE_CREATE);
         db.execSQL(TABLE_CATEGORY_TO_PAGEID_CREATE);
+        db.execSQL(TABLE_SEARCH_WORD_CREATE);
     }
 
     /**
@@ -79,6 +91,8 @@ public class PHDBHandler extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         db.execSQL(PHARTICLE_TABLE_DELETE);
         db.execSQL(CATEGORY_TO_PAGEID_TABLE_DELETE);
+        /*attempt*/
+        db.execSQL(TABLE_SEARCH_WORD_DELETE);
         onCreate(db);
     }
 

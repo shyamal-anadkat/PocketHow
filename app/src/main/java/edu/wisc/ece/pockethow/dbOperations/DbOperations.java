@@ -29,6 +29,10 @@ import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.extraColumn;
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordColumn;
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
+
 /*** PocketHow, (@C) 2017 ***/
 public class DbOperations {
 
@@ -43,6 +47,10 @@ public class DbOperations {
     //for cleaning pages
     public static ArrayList<PHArticle> washrack = new ArrayList<>();
     //******
+/*
+    searchWordList for spelling correction
+ */
+    public ArrayList<String> searchWordList = new ArrayList<>();
 
     public DbOperations(Context context) {
         dbHandler = new PHDBHandler(context);
@@ -443,7 +451,120 @@ public class DbOperations {
         return database.isOpen();
 
     }
+/*
+    Make the table of title words
+     */
 
+    public void makeSearchWordTempTable() {
+        if (!database.isOpen())
+        {
+            open();
+        }
+        //note: searchWordTable is a constant that is instantiated in PHDBHandler
+        //note: searchWordColumn is a constant that is instantiated in PHDBHandler
+        String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
+                + "("
+                + searchWordColumn + " PRIMARY KEY TEXT);";
+        database.execSQL(TABLE_SEARCH_WORD_CREATE);
+    }
+
+    public void deleteSearchWordTempTable()
+    {
+        if (!database.isOpen())
+        {
+            open();
+        }
+        //note: searchWordTable is a constant that is instantiated in PHDBHandler
+        String TABLE_SEARCH_WORD_DELETE = "DROP TABLE IF EXISTS " + searchWordTable;
+        database.execSQL(TABLE_SEARCH_WORD_DELETE);
+    }
+
+    public void populateSearchWordTable()
+    {
+        for(PHArticle phArticle: washrack)
+        {
+            addArticleTitleToSearchWordTable(phArticle);
+        }
+        String sqlGetSearchWords = "SELECT * FROM " + searchWordList;
+        String[] col = new String[1];
+        col[0] = searchWordColumn;
+        //Cursor cursor = database.query(searchWordTable, col, );
+        Cursor cursor = database.query(searchWordTable, col, null, null, null, null, null);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            searchWordList.add(cursor.getString(cursor.getColumnIndex(searchWordColumn)));
+        }
+    }
+
+    public void addArticleTitleToSearchWordTable(PHArticle phArticle)
+    {
+        addSearchWord(phArticle.getTitle());
+    }
+
+    public void addSearchWord(String word)
+    {
+        String[] arr = word.split(" ");
+
+        for ( String ss : arr) {
+            ContentValues contentValues = new ContentValues();
+//            contentValues.put(searchWordTableId, searchWordIndex);
+            contentValues.put(searchWordColumn, ss);
+            //Log.d("dbTester", "Word = " + ss);
+            //should theoretically only insert unique values
+
+            database.insertWithOnConflict(searchWordTable, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+            //if (database.insert(searchwordTable, null, contentValues) == -1) {
+            //Log.e("DbOperations", "PHArticle - database insert failed");
+            //}
+        }
+
+    }
+
+    public ArrayList<String> getSearchWords()
+    {
+        Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+        ArrayList<String> returnValue = new ArrayList<>();
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+
+            // do what you need with the cursor here
+            try {
+                String columnID = cursor.getString(cursor.getColumnIndex(searchWordColumn));
+
+                returnValue.add(columnID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        cursor.close();
+        return returnValue;
+    }
+
+    //get closest established search word
+    public String getClosestSearchWord(String input)
+    {
+        if(searchWordList.size() == 0)
+        {
+            searchWordList = getSearchWords();
+        }
+        int ratio = 0;
+        String output = input;
+        int newRatio = 0;
+        for(String searchWord: searchWordList)
+        {
+            if(searchWord.equals(input))
+            {
+                return input;
+            }
+            else {
+                newRatio = FuzzySearch.ratio(input, searchWord);
+                if (ratio < newRatio) {
+                    ratio = newRatio;
+                    output = searchWord;
+                }
+            }
+        }
+        return output;
+    }
     //used only by dbTester
     public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);
