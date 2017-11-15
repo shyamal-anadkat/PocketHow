@@ -53,15 +53,6 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchEditText.getText().toString());
-
-                /*
-                TODO: ERROR WHEN SEARCHING FOR CHILDS INSTEAD OF CHILD (ISSUE BECAUSE INTERPRETED AS OF CHILD'S)
-                 */
-                /*
-                TODO: HOW DOES IT HANDLE PUNCTUATION?
-                ex: health's returns Unhealthy, but person's returns Person
-                ex: In Health category, nut's becomes Minutes instead of nut
-                 */
                 /*
                 TODO: searching door should allow for "Indoor" and "Door", but it only returns "Indoor"
                 high priority
