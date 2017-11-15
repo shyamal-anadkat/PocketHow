@@ -71,6 +71,8 @@ public class PageDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(PageDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(PageDetailFragment.ARG_ITEM_ID));
+            arguments.putString(PageDetailFragment.ARG_ITEM_TITLE,
+                    getIntent().getStringExtra(PageDetailFragment.ARG_ITEM_TITLE));
             PageDetailFragment fragment = new PageDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -109,21 +109,21 @@ public class searchActivity extends AppCompatActivity {
                             , phWikihowFetches.categoryListToDelimString(testIDs),
                             null));
 
-                    for(int i = 0; i < testIDs.size(); i = i + 50) {
-                        if(i+50 < testIDs.size())
-                        {
-                            List<String> temp = new ArrayList<>(testIDs.subList(i, i+50));
-                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                    (phWikihowFetches.getFetchURLFromPageIds
-                                            (temp)));
-                        }
-                        else
-                        {
-                            List<String> temp = new ArrayList<>(testIDs.subList(i,testIDs.size()));
-                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                    (phWikihowFetches.getFetchURLFromPageIds
-                                            (temp)));
-                        }
+                    //// supports upto 100 article requests ////
+                    if (testIDs.size() > 50) {
+                        List<String> temp = new ArrayList<>(testIDs.subList(0, 50));
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (temp)));
+                        List<String> temp1 = new ArrayList<>(testIDs.subList(50, testIDs.size()));
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (temp1)));
+
+                    } else {
+                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                (phWikihowFetches.getFetchURLFromPageIds
+                                        (testIDs)));
                     }
                 }
                 dbOperations.populateSearchWordTable();
