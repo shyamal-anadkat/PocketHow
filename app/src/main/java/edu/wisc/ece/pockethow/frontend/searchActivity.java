@@ -53,7 +53,33 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchEditText.getText().toString());
-                intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
+
+                /*
+                TODO: ERROR WHEN SEARCHING FOR CHILDS INSTEAD OF CHILD (ISSUE BECAUSE INTERPRETED AS OF CHILD'S)
+                 */
+                /*
+                TODO: HOW DOES IT HANDLE PUNCTUATION?
+                 */
+                /*
+                TODO: searching door should allow for "Indoor" and "Door", but it only returns "Indoor"
+                 */
+                /*
+                TODO: "heal" turns into "deal" instead of "health"
+                 */
+                /*
+                TODO: prioritize articles that have more matched items
+                For example, "nut health" should have the "nut health" article on top instead of "health..." and then "nut health"
+                 */
+                String inputString = "";
+                //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
+                String originalString = searchEditText.getText().toString();
+                String[] tokenArray = originalString.split(" ");
+                for(int i = 0; i < tokenArray.length; i++)
+                {
+                    inputString += dbOperations.getClosestSearchWord(tokenArray[i]) + " ";
+                }
+                Log.d("searchActivity", "input string = " + inputString);
+                intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
                 if(dbOperations.isOpen())
                 {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
