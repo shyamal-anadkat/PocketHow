@@ -451,40 +451,21 @@ public class DbOperations {
         return database.isOpen();
 
     }
-/*
-    Make the table of title words
+    /**
+     * Given that the washrack array list is not empty after downloading documents,
+     * parse every article title for unique words and add them to a SQL table full of
+     * title words. Then, load the table into a global array list of title words
+     *
+     * @return
      */
-
-    public void makeSearchWordTempTable() {
-        if (!database.isOpen())
-        {
-            open();
-        }
-        //note: searchWordTable is a constant that is instantiated in PHDBHandler
-        //note: searchWordColumn is a constant that is instantiated in PHDBHandler
-        String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
-                + "("
-                + searchWordColumn + " PRIMARY KEY TEXT);";
-        database.execSQL(TABLE_SEARCH_WORD_CREATE);
-    }
-
-    public void deleteSearchWordTempTable()
-    {
-        if (!database.isOpen())
-        {
-            open();
-        }
-        //note: searchWordTable is a constant that is instantiated in PHDBHandler
-        String TABLE_SEARCH_WORD_DELETE = "DROP TABLE IF EXISTS " + searchWordTable;
-        database.execSQL(TABLE_SEARCH_WORD_DELETE);
-    }
-
     public void populateSearchWordTable()
     {
+        database.execSQL("BEGIN TRANSACTION");
         for(PHArticle phArticle: washrack)
         {
             addArticleTitleToSearchWordTable(phArticle);
         }
+        database.execSQL("END TRANSACTION");
         String sqlGetSearchWords = "SELECT * FROM " + searchWordList;
         String[] col = new String[1];
         col[0] = searchWordColumn;
@@ -519,6 +500,10 @@ public class DbOperations {
 
     }
 
+    /*
+    Load the search words from the database into a global array list
+     */
+
     public ArrayList<String> getSearchWords()
     {
         Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
@@ -539,7 +524,8 @@ public class DbOperations {
         return returnValue;
     }
 
-    //get closest established search word
+    //get closest established search word via Levenshtein Distance
+    //
     public String getClosestSearchWord(String input)
     {
         if(searchWordList.size() == 0)
