@@ -53,7 +53,7 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchEditText.getText().toString());
-                intent.putExtra("message", searchEditText.getText().toString());
+                intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
                 if(dbOperations.isOpen())
                 {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
@@ -71,19 +71,7 @@ public class searchActivity extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View v) {
-                                               loadingTextView.setVisibility(View.VISIBLE);
-                                               Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                                               Log.d("searchActivity", searchEditText.getText().toString());
-                                               intent.putExtra("message", searchEditText.getText().toString());
-                                               if(dbOperations.isOpen())
-                                               {
-                                                   Toast.makeText(searchActivity.this, "Please wait, the database is loading",
-                                                           Toast.LENGTH_LONG).show();
-                                               }
-                                               else {
-                                                   Log.d("searchActivity", "Done loading DB");
-                                                   startActivity(intent);
-                                               }
+                                               button.performClick();
                                            }
                                        }
         );
@@ -99,6 +87,7 @@ public class searchActivity extends AppCompatActivity {
     public void populateDB()
     {
         deleteDatabase("PocketHow.db");
+        dbOperations.searchWordList.clear();
         new Thread(new Runnable() {
             public void run() {
                 final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
@@ -137,6 +126,7 @@ public class searchActivity extends AppCompatActivity {
                                         (testIDs)));
                     }
                 }
+                dbOperations.populateSearchWordTable();
                 dbOperations.pageCleaner();
                 dbOperations.close();
                 categoryArrayList.clear();
