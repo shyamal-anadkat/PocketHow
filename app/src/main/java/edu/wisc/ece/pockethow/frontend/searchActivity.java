@@ -59,15 +59,20 @@ public class searchActivity extends AppCompatActivity {
                  */
                 /*
                 TODO: HOW DOES IT HANDLE PUNCTUATION?
+                ex: health's returns Unhealthy, but person's returns Person
+                ex: In Health category, nut's becomes Minutes instead of nut
                  */
                 /*
                 TODO: searching door should allow for "Indoor" and "Door", but it only returns "Indoor"
+                high priority
                  */
                 /*
                 TODO: "heal" turns into "deal" instead of "health"
+                high priority
                  */
                 /*
                 TODO: prioritize articles that have more matched items
+                low priority
                 For example, "nut health" should have the "nut health" article on top instead of "health..." and then "nut health"
                  */
                 String inputString = "";
@@ -76,7 +81,20 @@ public class searchActivity extends AppCompatActivity {
                 String[] tokenArray = originalString.split(" ");
                 for(int i = 0; i < tokenArray.length; i++)
                 {
-                    inputString += dbOperations.getClosestSearchWord(tokenArray[i]) + " ";
+                    /*
+                    check for 's and delete them
+                    for example: nut's becomes nut
+                     */
+                    String tempInput = tokenArray[i];
+                    for(int j = 0; j < tempInput.length(); j++)
+                    {
+                        if(tempInput.charAt(j) == '\'' && (j+1) < tempInput.length() && tempInput.charAt(j+1) == 's')
+                        {
+                            tempInput = tempInput.substring(0, j);
+                            j = tempInput.length();
+                        }
+                    }
+                    inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
                 }
                 Log.d("searchActivity", "input string = " + inputString);
                 intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
