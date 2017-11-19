@@ -488,6 +488,7 @@ public class DbOperations {
         for ( String ss : arr) {
             ContentValues contentValues = new ContentValues();
 //            contentValues.put(searchWordTableId, searchWordIndex);
+            ss = ss.replace("'", "`");
             contentValues.put(searchWordColumn, ss);
             //Log.d("dbTester", "Word = " + ss);
             //should theoretically only insert unique values

@@ -53,7 +53,42 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                 Log.d("searchActivity", searchEditText.getText().toString());
-                intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
+                /*
+                TODO: searching door should allow for "Indoor" and "Door", but it only returns "Indoor"
+                high priority
+                 */
+                /*
+                TODO: "heal" turns into "deal" instead of "health"
+                high priority
+                 */
+                /*
+                TODO: prioritize articles that have more matched items
+                low priority
+                For example, "nut health" should have the "nut health" article on top instead of "health..." and then "nut health"
+                 */
+                String inputString = "";
+                //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
+                String originalString = searchEditText.getText().toString();
+                String[] tokenArray = originalString.split(" ");
+                for(int i = 0; i < tokenArray.length; i++)
+                {
+                    /*
+                    check for 's and delete them
+                    for example: nut's becomes nut
+                     */
+                    String tempInput = tokenArray[i];
+                    for(int j = 0; j < tempInput.length(); j++)
+                    {
+                        if(tempInput.charAt(j) == '\'' && (j+1) < tempInput.length() && tempInput.charAt(j+1) == 's')
+                        {
+                            tempInput = tempInput.substring(0, j);
+                            j = tempInput.length();
+                        }
+                    }
+                    inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
+                }
+                Log.d("searchActivity", "input string = " + inputString);
+                intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
                 if(dbOperations.isOpen())
                 {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
