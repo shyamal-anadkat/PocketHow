@@ -29,6 +29,10 @@ import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.extraColumn;
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordColumn;
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
+
 /*** PocketHow, (@C) 2017 ***/
 public class DbOperations {
 
@@ -43,6 +47,10 @@ public class DbOperations {
     //for cleaning pages
     public static ArrayList<PHArticle> washrack = new ArrayList<>();
     //******
+/*
+    searchWordList for spelling correction
+ */
+    public ArrayList<String> searchWordList = new ArrayList<>();
 
     public DbOperations(Context context) {
         dbHandler = new PHDBHandler(context);
@@ -246,14 +254,16 @@ public class DbOperations {
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
 
-                        PHArticle phArticle = new PHArticle(pageId, title,
-                                content,
-                                new Timestamp(System.currentTimeMillis()));
-                        //addArticle(phArticle);
-                        //Note: attempts to prettify the pages while this method is running creates unusable pages,
-                        //so add the pages to a global ArrayList, then parse the PHArticles' contents to clean them,
-                        //then add them to database.
-                        washrack.add(phArticle);
+                        if(!title.contains("Category:") && !title.contains("wikiHow:")) {
+                            PHArticle phArticle = new PHArticle(pageId, title,
+                                    content,
+                                    new Timestamp(System.currentTimeMillis()));
+                            //addArticle(phArticle);
+                            //Note: attempts to prettify the pages while this method is running creates unusable pages,
+                            //so add the pages to a global ArrayList, then parse the PHArticles' contents to clean them,
+                            //then add them to database.
+                            washrack.add(phArticle);
+                        }
                         Log.i(TAG, title);
                         Log.i(TAG, content);
                     }
@@ -443,7 +453,107 @@ public class DbOperations {
         return database.isOpen();
 
     }
+    /**
+     * Given that the washrack array list is not empty after downloading documents,
+     * parse every article title for unique words and add them to a SQL table full of
+     * title words. Then, load the table into a global array list of title words
+     *
+     * @return
+     */
+    public void populateSearchWordTable()
+    {
+        database.execSQL("BEGIN TRANSACTION");
+        for(PHArticle phArticle: washrack)
+        {
+            addArticleTitleToSearchWordTable(phArticle);
+        }
+        database.execSQL("END TRANSACTION");
+        String sqlGetSearchWords = "SELECT * FROM " + searchWordList;
+        String[] col = new String[1];
+        col[0] = searchWordColumn;
+        //Cursor cursor = database.query(searchWordTable, col, );
+        Cursor cursor = database.query(searchWordTable, col, null, null, null, null, null);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            searchWordList.add(cursor.getString(cursor.getColumnIndex(searchWordColumn)));
+        }
+    }
 
+    public void addArticleTitleToSearchWordTable(PHArticle phArticle)
+    {
+        addSearchWord(phArticle.getTitle());
+    }
+
+    public void addSearchWord(String word)
+    {
+        String[] arr = word.split(" ");
+
+        for ( String ss : arr) {
+            ContentValues contentValues = new ContentValues();
+//            contentValues.put(searchWordTableId, searchWordIndex);
+            ss = ss.replace("'", "`");
+            contentValues.put(searchWordColumn, ss);
+            //Log.d("dbTester", "Word = " + ss);
+            //should theoretically only insert unique values
+
+            database.insertWithOnConflict(searchWordTable, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+            //if (database.insert(searchwordTable, null, contentValues) == -1) {
+            //Log.e("DbOperations", "PHArticle - database insert failed");
+            //}
+        }
+
+    }
+
+    /*
+    Load the search words from the database into a global array list
+     */
+
+    public ArrayList<String> getSearchWords()
+    {
+        Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+        ArrayList<String> returnValue = new ArrayList<>();
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+
+            // do what you need with the cursor here
+            try {
+                String columnID = cursor.getString(cursor.getColumnIndex(searchWordColumn));
+
+                returnValue.add(columnID);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        cursor.close();
+        return returnValue;
+    }
+
+    //get closest established search word via Levenshtein Distance
+    //
+    public String getClosestSearchWord(String input)
+    {
+        if(searchWordList.size() == 0)
+        {
+            searchWordList = getSearchWords();
+        }
+        int ratio = 0;
+        String output = input;
+        int newRatio = 0;
+        for(String searchWord: searchWordList)
+        {
+            if(searchWord.equals(input))
+            {
+                return input;
+            }
+            else {
+                newRatio = FuzzySearch.ratio(input, searchWord);
+                if (ratio < newRatio) {
+                    ratio = newRatio;
+                    output = searchWord;
+                }
+            }
+        }
+        return output;
+    }
     //used only by dbTester
     public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);

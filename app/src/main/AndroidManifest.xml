@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".frontend.PageDetailActivity"
-            android:label="@string/title_page_detail"
+            android:label=""
             android:parentActivityName=".frontend.PageListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -23,21 +23,23 @@
         </activity>
         <activity
             android:name=".frontend.PageListActivity"
-            android:label="Page List" />
+            android:label="Search Results" />
         <activity android:name=".dbOperations.dbTester" />
-        <activity android:name=".frontend.searchActivity">
-
-        </activity>
-        <activity android:name=".frontend.CategorySelectionActivity">
-
+        <activity android:name=".frontend.searchActivity"></activity>
+        <activity
+            android:name=".frontend.SplashScreen"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
+        <activity android:name=".frontend.CategorySelectionActivity" />
+        <activity
+            android:name=".frontend.SideNavigationActivity"
+            android:label="@string/title_activity_side_navigation"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

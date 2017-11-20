@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import edu.wisc.ece.pockethow.ImageAdapter;
+import edu.wisc.ece.pockethow.frontend.ImageAdapter;
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.entity.CategoryIcon;
 

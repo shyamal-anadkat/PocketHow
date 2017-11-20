@@ -1,4 +1,4 @@
-package edu.wisc.ece.pockethow;
+package edu.wisc.ece.pockethow.frontend;
 
 import android.content.Context;
 import android.view.View;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import edu.wisc.ece.pockethow.R;
 
 /**
  * Created by Cameron on 11/5/2017.
