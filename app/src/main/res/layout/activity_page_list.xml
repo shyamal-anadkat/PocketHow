@@ -38,7 +38,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:tint="@android:color/white"
+        android:backgroundTint="@android:color/black"
+        app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
 
 </android.support.design.widget.CoordinatorLayout>
