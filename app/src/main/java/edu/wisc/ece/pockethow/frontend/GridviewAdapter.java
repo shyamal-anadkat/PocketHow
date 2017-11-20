@@ -27,6 +27,11 @@ public class GridviewAdapter extends BaseAdapter
         this.activity = activity;
     }
 
+    public boolean toggleChecked(int position){
+        this.listCategories.get(position).toggleChecked();
+        return this.listCategories.get(position).isChecked();
+    }
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
@@ -66,15 +71,18 @@ public class GridviewAdapter extends BaseAdapter
             view.imgViewIcon = (ImageView) convertView.findViewById(R.id.imageView1);
 
             convertView.setTag(view);
+
         }
         else
         {
             view = (ViewHolder) convertView.getTag();
-            convertView.setSelected(this.listCategories.get(position).isChecked());
+
         }
 
         view.txtViewLabel.setText(listCategories.get(position).Label);
         view.imgViewIcon.setImageResource(listCategories.get(position).Icon);
+        //view.imgViewIcon.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
+        //view.txtViewLabel.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
         return convertView;
     }
 }

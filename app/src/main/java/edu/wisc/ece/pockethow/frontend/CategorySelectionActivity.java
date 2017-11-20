@@ -1,11 +1,16 @@
 package edu.wisc.ece.pockethow.frontend;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -22,12 +27,37 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private GridviewAdapter mAdapter;
     private ArrayList<CategoryIcon> listCategories;
     private GridView gridView;
+    private DownloadManager dlm;
+    private BroadcastReceiver downloadReceiver;
+    private long downloadId = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_selection);
 
         prepareList();
+
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+
+        dlm = this.getSystemService(DownloadManager.class);
+
+        downloadReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                //check if the broadcast message is for our enqueued download
+                long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                if(downloadId == referenceId){
+                    Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                            "Download Complete", Toast.LENGTH_LONG);
+                    toast.show();
+                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                    startActivity(goToNextActivity);
+                }
+            }
+        };
+        registerReceiver(downloadReceiver, filter);
 
         // prepared arraylist and passed it to the Adapter class
         mAdapter = new GridviewAdapter(this,listCategories);
@@ -42,21 +72,30 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
                 Context context = gridView.getContext();
 
-                mAdapter.getItem(position).toggleChecked();
-
+                Uri uri = listCategories.get(position).getUri();
+                if(uri != null && downloadId == 0){
+                    DownloadManager.Request request = new DownloadManager.Request(uri);
+                    request.setTitle("Archive Download");
+                    Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                            "Download Started", Toast.LENGTH_LONG);
+                    toast.show();
+                    downloadId = dlm.enqueue(request);
+                }
             }
         });
 
     }
 
+
+
     public void prepareList()
     {
         listCategories = new ArrayList<CategoryIcon>();
 
-        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts"));
+        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts","https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));
         listCategories.add(new CategoryIcon(R.drawable.education,"Education"));
         listCategories.add(new CategoryIcon(R.drawable.elec,"Electronics"));
