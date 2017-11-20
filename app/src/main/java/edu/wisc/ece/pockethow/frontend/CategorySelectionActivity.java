@@ -52,7 +52,10 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(CategorySelectionActivity.this,
                             "Download Complete", Toast.LENGTH_LONG);
                     toast.show();
+                    ArrayList<String> selectedCategories = new ArrayList<>();
+                    selectedCategories.add("Arts and Entertainment");
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                    goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
                     startActivity(goToNextActivity);
                 }
             }
