@@ -111,7 +111,7 @@ public class searchActivity extends AppCompatActivity {
     }
 
     public void populateDB() {
-        deleteDatabase("PocketHow.db");
+        //deleteDatabase("PocketHow.db");
         dbOperations.searchWordList.clear();
         new Thread(new Runnable() {
             public void run() {
