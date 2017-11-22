@@ -1,5 +1,6 @@
 package edu.wisc.ece.pockethow.frontend;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class searchActivity extends AppCompatActivity {
     EditText searchEditText;
     TextView loadingTextView;
     ImageButton imageButton;
-
+    Button deleteButton;
     static final String codeword = "catagory";
     ArrayList<String> categoryArrayList = new ArrayList<>();
 
@@ -47,8 +49,12 @@ public class searchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingTextView.setVisibility(View.VISIBLE);
-                Intent intent = new Intent(searchActivity.this, PageListActivity.class);
-                Log.d("searchActivity", searchEditText.getText().toString());
+                Context context = searchActivity.this;
+                File dbFile = context.getDatabasePath("PocketHow.db");
+                if(dbFile.exists())
+                {
+                    Intent intent = new Intent(searchActivity.this, PageListActivity.class);
+                    Log.d("searchActivity", searchEditText.getText().toString());
                 /*
                 TODO: searching door should allow for "Indoor" and "Door", but it only returns "Indoor"
                 high priority
@@ -62,34 +68,41 @@ public class searchActivity extends AppCompatActivity {
                 low priority
                 For example, "nut health" should have the "nut health" article on top instead of "health..." and then "nut health"
                  */
-                String inputString = "";
-                //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
-                String originalString = searchEditText.getText().toString();
-                String[] tokenArray = originalString.split(" ");
-                for (int i = 0; i < tokenArray.length; i++) {
+                    String inputString = "";
+                    //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
+                    String originalString = searchEditText.getText().toString();
+                    String[] tokenArray = originalString.split(" ");
+                    for (int i = 0; i < tokenArray.length; i++) {
                     /*
                     check for 's and delete them
                     for example: nut's becomes nut
                      */
-                    String tempInput = tokenArray[i];
-                    for (int j = 0; j < tempInput.length(); j++) {
-                        if (tempInput.charAt(j) == '\'' && (j + 1) < tempInput.length() && tempInput.charAt(j + 1) == 's') {
-                            tempInput = tempInput.substring(0, j);
-                            j = tempInput.length();
+                        String tempInput = tokenArray[i];
+                        for (int j = 0; j < tempInput.length(); j++) {
+                            if (tempInput.charAt(j) == '\'' && (j + 1) < tempInput.length() && tempInput.charAt(j + 1) == 's') {
+                                tempInput = tempInput.substring(0, j);
+                                j = tempInput.length();
+                            }
                         }
+                        inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
                     }
-                    inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
+                    Log.d("searchActivity", "input string = " + inputString);
+                    intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
+                    if (dbOperations.isOpen()) {
+                        Toast.makeText(searchActivity.this, "Please wait, the database is loading",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d("searchActivity", "Done loading DB");
+                        startActivity(intent);
+                    }
+                    //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
                 }
-                Log.d("searchActivity", "input string = " + inputString);
-                intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
-                if (dbOperations.isOpen()) {
-                    Toast.makeText(searchActivity.this, "Please wait, the database is loading",
+                else
+                {
+                    Toast.makeText(searchActivity.this, "Database does not exist. Please download a category",
                             Toast.LENGTH_LONG).show();
-                } else {
-                    Log.d("searchActivity", "Done loading DB");
-                    startActivity(intent);
                 }
-                //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
+
             }
         });
 
@@ -102,6 +115,13 @@ public class searchActivity extends AppCompatActivity {
                                        }
         );
 
+        deleteButton = (Button) findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteDatabase("PocketHow.db");
+            }
+        });
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         categoryArrayList = bundle.getStringArrayList(codeword);
@@ -172,5 +192,4 @@ public class searchActivity extends AppCompatActivity {
         super.onStop();
         //dbOperations.close();
     }
-
 }

@@ -90,18 +90,18 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             "Download Started", Toast.LENGTH_LONG);
                     toast.show();
                     downloadId = dlm.enqueue(request);
-                }/*
+                }
                 else //TODO: TEMP
                 {
                     makeRequests();
-                }*/
+                }
             }
         });
 
     }
 
     //temp for testing
-    /*
+
     public void makeRequests()
     {
         ArrayList<String> selectedCategories = new ArrayList<>();
@@ -110,11 +110,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
         goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
         startActivity(goToNextActivity);
     }
-    */
+    //
     public void prepareList()
     {
         listCategories = new ArrayList<CategoryIcon>();
-        /*
+
+        //
         listLabel = new ArrayList<>();
         listLabel.add("Arts and Entertainment");
         listLabel.add("Cars & Other Vehicles");
@@ -136,8 +137,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Wikihow");
         listLabel.add("Work World");
         listLabel.add("Youth");
+        //
 
-        */
 
         listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts","https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));
