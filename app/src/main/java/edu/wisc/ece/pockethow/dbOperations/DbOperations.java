@@ -254,14 +254,16 @@ public class DbOperations {
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
 
-                        PHArticle phArticle = new PHArticle(pageId, title,
-                                content,
-                                new Timestamp(System.currentTimeMillis()));
-                        //addArticle(phArticle);
-                        //Note: attempts to prettify the pages while this method is running creates unusable pages,
-                        //so add the pages to a global ArrayList, then parse the PHArticles' contents to clean them,
-                        //then add them to database.
-                        washrack.add(phArticle);
+                        if(!title.contains("Category:") && !title.contains("wikiHow:")) {
+                            PHArticle phArticle = new PHArticle(pageId, title,
+                                    content,
+                                    new Timestamp(System.currentTimeMillis()));
+                            //addArticle(phArticle);
+                            //Note: attempts to prettify the pages while this method is running creates unusable pages,
+                            //so add the pages to a global ArrayList, then parse the PHArticles' contents to clean them,
+                            //then add them to database.
+                            washrack.add(phArticle);
+                        }
                         Log.i(TAG, title);
                         Log.i(TAG, content);
                     }

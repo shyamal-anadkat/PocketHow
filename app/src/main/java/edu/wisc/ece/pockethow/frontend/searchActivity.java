@@ -25,11 +25,8 @@ import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 public class searchActivity extends AppCompatActivity {
     Button button;
     EditText searchEditText;
-    //private DbOperations dbOperations;
     TextView loadingTextView;
     ImageButton imageButton;
-    //Button populateButton;
-    //String categoryStr;
 
     static final String codeword = "catagory";
     ArrayList<String> categoryArrayList = new ArrayList<>();
@@ -38,7 +35,6 @@ public class searchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
 
         super.onCreate(savedInstanceState);
@@ -70,17 +66,14 @@ public class searchActivity extends AppCompatActivity {
                 //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
                 String originalString = searchEditText.getText().toString();
                 String[] tokenArray = originalString.split(" ");
-                for(int i = 0; i < tokenArray.length; i++)
-                {
+                for (int i = 0; i < tokenArray.length; i++) {
                     /*
                     check for 's and delete them
                     for example: nut's becomes nut
                      */
                     String tempInput = tokenArray[i];
-                    for(int j = 0; j < tempInput.length(); j++)
-                    {
-                        if(tempInput.charAt(j) == '\'' && (j+1) < tempInput.length() && tempInput.charAt(j+1) == 's')
-                        {
+                    for (int j = 0; j < tempInput.length(); j++) {
+                        if (tempInput.charAt(j) == '\'' && (j + 1) < tempInput.length() && tempInput.charAt(j + 1) == 's') {
                             tempInput = tempInput.substring(0, j);
                             j = tempInput.length();
                         }
@@ -89,12 +82,10 @@ public class searchActivity extends AppCompatActivity {
                 }
                 Log.d("searchActivity", "input string = " + inputString);
                 intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
-                if(dbOperations.isOpen())
-                {
+                if (dbOperations.isOpen()) {
                     Toast.makeText(searchActivity.this, "Please wait, the database is loading",
                             Toast.LENGTH_LONG).show();
-                }
-                else {
+                } else {
                     Log.d("searchActivity", "Done loading DB");
                     startActivity(intent);
                 }
@@ -117,11 +108,10 @@ public class searchActivity extends AppCompatActivity {
         populateDB();
 
 
-
     }
-    public void populateDB()
-    {
-        deleteDatabase("PocketHow.db");
+
+    public void populateDB() {
+        //deleteDatabase("PocketHow.db");
         dbOperations.searchWordList.clear();
         new Thread(new Runnable() {
             public void run() {
@@ -137,8 +127,7 @@ public class searchActivity extends AppCompatActivity {
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
                                         */
-                for(String categoryStr: categoryArrayList)
-                {
+                for (String categoryStr : categoryArrayList) {
                     List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
                     dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
                             , phWikihowFetches.categoryListToDelimString(testIDs),
@@ -169,6 +158,7 @@ public class searchActivity extends AppCompatActivity {
             }
         }).start();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -181,7 +171,5 @@ public class searchActivity extends AppCompatActivity {
         super.onStop();
         //dbOperations.close();
     }
-
-
 
 }

@@ -23,7 +23,7 @@
         </activity>
         <activity
             android:name=".frontend.PageListActivity"
-            android:label="Page List" />
+            android:label="Search Results" />
         <activity android:name=".dbOperations.dbTester" />
         <activity android:name=".frontend.searchActivity"></activity>
         <activity

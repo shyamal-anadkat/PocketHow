@@ -14,30 +14,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.entity.CategoryIcon;
 
 public class GridviewAdapter extends BaseAdapter
 {
-    private ArrayList<String> listCountry;
-    private ArrayList<Integer> listFlag;
+    private ArrayList<CategoryIcon> listCategories;
     private Activity activity;
 
-    public GridviewAdapter(Activity activity,ArrayList<String> listCountry, ArrayList<Integer> listFlag) {
+    public GridviewAdapter(Activity activity,ArrayList<CategoryIcon> listCategories) {
         super();
-        this.listCountry = listCountry;
-        this.listFlag = listFlag;
+        this.listCategories = listCategories;
         this.activity = activity;
+    }
+
+    public boolean toggleChecked(int position){
+        this.listCategories.get(position).toggleChecked();
+        return this.listCategories.get(position).isChecked();
     }
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return listCountry.size();
+        return listCategories.size();
     }
 
     @Override
-    public String getItem(int position) {
+    public CategoryIcon getItem(int position) {
         // TODO Auto-generated method stub
-        return listCountry.get(position);
+        return listCategories.get(position);
     }
 
     @Override
@@ -48,8 +52,8 @@ public class GridviewAdapter extends BaseAdapter
 
     public static class ViewHolder
     {
-        public ImageView imgViewFlag;
-        public TextView txtViewTitle;
+        public ImageView imgViewIcon;
+        public TextView txtViewLabel;
     }
 
     @Override
@@ -63,19 +67,22 @@ public class GridviewAdapter extends BaseAdapter
             view = new ViewHolder();
             convertView = inflator.inflate(R.layout.gridview_row, null);
 
-            view.txtViewTitle = (TextView) convertView.findViewById(R.id.textView1);
-            view.imgViewFlag = (ImageView) convertView.findViewById(R.id.imageView1);
+            view.txtViewLabel = (TextView) convertView.findViewById(R.id.textView1);
+            view.imgViewIcon = (ImageView) convertView.findViewById(R.id.imageView1);
 
             convertView.setTag(view);
+
         }
         else
         {
             view = (ViewHolder) convertView.getTag();
+
         }
 
-        view.txtViewTitle.setText(listCountry.get(position));
-        view.imgViewFlag.setImageResource(listFlag.get(position));
-
+        view.txtViewLabel.setText(listCategories.get(position).Label);
+        view.imgViewIcon.setImageResource(listCategories.get(position).Icon);
+        //view.imgViewIcon.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
+        //view.txtViewLabel.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
         return convertView;
     }
 }
