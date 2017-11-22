@@ -105,6 +105,7 @@ public class searchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         categoryArrayList = bundle.getStringArrayList(codeword);
+        //deleteDatabase("PocketHow.db");
         populateDB();
 
 
