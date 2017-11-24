@@ -33,6 +33,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     //temp for testing purposes
     private ArrayList<String> listLabel;
     private int globalposition = 0;
+    private int globalCategoryId;
     //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     selectedCategories.add("Arts and Entertainment");
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+                    goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
                     startActivity(goToNextActivity);
                 }
             }
@@ -105,9 +107,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void makeRequests()
     {
         ArrayList<String> selectedCategories = new ArrayList<>();
+
         selectedCategories.add(listLabel.get(globalposition));
         Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
         goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+        goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
         startActivity(goToNextActivity);
     }
     //
