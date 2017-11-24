@@ -554,6 +554,12 @@ public class DbOperations {
         }
         return output;
     }
+
+    public SQLiteDatabase getDatabase()
+    {
+        return database;
+    }
+
     //used only by dbTester
     public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);
