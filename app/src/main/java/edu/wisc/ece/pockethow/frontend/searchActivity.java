@@ -32,7 +32,8 @@ public class searchActivity extends AppCompatActivity {
     Button deleteButton;
     static final String codeword = "catagory";
     static final String categoryIntIdCodeword = "categoryIntId";
-    int categoryIdGlobal;
+    //int categoryIdGlobal;
+    ArrayList<Integer> categoryIdList = new ArrayList<>();
     ArrayList<String> categoryArrayList = new ArrayList<>();
 
     final DbOperations dbOperations = new DbOperations(this);
@@ -127,7 +128,8 @@ public class searchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         categoryArrayList = bundle.getStringArrayList(codeword);
-        categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
+        //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
+        categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
         //deleteDatabase("PocketHow.db");
         populateDB();
 
@@ -151,7 +153,11 @@ public class searchActivity extends AppCompatActivity {
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
                                         */
-                for (String categoryStr : categoryArrayList) {
+                //for (String categoryStr : categoryArrayList) {
+                for (int i = 0; i < categoryArrayList.size(); i++)
+                {
+                    String categoryStr = categoryArrayList.get(i);
+                    int categoryIdGlobal = categoryIdList.get(i);
                     List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
                     dbOperations.addCategoryToPageID(new PHCategory(categoryIdGlobal, categoryStr
                             , phWikihowFetches.categoryListToDelimString(testIDs),

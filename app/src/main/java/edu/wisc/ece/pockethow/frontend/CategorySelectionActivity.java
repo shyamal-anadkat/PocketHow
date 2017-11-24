@@ -33,6 +33,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     //temp for testing purposes
     private ArrayList<String> listLabel;
     private int globalposition = 0;
+    private ArrayList<Integer> categoryIdList;
     private int globalCategoryId;
     //
     @Override
@@ -59,10 +60,13 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     toast.show();
                     ArrayList<String> selectedCategories = new ArrayList<>();
                     selectedCategories.add("Arts and Entertainment");
+                    categoryIdList.add(listCategories.get(globalposition).Icon);
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
-                    goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+                    //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+                    goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
                     startActivity(goToNextActivity);
+                    categoryIdList.clear();
                 }
             }
         };
@@ -109,10 +113,14 @@ public class CategorySelectionActivity extends AppCompatActivity {
         ArrayList<String> selectedCategories = new ArrayList<>();
 
         selectedCategories.add(listLabel.get(globalposition));
+        categoryIdList.add(listCategories.get(globalposition).Icon);
         Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
         goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
-        goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+        //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+        goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
         startActivity(goToNextActivity);
+        selectedCategories.clear();
+        categoryIdList.clear();
     }
     //
     public void prepareList()
@@ -142,7 +150,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Work World");
         listLabel.add("Youth");
         //
-
+        categoryIdList = new ArrayList<>();
 
         listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts","https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));
