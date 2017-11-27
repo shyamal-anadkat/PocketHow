@@ -1,21 +1,14 @@
 package edu.wisc.ece.pockethow.frontend;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import edu.wisc.ece.pockethow.R;
-import edu.wisc.ece.pockethow.dummyContent.DummyContent;
-import edu.wisc.ece.pockethow.entity.PHArticle;
 
 /**
  * A fragment representing a single Page detail screen.
@@ -30,11 +23,6 @@ public class PageDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ITEM_TITLE = "item_title";
-
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
 
     private String content;
     private String title;

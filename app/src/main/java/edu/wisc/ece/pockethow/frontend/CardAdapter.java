@@ -12,12 +12,10 @@ import android.widget.Toast;
 
 import edu.wisc.ece.pockethow.R;
 
-/**
- * Created by onglp on 11/4/2017.
- */
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     private String[] mDataset;
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -27,8 +25,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
         final CardView cardView;
         final TextView textView;
-        public ViewHolder(View v)
-        {
+
+        public ViewHolder(View v) {
             super(v);
             cardView = (CardView) itemView.findViewById(R.id.category_card_view);
             textView = (TextView) itemView.findViewById(R.id.category_text);
@@ -40,6 +38,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             }
 */
     }
+
     // Provide a suitable constructor (depends on the kind of dataset)
     public CardAdapter(String[] myDataset) {
         mDataset = myDataset;

@@ -9,9 +9,6 @@ import android.widget.ImageView;
 
 import edu.wisc.ece.pockethow.R;
 
-/**
- * Created by Cameron on 11/5/2017.
- */
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;

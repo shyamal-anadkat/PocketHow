@@ -4,29 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-
-import edu.wisc.ece.pockethow.R;
-import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
-import edu.wisc.ece.pockethow.dbOperations.DbOperations;
-import edu.wisc.ece.pockethow.dummyContent.DummyContent;
-import edu.wisc.ece.pockethow.entity.PHArticle;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbOperations.DbOperations;
+import edu.wisc.ece.pockethow.entity.PHArticle;
 
 /**
  * An activity representing a list of Pages. This activity
@@ -46,6 +41,7 @@ public class PageListActivity extends AppCompatActivity {
     DbOperations dbOperations;
     String searchStr;
     ArrayList<PHArticle> searchResults = new ArrayList<>(); //PHArticle arraylist to store the results of search query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +54,7 @@ public class PageListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         searchStr = bundle.getString("message");
-        if(searchStr == null)
-        {
+        if (searchStr == null) {
             searchStr = "";
         }
         Log.d("PageListActivity", "Search for: " + searchStr);
@@ -99,11 +94,9 @@ public class PageListActivity extends AppCompatActivity {
                         searchResults = dbOperations.getArticle(searchStr);
                         //solely for testing purposes
                         Log.d("PageListActivity", "Search for: " + searchStr);
-                        if (searchResults.size() == 0)
-                        {
+                        if (searchResults.size() == 0) {
                             Log.d("PageListActivity", "retrieved 0 articles");
-                        }
-                        else {
+                        } else {
                             for (int i = 0; i < searchResults.size(); i++) {
                                 Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
                             }
@@ -128,12 +121,10 @@ public class PageListActivity extends AppCompatActivity {
         searchResults.clear();
         searchResults = dbOperations.getArticle(searchStr);
         //solely for testing purposes
-        if (searchResults.size() == 0)
-        {
+        if (searchResults.size() == 0) {
             Log.d("PageListActivity", "retrieved 0 articles");
         }
-        for (int i = 0; i < searchResults.size(); i++)
-        {
+        for (int i = 0; i < searchResults.size(); i++) {
             Log.d("PageListActivity", "retrived article: " + searchResults.get(i).getTitle());
         }
         setupRecyclerView((RecyclerView) recyclerView);
@@ -166,7 +157,7 @@ public class PageListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(Long.toString(position)); 
+            holder.mIdView.setText(Long.toString(position));
             holder.mContentView.setText(mValues.get(position).getTitle()); //defines the title displayed
 
             holder.mView.setOnClickListener(new View.OnClickListener() {

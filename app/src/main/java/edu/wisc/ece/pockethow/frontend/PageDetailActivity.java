@@ -4,27 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-
-import org.json.JSONObject;
-
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
+import android.view.View;
 
 import edu.wisc.ece.pockethow.R;
-import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
-import edu.wisc.ece.pockethow.dbOperations.DbOperations;
-import edu.wisc.ece.pockethow.dbOperations.dbTester;
-import edu.wisc.ece.pockethow.entity.PHArticle;
-import edu.wisc.ece.pockethow.entity.PHCategory;
-import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
 /**
  * An activity representing a single Page detail screen. This
