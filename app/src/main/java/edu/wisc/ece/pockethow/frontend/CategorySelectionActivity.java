@@ -30,6 +30,13 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private DownloadManager dlm;
     private BroadcastReceiver downloadReceiver;
     private long downloadId = 0;
+    //temp for testing purposes
+    private ArrayList<String> listLabel;
+    private int globalposition = 0;
+    private ArrayList<Integer> categoryIdList;
+    private int globalCategoryId;
+    private ArrayList<String> downloadedDatabaseNameList;
+    //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +61,14 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     toast.show();
                     ArrayList<String> selectedCategories = new ArrayList<>();
                     selectedCategories.add("Arts and Entertainment");
+                    categoryIdList.add(listCategories.get(globalposition).Icon);
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+                    //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+                    goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
+                    goToNextActivity.putStringArrayListExtra(searchActivity.filenameCodeword, downloadedDatabaseNameList);
                     startActivity(goToNextActivity);
+                    categoryIdList.clear();
                 }
             }
         };
@@ -77,7 +89,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     long arg3) {
                 //Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
                 Context context = gridView.getContext();
-
+                globalposition = position;
+                downloadedDatabaseNameList.add(listCategories.get(position).getDatabaseName());
                 Uri uri = listCategories.get(position).getUri();
                 if(uri != null && downloadId == 0){
                     DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -87,16 +100,61 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     toast.show();
                     downloadId = dlm.enqueue(request);
                 }
+                else //TODO: TEMP
+                {
+                    makeRequests();
+                }
             }
         });
 
     }
 
+    //temp for testing
 
+    public void makeRequests()
+    {
+        ArrayList<String> selectedCategories = new ArrayList<>();
 
+        selectedCategories.add(listLabel.get(globalposition));
+        categoryIdList.add(listCategories.get(globalposition).Icon);
+        Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+        goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+        //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+        goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
+        startActivity(goToNextActivity);
+        selectedCategories.clear();
+        categoryIdList.clear();
+    }
+    //
     public void prepareList()
     {
         listCategories = new ArrayList<CategoryIcon>();
+
+        //
+        listLabel = new ArrayList<>();
+        listLabel.add("Arts and Entertainment");
+        listLabel.add("Cars & Other Vehicles");
+        listLabel.add("Education and Communications");
+        listLabel.add("Computers and Electronics");
+        listLabel.add("Family Life");
+        listLabel.add("Finance and Business");
+        listLabel.add("Food and Entertaining");
+        listLabel.add("Home and Garden");
+        listLabel.add("Health");
+        listLabel.add("Hobbies and Crafts");
+        listLabel.add("Holidays and Traditions");
+        listLabel.add("Personal Care and Style");
+        listLabel.add("Pets and Animals");
+        listLabel.add("Relationships");
+        listLabel.add("Philosophy and Religion");
+        listLabel.add("Sports and Fitness");
+        listLabel.add("Travel");
+        listLabel.add("Wikihow");
+        listLabel.add("Work World");
+        listLabel.add("Youth");
+        //
+        categoryIdList = new ArrayList<>();
+        downloadedDatabaseNameList = new ArrayList<>();
 
         listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts","https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));

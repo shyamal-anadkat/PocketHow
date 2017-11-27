@@ -415,7 +415,7 @@ public class DbOperations {
             do {
 
 
-                if (i < content.length() && content.charAt(i) == '[' && i + 1 < content.length() && content.charAt(i + 1) == '[') {
+                if (i < content.length() && content.charAt(i) == '[' && i + 2+ ("Image".length()) < content.length() && content.charAt(i + 1) == '[') {
                     imageTagFound = true;
                     String s1 = content.substring(i + 2, i + 2 + ("Image".length()));
                     if (s1.equals("Image") || s1.equals("image") || s1.equals("Categ")) {
@@ -554,6 +554,12 @@ public class DbOperations {
         }
         return output;
     }
+
+    public SQLiteDatabase getDatabase()
+    {
+        return database;
+    }
+
     //used only by dbTester
     public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);

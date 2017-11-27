@@ -30,7 +30,14 @@ public class PHDBHandler extends SQLiteOpenHelper {
                     COLUMN_TITLE + " TEXT NOT NULL," +
                     COLUMN_CONTENT + " TEXT NOT NULL, " +
                     COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL, tokenize=porter);";
-
+/*
+    public static final String PHARTICLE_TABLE_CREATE =
+        "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts4(" +
+                COLUMN_PHARTICLE_ID + " INTEGER PRIMARY KEY autoincrement," +
+                COLUMN_TITLE + " TEXT NOT NULL," +
+                COLUMN_CONTENT + " BLOB NOT NULL, " +
+                COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL, tokenize=porter);";
+*/
     public static final String PHARTICLE_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_PHARTICLE;
 
@@ -59,7 +66,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
     /*String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
             + "("
             + searchWordColumn + " VARCHAR PRIMARY KEY, " + extraColumn + " VARCHAR );";*/
-    String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
+    public static final String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
             + "("
             + searchWordColumn + " VARCHAR PRIMARY KEY);";
     String TABLE_SEARCH_WORD_DELETE = "DROP TABLE IF EXISTS " + searchWordTable;
