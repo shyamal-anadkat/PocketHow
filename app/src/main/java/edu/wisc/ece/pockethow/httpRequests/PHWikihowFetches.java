@@ -139,7 +139,7 @@ public class PHWikihowFetches {
     public String getFetchURLFromPageIds(List<String> ids) {
         String appendIDs = StringUtils.join(ids, "|");
         String retURL = "https://www.wikihow.com/api.php?action=query" +
-                "&prop=revisions&rvprop=content&format=json" +
+                "&prop=revisions&rvprop=content&rvparse&format=json" +
                 "&pageids=" + appendIDs;
         return retURL;
     }
