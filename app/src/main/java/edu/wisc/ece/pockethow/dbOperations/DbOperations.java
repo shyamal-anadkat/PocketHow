@@ -12,6 +12,7 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
 
 import java.nio.DoubleBuffer;
 import java.sql.Time;
@@ -255,6 +256,15 @@ public class DbOperations {
                         Log.d(TAG, "pageid = " + pageId);
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
+
+
+                        /// cleanup ///
+                        Document doc = markupParser.getDocFromString(content);
+                        // remove all links
+                        doc.select("a").remove();
+                        content = doc.toString();
+
+
 
                         if (!title.contains("Category:") && !title.contains("wikiHow:")) {
                             PHArticle phArticle = new PHArticle(pageId, title,
