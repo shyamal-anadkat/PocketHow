@@ -87,7 +87,9 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                //Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
+                listCategories.get(position).toggleChecked();
+                mAdapter.notifyDataSetChanged();
+                /*
                 Context context = gridView.getContext();
                 globalposition = position;
                 downloadedDatabaseNameList.add(listCategories.get(position).getDatabaseName());
@@ -104,6 +106,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 {
                     makeRequests();
                 }
+                */
             }
         });
 

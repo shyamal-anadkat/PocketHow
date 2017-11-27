@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:numColumns="auto_fit"
         android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
-        android:listSelector="@drawable/selector">
+        android:verticalSpacing="10dp">
 
     </GridView>
 </LinearLayout>

@@ -6,6 +6,7 @@ package edu.wisc.ece.pockethow.frontend;
 
 import java.util.ArrayList;
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,7 @@ public class GridviewAdapter extends BaseAdapter
 
         view.txtViewLabel.setText(listCategories.get(position).Label);
         view.imgViewIcon.setImageResource(listCategories.get(position).Icon);
+        convertView.setBackgroundColor(listCategories.get(position).isChecked() ? Color.BLUE : Color.TRANSPARENT);
         //view.imgViewIcon.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
         //view.txtViewLabel.setBackgroundResource(this.listCategories.get(position).isChecked() ? R.color.colorPrimary : R.color.white);
         return convertView;
