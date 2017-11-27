@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import edu.wisc.ece.pockethow.R;
@@ -71,7 +72,14 @@ public class PageDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.page_detail, container, false);
 
         if (content != null) {
-            ((TextView) rootView.findViewById(R.id.page_detail)).setText(content);
+            //String html = "<html><body>Hello, World!</body></html>";
+            String mime = "text/html";
+            String encoding = "utf-8";
+
+            WebView myWebView = ((WebView) rootView.findViewById(R.id.page_detail));
+            myWebView.getSettings().setJavaScriptEnabled(true);
+            myWebView.loadDataWithBaseURL(null, content, mime, encoding, null);
+            //((TextView) rootView.findViewById(R.id.page_detail)).setText(content);
         }
 
         //String title = rootView.getResources().getString(R.string.title_page_detail);
@@ -87,3 +95,15 @@ public class PageDetailFragment extends Fragment {
         return rootView;
     }
 }
+/*
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/page_detail"
+    style="?android:attr/textAppearanceLarge"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:textIsSelectable="true"
+    tools:context="edu.wisc.ece.pockethow.frontend.PageDetailFragment" />
+
+ */

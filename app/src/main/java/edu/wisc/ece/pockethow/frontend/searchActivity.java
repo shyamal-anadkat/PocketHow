@@ -2,6 +2,7 @@ package edu.wisc.ece.pockethow.frontend;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
@@ -31,8 +33,13 @@ public class searchActivity extends AppCompatActivity {
     ImageButton imageButton;
     Button deleteButton;
     static final String codeword = "catagory";
+    static final String categoryIntIdCodeword = "categoryIntId";
+    static final String filenameCodeword = "filename";
+    static final String downloadedParentPath = "/data/user/0/com.android.providers.downloads/cache/";
+    //int categoryIdGlobal;
+    ArrayList<Integer> categoryIdList = new ArrayList<>();
     ArrayList<String> categoryArrayList = new ArrayList<>();
-
+    ArrayList<String> downloadedFilePathList = new ArrayList<>();
     final DbOperations dbOperations = new DbOperations(this);
 
     @Override
@@ -125,9 +132,25 @@ public class searchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         categoryArrayList = bundle.getStringArrayList(codeword);
+        //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
+        categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
+        downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
+        if(downloadedFilePathList != null && downloadedFilePathList.size() != 0)
+        {
+            /*
+            for(String downloadedFilePath: downloadedFilePathList)
+            {
+                downloadedFilePath = downloadedParentPath + downloadedFilePath;
+            }
+            */
+            //take the name of the database and add the filepath to it
+            for(int i = 0; i < downloadedFilePathList.size(); i++)
+            {
+                downloadedFilePathList.set(i, downloadedParentPath + downloadedFilePathList.get(i));
+            }
+        }
         //deleteDatabase("PocketHow.db");
         populateDB();
-
 
     }
 
@@ -136,9 +159,11 @@ public class searchActivity extends AppCompatActivity {
         dbOperations.searchWordList.clear();
         new Thread(new Runnable() {
             public void run() {
-                final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
+                if(downloadedFilePathList == null || downloadedFilePathList.size() == 0) {
+                    //fetch and parse WikiHow pages
+                    final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
 
-                dbOperations.open();
+                    dbOperations.open();
                         /*
                         List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
                         dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
@@ -148,34 +173,58 @@ public class searchActivity extends AppCompatActivity {
                                 (phWikihowFetches.getFetchURLFromPageIds
                                         (testIDs)));
                                         */
-                for (String categoryStr : categoryArrayList) {
-                    List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
-                    dbOperations.addCategoryToPageID(new PHCategory(2, categoryStr
-                            , phWikihowFetches.categoryListToDelimString(testIDs),
-                            null));
+                    //for (String categoryStr : categoryArrayList) {
+                    for (int i = 0; i < categoryArrayList.size(); i++) {
+                        String categoryStr = categoryArrayList.get(i);
+                        int categoryIdGlobal = categoryIdList.get(i);
+                        List<String> testIDs = phWikihowFetches.fetchPagesFromCategory(categoryStr, 100);
+                        dbOperations.addCategoryToPageID(new PHCategory(categoryIdGlobal, categoryStr
+                                , phWikihowFetches.categoryListToDelimString(testIDs),
+                                null));
 
-                    //// supports upto 100 article requests ////
-                    if (testIDs.size() > 50) {
-                        List<String> temp = new ArrayList<>(testIDs.subList(0, 50));
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (temp)));
-                        List<String> temp1 = new ArrayList<>(testIDs.subList(50, testIDs.size()));
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (temp1)));
+                        //// supports upto 100 article requests ////
+                        if (testIDs.size() > 50) {
+                            List<String> temp = new ArrayList<>(testIDs.subList(0, 50));
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (temp)));
+                            List<String> temp1 = new ArrayList<>(testIDs.subList(50, testIDs.size()));
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (temp1)));
 
-                    } else {
-                        dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
-                                (phWikihowFetches.getFetchURLFromPageIds
-                                        (testIDs)));
+                        } else {
+                            dbOperations.parsePagesAndPopulateDB(phWikihowFetches.getJSONFromURL
+                                    (phWikihowFetches.getFetchURLFromPageIds
+                                            (testIDs)));
+                        }
+                    }
+                    dbOperations.populateSearchWordTable();
+                    dbOperations.pageCleaner();
+                    dbOperations.close();
+                    categoryArrayList.clear();
+                }
+                else //Add downloaded db file into PocketHow.db
+                {
+                    if(downloadedFilePathList != null) {
+                        for (String downloadedFilePath : downloadedFilePathList) {
+                            //SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0);
+                            String sql = "ATTACH DATABASE '" + downloadedFilePath + "' as 'DownloadedAlias'";
+                            dbOperations.getDatabase().execSQL(sql);
+
+                            //sql = "INSERT INTO X.TABLE SELECT * FROM Y.TABLE";
+                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_PHARTICLE + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_PHARTICLE;
+                            dbOperations.getDatabase().execSQL(sql);
+                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID;
+                            dbOperations.getDatabase().execSQL(sql);
+                            sql = "INSERT INTO PocketHow." + PHDBHandler.searchWordTable + " SELECT * FROM DownloadedAlias." + PHDBHandler.searchWordTable;
+                            dbOperations.getDatabase().execSQL(sql);
+                            sql = "DETACH DATABASE 'DownloadedAlias'";
+                            dbOperations.getDatabase().execSQL(sql);
+                        }
+                        downloadedFilePathList.clear();
                     }
                 }
-                dbOperations.populateSearchWordTable();
-                dbOperations.pageCleaner();
-                dbOperations.close();
-                categoryArrayList.clear();
-
             }
         }).start();
     }

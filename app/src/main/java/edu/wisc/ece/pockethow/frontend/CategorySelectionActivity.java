@@ -33,6 +33,9 @@ public class CategorySelectionActivity extends AppCompatActivity {
     //temp for testing purposes
     private ArrayList<String> listLabel;
     private int globalposition = 0;
+    private ArrayList<Integer> categoryIdList;
+    private int globalCategoryId;
+    private ArrayList<String> downloadedDatabaseNameList;
     //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +61,14 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     toast.show();
                     ArrayList<String> selectedCategories = new ArrayList<>();
                     selectedCategories.add("Arts and Entertainment");
+                    categoryIdList.add(listCategories.get(globalposition).Icon);
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+                    //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+                    goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
+                    goToNextActivity.putStringArrayListExtra(searchActivity.filenameCodeword, downloadedDatabaseNameList);
                     startActivity(goToNextActivity);
+                    categoryIdList.clear();
                 }
             }
         };
@@ -82,6 +90,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 //Toast.makeText(CategorySelectionActivity.this, mAdapter.getItem(position).Label, Toast.LENGTH_SHORT).show();
                 Context context = gridView.getContext();
                 globalposition = position;
+                downloadedDatabaseNameList.add(listCategories.get(position).getDatabaseName());
                 Uri uri = listCategories.get(position).getUri();
                 if(uri != null && downloadId == 0){
                     DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -105,10 +114,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void makeRequests()
     {
         ArrayList<String> selectedCategories = new ArrayList<>();
+
         selectedCategories.add(listLabel.get(globalposition));
+        categoryIdList.add(listCategories.get(globalposition).Icon);
         Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
         goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+        //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+        goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
         startActivity(goToNextActivity);
+        selectedCategories.clear();
+        categoryIdList.clear();
     }
     //
     public void prepareList()
@@ -138,7 +153,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listLabel.add("Work World");
         listLabel.add("Youth");
         //
-
+        categoryIdList = new ArrayList<>();
+        downloadedDatabaseNameList = new ArrayList<>();
 
         listCategories.add(new CategoryIcon(R.drawable.arts_entertainment,"Arts","https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive,"Auto"));

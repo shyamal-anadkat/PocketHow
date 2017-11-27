@@ -66,7 +66,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
     /*String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
             + "("
             + searchWordColumn + " VARCHAR PRIMARY KEY, " + extraColumn + " VARCHAR );";*/
-    String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
+    public static final String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
             + "("
             + searchWordColumn + " VARCHAR PRIMARY KEY);";
     String TABLE_SEARCH_WORD_DELETE = "DROP TABLE IF EXISTS " + searchWordTable;
