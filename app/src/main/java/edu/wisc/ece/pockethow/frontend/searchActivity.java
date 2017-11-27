@@ -2,19 +2,15 @@ package edu.wisc.ece.pockethow.frontend;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,8 +54,7 @@ public class searchActivity extends AppCompatActivity {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Context context = searchActivity.this;
                 File dbFile = context.getDatabasePath("PocketHow.db");
-                if(dbFile.exists())
-                {
+                if (dbFile.exists()) {
                     Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                     Log.d("searchActivity", searchEditText.getText().toString());
                 /*
@@ -103,9 +98,7 @@ public class searchActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                     //startActivity(new Intent(searchActivity.this, PageDetailActivity.class));
-                }
-                else
-                {
+                } else {
                     Toast.makeText(searchActivity.this, "Database does not exist. Please download a category",
                             Toast.LENGTH_LONG).show();
                 }
@@ -135,8 +128,7 @@ public class searchActivity extends AppCompatActivity {
         //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
         categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
         downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
-        if(downloadedFilePathList != null && downloadedFilePathList.size() != 0)
-        {
+        if (downloadedFilePathList != null && downloadedFilePathList.size() != 0) {
             /*
             for(String downloadedFilePath: downloadedFilePathList)
             {
@@ -144,8 +136,7 @@ public class searchActivity extends AppCompatActivity {
             }
             */
             //take the name of the database and add the filepath to it
-            for(int i = 0; i < downloadedFilePathList.size(); i++)
-            {
+            for (int i = 0; i < downloadedFilePathList.size(); i++) {
                 downloadedFilePathList.set(i, downloadedParentPath + downloadedFilePathList.get(i));
             }
         }
@@ -159,7 +150,7 @@ public class searchActivity extends AppCompatActivity {
         dbOperations.searchWordList.clear();
         new Thread(new Runnable() {
             public void run() {
-                if(downloadedFilePathList == null || downloadedFilePathList.size() == 0) {
+                if (downloadedFilePathList == null || downloadedFilePathList.size() == 0) {
                     //fetch and parse WikiHow pages
                     final PHWikihowFetches phWikihowFetches = new PHWikihowFetches();
 
@@ -203,10 +194,9 @@ public class searchActivity extends AppCompatActivity {
                     dbOperations.pageCleaner();
                     dbOperations.close();
                     categoryArrayList.clear();
-                }
-                else //Add downloaded db file into PocketHow.db
+                } else //Add downloaded db file into PocketHow.db
                 {
-                    if(downloadedFilePathList != null) {
+                    if (downloadedFilePathList != null) {
                         for (String downloadedFilePath : downloadedFilePathList) {
                             //SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0);
                             String sql = "ATTACH DATABASE '" + downloadedFilePath + "' as 'DownloadedAlias'";

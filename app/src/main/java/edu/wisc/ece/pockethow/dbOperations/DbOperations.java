@@ -5,33 +5,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.icu.text.SimpleDateFormat;
 import android.util.Log;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 
-import java.nio.DoubleBuffer;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import edu.wisc.ece.pockethow.contentParser.markupParser;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 import edu.wisc.ece.pockethow.entity.PHCategory;
-import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
-import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.extraColumn;
 import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordColumn;
 import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
 
@@ -263,7 +254,6 @@ public class DbOperations {
                         // remove all links
                         doc.select("a").remove();
                         content = doc.toString();
-
 
 
                         if (!title.contains("Category:") && !title.contains("wikiHow:")) {
