@@ -3,12 +3,6 @@ package edu.wisc.ece.pockethow.dbHandler;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-
-import java.sql.Date;
 
 /*** PocketHow */
 
@@ -28,16 +22,9 @@ public class PHDBHandler extends SQLiteOpenHelper {
             "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts4(" +
                     COLUMN_PHARTICLE_ID + " INTEGER PRIMARY KEY autoincrement," +
                     COLUMN_TITLE + " TEXT NOT NULL," +
-                    COLUMN_CONTENT + " TEXT NOT NULL, " +
+                    COLUMN_CONTENT + " BLOB NOT NULL, " +
                     COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL, tokenize=porter);";
-/*
-    public static final String PHARTICLE_TABLE_CREATE =
-        "CREATE VIRTUAL TABLE " + TABLE_PHARTICLE + " USING fts4(" +
-                COLUMN_PHARTICLE_ID + " INTEGER PRIMARY KEY autoincrement," +
-                COLUMN_TITLE + " TEXT NOT NULL," +
-                COLUMN_CONTENT + " BLOB NOT NULL, " +
-                COLUMN_ARTICLE_LASTACCESS + " TEXT NOT NULL, tokenize=porter);";
-*/
+
     public static final String PHARTICLE_TABLE_DELETE =
             "DROP TABLE IF EXISTS " + TABLE_PHARTICLE;
 
@@ -63,9 +50,7 @@ public class PHDBHandler extends SQLiteOpenHelper {
     public static final String searchWordColumn = "searchWord";
     public static final String searchWordTable = "searchwordTempTable";
     public static final String extraColumn = "extraColumn";
-    /*String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
-            + "("
-            + searchWordColumn + " VARCHAR PRIMARY KEY, " + extraColumn + " VARCHAR );";*/
+
     public static final String TABLE_SEARCH_WORD_CREATE = "CREATE TABLE " + searchWordTable
             + "("
             + searchWordColumn + " VARCHAR PRIMARY KEY);";
@@ -81,7 +66,6 @@ public class PHDBHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //db.execSQL(PHARTICLE_TABLE_DELETE);
         db.execSQL(PHARTICLE_TABLE_CREATE);
         db.execSQL(TABLE_CATEGORY_TO_PAGEID_CREATE);
         db.execSQL(TABLE_SEARCH_WORD_CREATE);

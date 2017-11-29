@@ -6,14 +6,14 @@ import java.sql.Timestamp;
 public class PHArticle {
     long _id;
     String _title;
-    String _content;
+    byte[] _content;
     Timestamp _timestamp;
 
     public PHArticle() {
     }
 
     //public PHArticle(long id, String title, String content, DateTime lastAccess) {
-    public PHArticle(long id, String title, String content, Timestamp timestamp) {
+    public PHArticle(long id, String title, byte[] content, Timestamp timestamp) {
         this._id = id;
         this._title = title;
         this._content = content;
@@ -36,7 +36,7 @@ public class PHArticle {
         this._title = title;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return this._content;
     }
 
@@ -48,7 +48,7 @@ public class PHArticle {
         this._timestamp = timestamp;
     }
 
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this._content = content;
     }
 
