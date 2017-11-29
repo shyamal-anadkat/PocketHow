@@ -124,24 +124,30 @@ public class searchActivity extends AppCompatActivity {
         });
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        categoryArrayList = bundle.getStringArrayList(codeword);
-        //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
-        categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
-        downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
-        if (downloadedFilePathList != null && downloadedFilePathList.size() != 0) {
+        try {
+            categoryArrayList = bundle.getStringArrayList(codeword);
+            categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
+            downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
+            if (downloadedFilePathList != null && downloadedFilePathList.size() != 0) {
             /*
             for(String downloadedFilePath: downloadedFilePathList)
             {
                 downloadedFilePath = downloadedParentPath + downloadedFilePath;
             }
             */
-            //take the name of the database and add the filepath to it
-            for (int i = 0; i < downloadedFilePathList.size(); i++) {
-                downloadedFilePathList.set(i, downloadedParentPath + downloadedFilePathList.get(i));
+                //take the name of the database and add the filepath to it
+                for (int i = 0; i < downloadedFilePathList.size(); i++) {
+                    downloadedFilePathList.set(i, downloadedParentPath + downloadedFilePathList.get(i));
+                }
             }
+            //deleteDatabase("PocketHow.db");
+            populateDB();
         }
-        //deleteDatabase("PocketHow.db");
-        populateDB();
+        catch (Exception e) {
+         e.printStackTrace();
+        }
+        //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
+
 
     }
 
