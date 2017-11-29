@@ -191,7 +191,7 @@ public class searchActivity extends AppCompatActivity {
                         }
                     }
                     dbOperations.populateSearchWordTable();
-                    dbOperations.pageCleaner();
+                    dbOperations.addArticlesToDb();
                     dbOperations.close();
                     categoryArrayList.clear();
                 } else //Add downloaded db file into PocketHow.db

@@ -15,6 +15,7 @@ public class PHDeflaterTest {
         assertNotEquals(0, deflated.length);
         assertNotEquals(sample, deflated.toString());
         byte[] inflated = phDeflater.inflate(deflated);
+        assert(inflated.length > deflated.length);
         assertEquals(sample, new String(inflated));
 
         byte[] deflatedFromBytes = phDeflater.deflate(sample.getBytes());
@@ -23,6 +24,5 @@ public class PHDeflaterTest {
         byte[] inflated1 = phDeflater.inflate(deflatedFromBytes);
         assertEquals(sample, new String(inflated1));
     }
-
 
 }

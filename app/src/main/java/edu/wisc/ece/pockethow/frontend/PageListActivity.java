@@ -176,7 +176,7 @@ public class PageListActivity extends AppCompatActivity {
                         Intent intent = new Intent(context, PageDetailActivity.class);
                         //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
                         //TODO: send the content of the selected article
-                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, holder.mItem.getContent());
+                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, new String(holder.mItem.getContent()));
                         intent.putExtra(PageDetailFragment.ARG_ITEM_TITLE, holder.mItem.getTitle());
                         //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                         context.startActivity(intent);

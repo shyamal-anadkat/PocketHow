@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import edu.wisc.ece.pockethow.compression.PHDeflater;
 import edu.wisc.ece.pockethow.contentParser.markupParser;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
@@ -32,7 +33,7 @@ public class DbOperations {
     // set the format to sql date time
     public final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final String TAG = "DB_OPERATIONS";
-
+    final PHDeflater phDeflater = new PHDeflater();
     SQLiteOpenHelper dbHandler;
     SQLiteDatabase database;
     markupParser markupParser = new markupParser();
@@ -163,7 +164,7 @@ public class DbOperations {
                 try {
                     String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_TITLE));
                     Long columnID = cursorAll.getLong(cursorAll.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-                    String columnContent = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                    byte[] columnContent = cursorAll.getBlob(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
                     String dateTimeString = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
                     Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
@@ -176,7 +177,8 @@ public class DbOperations {
 
                         if (!pageIdList.contains(columnID)) {
                             pageIdList.add(columnID);
-                            articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                            articleArrayList.add(new PHArticle(columnID, columnTitle,
+                                    phDeflater.inflate(columnContent), timestamp));
                         }
                     }
                 } catch (Exception e) {
@@ -203,13 +205,14 @@ public class DbOperations {
             try {
                 Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
                 String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-                String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                byte[] columnContent = cursor.getBlob(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
                 String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
                 Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
                 Date date = dateFormat.parse(dateTimeString);
                 if (!pageIdList.contains(columnID)) {
-                    PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
+                    PHArticle ph = new PHArticle(columnID, columnTitle,
+                            phDeflater.inflate(columnContent), timestamp);
                     articleArrayList.add(ph);
                     pageIdList.add(columnID);
                 }
@@ -253,12 +256,12 @@ public class DbOperations {
                         Document doc = markupParser.getDocFromString(content);
                         // remove all links
                         doc.select("a").remove();
-                        content = doc.toString();
+                        byte[] contentDeflated = phDeflater.deflate(doc.toString());
 
 
                         if (!title.contains("Category:") && !title.contains("wikiHow:")) {
                             PHArticle phArticle = new PHArticle(pageId, title,
-                                    content,
+                                    contentDeflated,
                                     new Timestamp(System.currentTimeMillis()));
                             //addArticle(phArticle);
                             //Note: attempts to prettify the pages while this method is running creates unusable pages,
@@ -278,21 +281,18 @@ public class DbOperations {
         }
     }
 
-    /**
-     * @TODO
-     */
-    public void pageCleaner() {
+
+    public void addArticlesToDb() {
         //*************************
         //Parse content to make it pretty and presentable
-
         long time = System.currentTimeMillis();
 
         //begin SQL transaction to make sequential SQL statements faster
         //Cuts the run time by half. from 1099 milliseconds to 513 milliseconds for Arts and Entertainment
         database.execSQL("BEGIN TRANSACTION");
         for (PHArticle phArticle : washrack) {
-            String content = phArticle.getContent();
-            phArticle.setContent(markupParser.stringCleaner(content));
+            //String content = phArticle.getContent();
+            //phArticle.setContent(markupParser.stringCleaner(content));
             addArticle(phArticle);
         }
         //end SQL transaction
@@ -301,7 +301,6 @@ public class DbOperations {
         long time2 = System.currentTimeMillis();
         Log.d(TAG, "Time in milliseconds = " + Long.toString(time2 - time));
     }
-
 
     public boolean isOpen() {
         return database.isOpen();
@@ -385,9 +384,8 @@ public class DbOperations {
         if (searchWordList.size() == 0) {
             searchWordList = getSearchWords();
         }
-        int ratio = 0;
+        int ratio = 0, newRatio = 0;
         String output = input;
-        int newRatio = 0;
         for (String searchWord : searchWordList) {
             if (searchWord.equals(input)) {
                 return input;
