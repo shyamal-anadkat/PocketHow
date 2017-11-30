@@ -45,7 +45,7 @@ public class dbTester extends AppCompatActivity {
                 FOLKS.clear();
                 for (int i = 0; i < articleArrayList.size(); i++) {
                     officialArticleList.add(articleArrayList.get(i));
-                    FOLKS.add(articleArrayList.get(i).getContent());
+                    //FOLKS.add(articleArrayList.get(i).getContent());
                 }
                 mAdapter.notifyDataSetChanged();
             }
@@ -71,10 +71,10 @@ public class dbTester extends AppCompatActivity {
 
         Log.d("dbTester", "start adding articles");
 
-        PHArticle p1 = new PHArticle(1, "The chicken", "The chicken {{Stub|date=2014-04-12}}(Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref><ref> ref </ref>type of domestic<ref></ref>", new Timestamp(System.currentTimeMillis()));
-        PHArticle p2 = new PHArticle(2, "The pig", "The pig", new Timestamp(System.currentTimeMillis()));
-        PHArticle p3 = new PHArticle(3, "The cow", "cow", new Timestamp(System.currentTimeMillis()));
-        PHArticle p4 = new PHArticle(4, "pig piggy", "123", new Timestamp(System.currentTimeMillis()));
+        //PHArticle p1 = new PHArticle(1, "The chicken", "The chicken {{Stub|date=2014-04-12}}(Gallus gallus domesticus) [[Image: chicken]]is a <ref> reference </ref><ref> ref </ref>type of domestic<ref></ref>", new Timestamp(System.currentTimeMillis()));
+        //PHArticle p2 = new PHArticle(2, "The pig", "The pig", new Timestamp(System.currentTimeMillis()));
+        //PHArticle p3 = new PHArticle(3, "The cow", "cow", new Timestamp(System.currentTimeMillis()));
+        //PHArticle p4 = new PHArticle(4, "pig piggy", "123", new Timestamp(System.currentTimeMillis()));
 
         Log.d("dbTester", "end adding articles");
 
@@ -84,22 +84,20 @@ public class dbTester extends AppCompatActivity {
 */
 
         Log.d("dbTester", "add to washRack");
-        dbOperations.addArticleToWashRack(p1);
-        dbOperations.addArticleToWashRack(p2);
-        dbOperations.addArticleToWashRack(p3);
-        dbOperations.addArticleToWashRack(p4);
+        //dbOperations.addArticleToWashRack(p1);
+        //dbOperations.addArticleToWashRack(p2);
+        //dbOperations.addArticleToWashRack(p3);
+        //dbOperations.addArticleToWashRack(p4);
         Log.d("dbTester", "populate search word table");
-        dbOperations.populateSearchWordTable();
+        //dbOperations.populateSearchWordTable();
         Log.d("dbTester", "page Clearner");
-        dbOperations.pageCleaner();
+        //dbOperations.pageCleaner();
         Log.d("dbTester", "searchword");
 
-        if(dbOperations.searchWordList.size() == 0)
-        {
+        if (dbOperations.searchWordList.size() == 0) {
             Log.d("dbTester", "searchWord is emtpy");
         }
-        for(int i = 0; i < dbOperations.searchWordList.size(); i++)
-        {
+        for (int i = 0; i < dbOperations.searchWordList.size(); i++) {
             Log.d("dbTester", "Word: " + i + ": " + dbOperations.searchWordList.get(i));
         }
 

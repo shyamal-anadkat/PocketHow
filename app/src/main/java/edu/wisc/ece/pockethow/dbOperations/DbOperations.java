@@ -5,31 +5,25 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.icu.text.SimpleDateFormat;
 import android.util.Log;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
 
-import java.nio.DoubleBuffer;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
+import edu.wisc.ece.pockethow.compression.PHDeflater;
+import edu.wisc.ece.pockethow.contentParser.markupParser;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 import edu.wisc.ece.pockethow.entity.PHCategory;
-import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
-import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.extraColumn;
 import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordColumn;
 import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
 
@@ -39,9 +33,10 @@ public class DbOperations {
     // set the format to sql date time
     public final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final String TAG = "DB_OPERATIONS";
-
+    final PHDeflater phDeflater = new PHDeflater();
     SQLiteOpenHelper dbHandler;
     SQLiteDatabase database;
+    markupParser markupParser = new markupParser();
 
     //*******
     //for cleaning pages
@@ -169,7 +164,7 @@ public class DbOperations {
                 try {
                     String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_TITLE));
                     Long columnID = cursorAll.getLong(cursorAll.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-                    String columnContent = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                    byte[] columnContent = cursorAll.getBlob(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
                     String dateTimeString = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
                     Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
@@ -182,7 +177,8 @@ public class DbOperations {
 
                         if (!pageIdList.contains(columnID)) {
                             pageIdList.add(columnID);
-                            articleArrayList.add(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                            articleArrayList.add(new PHArticle(columnID, columnTitle,
+                                    phDeflater.inflate(columnContent), timestamp));
                         }
                     }
                 } catch (Exception e) {
@@ -209,13 +205,14 @@ public class DbOperations {
             try {
                 Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
                 String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-                String columnContent = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                byte[] columnContent = cursor.getBlob(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
                 String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
                 Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
                 Date date = dateFormat.parse(dateTimeString);
                 if (!pageIdList.contains(columnID)) {
-                    PHArticle ph = new PHArticle(columnID, columnTitle, columnContent, timestamp);
+                    PHArticle ph = new PHArticle(columnID, columnTitle,
+                            phDeflater.inflate(columnContent), timestamp);
                     articleArrayList.add(ph);
                     pageIdList.add(columnID);
                 }
@@ -254,9 +251,17 @@ public class DbOperations {
                         JSONObject firstRev = revisions.getJSONObject(0);
                         String content = firstRev.get("*").toString();
 
-                        if(!title.contains("Category:") && !title.contains("wikiHow:")) {
+
+                        /// cleanup ///
+                        Document doc = markupParser.getDocFromString(content);
+                        // remove all links
+                        doc.select("a").remove();
+                        byte[] contentDeflated = phDeflater.deflate(doc.toString());
+
+
+                        if (!title.contains("Category:") && !title.contains("wikiHow:")) {
                             PHArticle phArticle = new PHArticle(pageId, title,
-                                    content,
+                                    contentDeflated,
                                     new Timestamp(System.currentTimeMillis()));
                             //addArticle(phArticle);
                             //Note: attempts to prettify the pages while this method is running creates unusable pages,
@@ -269,7 +274,6 @@ public class DbOperations {
                     }
                 }
 
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -277,21 +281,18 @@ public class DbOperations {
         }
     }
 
-    /**
-     * pageCleaner @TODO
-     */
-    public void pageCleaner() {
+
+    public void addArticlesToDb() {
         //*************************
         //Parse content to make it pretty and presentable
-
         long time = System.currentTimeMillis();
 
         //begin SQL transaction to make sequential SQL statements faster
         //Cuts the run time by half. from 1099 milliseconds to 513 milliseconds for Arts and Entertainment
         database.execSQL("BEGIN TRANSACTION");
         for (PHArticle phArticle : washrack) {
-            String content = phArticle.getContent();
-            phArticle.setContent(stringCleaner(content));
+            //String content = phArticle.getContent();
+            //phArticle.setContent(markupParser.stringCleaner(content));
             addArticle(phArticle);
         }
         //end SQL transaction
@@ -301,158 +302,10 @@ public class DbOperations {
         Log.d(TAG, "Time in milliseconds = " + Long.toString(time2 - time));
     }
 
-
-    /**
-     * Parse the content of the given PHArticle to prettify it up
-     *
-     * @param content
-     * @return
-     */
-    public String stringCleaner(String content) {
-        for (int i = 0; i < content.length(); i++) {
-            //get rid of stub date
-            //ex: in article "Check in at the Royal National Hotel
-
-            //delete stub dates
-            //TODO
-            //ex: "buy a scale" {{stub|date=2016-08-18}}
-            //{{Stub|date=2014-04-12}}
-            boolean foundStub = false;
-            do {
-
-
-                if ((i + 1 < content.length()) && content.charAt(i) == '{' && content.charAt(i + 1) == '{') {
-                    foundStub = true;
-                    int numUnmatchedBrackets = 2;
-                    int j = i + 1;
-                    while (numUnmatchedBrackets > 0 && j < content.length()) {
-                        if (content.charAt(j) == '}') {
-                            numUnmatchedBrackets--;
-                        }
-                        j++;
-                    }
-
-                    String string1 = content.substring(0, i);
-                    String string2 = content.substring(j);
-                    content = string1 + string2;
-
-                }
-                else
-                {
-                    foundStub = false;
-                }
-            }while(foundStub);
-            //delete ref tags
-            //TODO: NEEDS WORK, some tags are still being written
-            //check the "being a drifter" page
-            boolean refTagFound = false;
-            do {
-                if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
-                    int j = i + "<ref>".length();
-                    refTagFound = true;
-                /*
-                while ((j+"</ref>".length() < content.length()) &&  !content.substring(j, j+"</ref>".length()).equals("</ref>") )
-                {
-                    j++;
-                }
-                */
-                    char char1 = content.charAt(j);
-                    while (j < content.length() && content.charAt(j) != '>') {
-                        j++;
-                        char1 = content.charAt(j);
-                    }
-                /*
-                if(content.substring(j, j+"</ref>".length()).equals("</ref>"))
-                {
-                    String string1 = content.substring(0, i);
-                    String string2 = content.substring(j+"</ref>".length());
-                    content = string1 + string2;
-                }
-                */
-                    if (content.charAt(j) == '>') {
-                        j++;
-                        String string1 = content.substring(0, i);
-                        String string2 = content.substring(j);
-                        content = string1 + string2;
-                    }
-                }
-                else {
-                    refTagFound = false;
-                }
-            }while(refTagFound);
-
-            /*
-            //delete everything that is in [[trash]]
-            int leftBracketNum = 0;
-            //int rightBracketNum = 0;
-            if(content.charAt(i) == '[')
-            {
-                leftBracketNum++;
-                int j = i+1;
-                while(leftBracketNum > 0)
-                {
-                    if(content.charAt(j) == '[')
-                    {
-                        leftBracketNum++;
-                    }
-                    else if(content.charAt(j) == ']')
-                    {
-                        leftBracketNum--;
-                    }
-                    j++;
-                }
-                String string1 = content.substring(0, i);
-                String string2 = content.substring(j);
-                string1 += "\n";
-                content = string1 + string2;
-            }
-            */
-            //{{reflist}}
-
-            //get ride of [[Image: ...]]
-            //for example: [[Image:Convince People You Are a local step1.jpg|center]]
-            boolean imageTagFound = false;
-            do {
-
-
-                if (i < content.length() && content.charAt(i) == '[' && i + 2+ ("Image".length()) < content.length() && content.charAt(i + 1) == '[') {
-                    imageTagFound = true;
-                    String s1 = content.substring(i + 2, i + 2 + ("Image".length()));
-                    if (s1.equals("Image") || s1.equals("image") || s1.equals("Categ")) {
-                        int j = i + 2 + ("Image".length());
-                        //find the first ']'
-                        while (j < content.length() && content.charAt(j) != ']') {
-                            j++;
-                        }
-                        j = j + 2;
-                        //Log.d("Editing", "string = " + content.substring(i,j));
-                        String firstPart = content.substring(0, i);
-                        String secondPart = content.substring(j);
-                        content = firstPart.concat(secondPart);
-                    }
-                    else
-                    {
-                        imageTagFound = false;
-                    }
-                }
-                else
-                {
-                    imageTagFound = false;
-                }
-            }while(imageTagFound);
-            //get rid of more stuff
-            //more parsing
-
-        }
-        return content;
-    }
-
-    public boolean isOpen()
-    {
-
+    public boolean isOpen() {
         return database.isOpen();
-
     }
+
     /**
      * Given that the washrack array list is not empty after downloading documents,
      * parse every article title for unique words and add them to a SQL table full of
@@ -460,55 +313,50 @@ public class DbOperations {
      *
      * @return
      */
-    public void populateSearchWordTable()
-    {
+    public void populateSearchWordTable() {
         database.execSQL("BEGIN TRANSACTION");
-        for(PHArticle phArticle: washrack)
-        {
+        for (PHArticle phArticle : washrack) {
             addArticleTitleToSearchWordTable(phArticle);
         }
         database.execSQL("END TRANSACTION");
         String sqlGetSearchWords = "SELECT * FROM " + searchWordList;
         String[] col = new String[1];
         col[0] = searchWordColumn;
-        //Cursor cursor = database.query(searchWordTable, col, );
         Cursor cursor = database.query(searchWordTable, col, null, null, null, null, null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             searchWordList.add(cursor.getString(cursor.getColumnIndex(searchWordColumn)));
         }
     }
 
-    public void addArticleTitleToSearchWordTable(PHArticle phArticle)
-    {
+    /**
+     * @param phArticle
+     */
+    public void addArticleTitleToSearchWordTable(PHArticle phArticle) {
         addSearchWord(phArticle.getTitle());
     }
 
-    public void addSearchWord(String word)
-    {
+    /**
+     * @param word
+     */
+    public void addSearchWord(String word) {
         String[] arr = word.split(" ");
 
-        for ( String ss : arr) {
+        for (String ss : arr) {
             ContentValues contentValues = new ContentValues();
-//            contentValues.put(searchWordTableId, searchWordIndex);
             ss = ss.replace("'", "`");
             contentValues.put(searchWordColumn, ss);
-            //Log.d("dbTester", "Word = " + ss);
-            //should theoretically only insert unique values
-
-            database.insertWithOnConflict(searchWordTable, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
-            //if (database.insert(searchwordTable, null, contentValues) == -1) {
-            //Log.e("DbOperations", "PHArticle - database insert failed");
-            //}
+            database.insertWithOnConflict(searchWordTable,
+                    null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         }
-
     }
 
-    /*
-    Load the search words from the database into a global array list
-     */
 
-    public ArrayList<String> getSearchWords()
-    {
+    /**
+     * Load the search words from the database into a global array list
+     *
+     * @return
+     */
+    public ArrayList<String> getSearchWords() {
         Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
         ArrayList<String> returnValue = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
@@ -516,7 +364,6 @@ public class DbOperations {
             // do what you need with the cursor here
             try {
                 String columnID = cursor.getString(cursor.getColumnIndex(searchWordColumn));
-
                 returnValue.add(columnID);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -527,24 +374,22 @@ public class DbOperations {
         return returnValue;
     }
 
-    //get closest established search word via Levenshtein Distance
-    //
-    public String getClosestSearchWord(String input)
-    {
-        if(searchWordList.size() == 0)
-        {
+    /**
+     * get closest established search word via Levenshtein Distance
+     *
+     * @param input
+     * @return
+     */
+    public String getClosestSearchWord(String input) {
+        if (searchWordList.size() == 0) {
             searchWordList = getSearchWords();
         }
-        int ratio = 0;
+        int ratio = 0, newRatio = 0;
         String output = input;
-        int newRatio = 0;
-        for(String searchWord: searchWordList)
-        {
-            if(searchWord.equals(input))
-            {
+        for (String searchWord : searchWordList) {
+            if (searchWord.equals(input)) {
                 return input;
-            }
-            else {
+            } else {
                 newRatio = FuzzySearch.ratio(input, searchWord);
                 if (ratio < newRatio) {
                     ratio = newRatio;
@@ -555,12 +400,15 @@ public class DbOperations {
         return output;
     }
 
-    public SQLiteDatabase getDatabase()
-    {
+    public SQLiteDatabase getDatabase() {
         return database;
     }
 
-    //used only by dbTester
+    /**
+     * used for testing only
+     *
+     * @param phArticle
+     */
     public void addArticleToWashRack(PHArticle phArticle) {
         washrack.add(phArticle);
     }
