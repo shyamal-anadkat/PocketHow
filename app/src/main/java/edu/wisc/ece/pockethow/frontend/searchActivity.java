@@ -166,7 +166,7 @@ public class searchActivity extends AppCompatActivity {
         }
         //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
         //deleteDatabase("PocketHow.db");
-        populateDB();
+        //populateDB();
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},requestCode);
 
 

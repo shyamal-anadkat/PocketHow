@@ -90,10 +90,10 @@ public class DbOperations {
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST, category.getPageIdList());
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, "");
 
-        if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
+        /*if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
             Log.e("DbOperations", "PHCategory: database insert failed");
         }
-
+*/
         return category;
     }
 
