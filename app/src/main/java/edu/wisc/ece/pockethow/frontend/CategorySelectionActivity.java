@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -37,6 +40,41 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int globalCategoryId;
     private ArrayList<String> downloadedDatabaseNameList;
     //
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_download:
+                Context context = gridView.getContext();
+                for (CategoryIcon icon : listCategories )
+                {
+                    if(icon.isChecked()) {
+                        Uri uri = icon.getUri();
+                        if (uri != null) {
+                            DownloadManager.Request request = new DownloadManager.Request(uri);
+                            request.setTitle("Archive Download: " + icon.Label);
+                            Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                                    "Download Started: " + icon.Label, Toast.LENGTH_LONG);
+                            toast.show();
+                            downloadId = dlm.enqueue(request);
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,29 +91,29 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                //check if the broadcast message is for our enqueued download
-                long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                if(downloadId == referenceId){
-                    Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                            "Download Complete", Toast.LENGTH_LONG);
-                    toast.show();
-                    ArrayList<String> selectedCategories = new ArrayList<>();
-                    selectedCategories.add("Arts and Entertainment");
-                    categoryIdList.add(listCategories.get(globalposition).Icon);
-                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
-                    goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
-                    //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
-                    goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
-                    goToNextActivity.putStringArrayListExtra(searchActivity.filenameCodeword, downloadedDatabaseNameList);
-                    startActivity(goToNextActivity);
-                    categoryIdList.clear();
-                }
+            //check if the broadcast message is for our enqueued download
+            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if(downloadId == referenceId){
+                Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                        "Download Complete", Toast.LENGTH_LONG);
+                toast.show();
+                ArrayList<String> selectedCategories = new ArrayList<>();
+                selectedCategories.add("Arts and Entertainment");
+                categoryIdList.add(listCategories.get(globalposition).Icon);
+                Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                goToNextActivity.putStringArrayListExtra(searchActivity.codeword, selectedCategories);
+                //goToNextActivity.putExtra(searchActivity.categoryIntIdCodeword, listCategories.get(globalposition).Icon);
+                goToNextActivity.putIntegerArrayListExtra(searchActivity.categoryIntIdCodeword, categoryIdList);
+                goToNextActivity.putStringArrayListExtra(searchActivity.filenameCodeword, downloadedDatabaseNameList);
+                startActivity(goToNextActivity);
+                categoryIdList.clear();
+            }
             }
         };
         registerReceiver(downloadReceiver, filter);
 
         // prepared arraylist and passed it to the Adapter class
-        mAdapter = new GridviewAdapter(this,listCategories);
+        mAdapter = new GridviewAdapter(this, listCategories, getResources().getColor(R.color.colorPrimary));
 
         // Set custom adapter to gridview
         gridView = (GridView) findViewById(R.id.gridView1);
@@ -89,24 +127,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     long arg3) {
                 listCategories.get(position).toggleChecked();
                 mAdapter.notifyDataSetChanged();
-                /*
-                Context context = gridView.getContext();
-                globalposition = position;
-                downloadedDatabaseNameList.add(listCategories.get(position).getDatabaseName());
-                Uri uri = listCategories.get(position).getUri();
-                if(uri != null && downloadId == 0){
-                    DownloadManager.Request request = new DownloadManager.Request(uri);
-                    request.setTitle("Archive Download");
-                    Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                            "Download Started", Toast.LENGTH_LONG);
-                    toast.show();
-                    downloadId = dlm.enqueue(request);
-                }
-                else //TODO: TEMP
-                {
-                    makeRequests();
-                }
-                */
             }
         });
 
