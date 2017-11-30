@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -176,7 +177,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         categoryIdList = new ArrayList<>();
         downloadedDatabaseNameList = new ArrayList<>();
 
-        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/PocketHow.db"));
+        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db"));
         listCategories.add(new CategoryIcon(R.drawable.automotive, "Auto"));
         listCategories.add(new CategoryIcon(R.drawable.education, "Education"));
         listCategories.add(new CategoryIcon(R.drawable.elec, "Electronics"));

@@ -48,7 +48,7 @@ public class searchActivity extends AppCompatActivity {
     static final String codeword = "catagory";
     static final String categoryIntIdCodeword = "categoryIntId";
     static final String filenameCodeword = "filename";
-    static final String downloadedParentPath = "/data/user/0/com.android.providers.downloads/cache/";
+    static final String downloadedParentPath = "/storage/emulated/0/Download/";
     //int categoryIdGlobal;
     ArrayList<Integer> categoryIdList = new ArrayList<>();
     ArrayList<String> categoryArrayList = new ArrayList<>();
@@ -71,7 +71,7 @@ public class searchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Context context = searchActivity.this;
-                File dbFile = context.getDatabasePath("PocketHow.db");
+                File dbFile = context.getDatabasePath("art.db");
                 if (dbFile.exists()) {
                     Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                     Log.d("searchActivity", searchEditText.getText().toString());
