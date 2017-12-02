@@ -5,6 +5,8 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,12 +32,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
 import static java.nio.file.StandardCopyOption.*;
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
+import edu.wisc.ece.pockethow.entity.PHArticle;
 import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
@@ -49,6 +55,8 @@ public class searchActivity extends AppCompatActivity {
     static final String categoryIntIdCodeword = "categoryIntId";
     static final String filenameCodeword = "filename";
     static final String downloadedParentPath = "/storage/emulated/0/Download/";
+    static final String downloadDatabase = "downloadDatabase";
+    static final String databaseFromServer = "from server";
     //int categoryIdGlobal;
     ArrayList<Integer> categoryIdList = new ArrayList<>();
     ArrayList<String> categoryArrayList = new ArrayList<>();
@@ -71,7 +79,7 @@ public class searchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loadingTextView.setVisibility(View.VISIBLE);
                 Context context = searchActivity.this;
-                File dbFile = context.getDatabasePath("art.db");
+                File dbFile = context.getDatabasePath("PocketHow.db");
                 if (dbFile.exists()) {
                     Intent intent = new Intent(searchActivity.this, PageListActivity.class);
                     Log.d("searchActivity", searchEditText.getText().toString());
@@ -104,10 +112,25 @@ public class searchActivity extends AppCompatActivity {
                                 j = tempInput.length();
                             }
                         }
-                        inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
+                        if(!inputString.equals(""))
+                        {
+                            inputString += dbOperations.getClosestSearchWord(tempInput) + " ";
+                        }
+
                     }
                     Log.d("searchActivity", "input string = " + inputString);
-                    intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
+                    if(inputString.equals(""))
+                    {
+                        intent.putExtra("message", "");
+
+                    }
+                    else
+                    {
+                        intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
+
+                    }
+                    dbOperations.open();
+                    dbOperations.close();
                     if (dbOperations.isOpen()) {
                         Toast.makeText(searchActivity.this, "Please wait, the database is loading",
                                 Toast.LENGTH_LONG).show();
@@ -143,23 +166,22 @@ public class searchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         try {
-            categoryArrayList = bundle.getStringArrayList(codeword);
-            categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
-            downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
-            if (downloadedFilePathList != null && downloadedFilePathList.size() != 0) {
-            /*
-            for(String downloadedFilePath: downloadedFilePathList)
+            if(bundle.getBoolean(databaseFromServer))
             {
-                downloadedFilePath = downloadedParentPath + downloadedFilePath;
+                //used for downloading from server
+                downloadedFilePathList = bundle.getStringArrayList(downloadDatabase);
+                populateDB();
             }
-            */
-                //take the name of the database and add the filepath to it
-                for (int i = 0; i < downloadedFilePathList.size(); i++) {
-                    downloadedFilePathList.set(i, downloadedParentPath + downloadedFilePathList.get(i));
-                }
+            else{
+                //used for scraping WikiHow
+                categoryArrayList = bundle.getStringArrayList(codeword);
+                categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
+                downloadedFilePathList = bundle.getStringArrayList(filenameCodeword);
+
+                //deleteDatabase("PocketHow.db");
+                populateDB();
             }
-            //deleteDatabase("PocketHow.db");
-            populateDB();
+
         }
         catch (Exception e) {
          e.printStackTrace();
@@ -224,6 +246,41 @@ public class searchActivity extends AppCompatActivity {
                 }
             }
         });
+        //************************8
+        /*
+        dbOperations.open();
+        Cursor cursor = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
+        if(cursor == null)
+        {
+            Log.d("cursor", "cursor is null");
+        }
+        else
+        {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                try {
+                    Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
+                    String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+                    byte[] columnContent = cursor.getBlob(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                    String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                    Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Cursor cursor1 = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
+        if(cursor1 == null)
+        {
+            Log.d("cursor", "cursor1 is null");
+        }
+        Cursor cursor2 = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.searchWordTable, null);
+        if(cursor2 == null)
+        {
+            Log.d("cursor", "cursor2 is null");
+        }
+        //********************
+        */
     }
     @Override // android recommended class to handle permissions
     public void onRequestPermissionsResult(int requestCode,
@@ -305,8 +362,10 @@ public class searchActivity extends AppCompatActivity {
                 {
                     if (downloadedFilePathList != null) {
                         for (String downloadedFilePath : downloadedFilePathList) {
-                            //SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0);
-                            String sql = "ATTACH DATABASE '" + downloadedFilePath + "' as 'DownloadedAlias'";
+
+                            SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0, null);
+                            String sql = "ATTACH DATABASE '" + db.toString() + "' as 'DownloadedAlias'";
+
                             dbOperations.getDatabase().execSQL(sql);
 
                             //sql = "INSERT INTO X.TABLE SELECT * FROM Y.TABLE";
@@ -322,12 +381,6 @@ public class searchActivity extends AppCompatActivity {
                         downloadedFilePathList.clear();
                     }
                 }
-                //exporting database to Downloads folder
-                File downloadsPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                ///data/user/0/edu.wisc.ece.pockethow/databases/PocketHow.db
-                File sauron = new File(downloadsPath.getAbsoluteFile() + "/sauron.txt");
-                //File sauron = new File(Environment.getExternalStorageDirectory().toString() + "/sauron.txt");
-
             }
         }).start();
     }

@@ -357,7 +357,12 @@ public class DbOperations {
      * @return
      */
     public ArrayList<String> getSearchWords() {
-        Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+        //TODO: error here
+        try
+        {
+            Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+
+
         ArrayList<String> returnValue = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 
@@ -370,8 +375,15 @@ public class DbOperations {
             }
         }
 
-        cursor.close();
-        return returnValue;
+            cursor.close();
+            return returnValue;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Log.d(TAG, "error");
+        }
+        return  null;
     }
 
     /**
@@ -381,6 +393,15 @@ public class DbOperations {
      * @return
      */
     public String getClosestSearchWord(String input) {
+        if(input.equals("") || input.equals(" "))
+        {
+            return "";
+        }
+
+        if(input.length() == 0)
+        {
+            return input;
+        }
         if (searchWordList.size() == 0) {
             searchWordList = getSearchWords();
         }
