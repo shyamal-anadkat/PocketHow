@@ -9,15 +9,23 @@ public class CategoryIcon {
     public String Label;
     private boolean isChecked;
     private Uri uri;
-    private String databaseName;
     private Long downloadId;
+    private String wikihowAPIname;
+
+    public CategoryIcon(Integer icon, String label, String url, String wikihowAPIname) {
+        this.Icon = icon;
+        this.Label = label;
+        this.isChecked = false;
+        this.uri = Uri.parse(url);
+        this.downloadId = null;
+        this.wikihowAPIname = wikihowAPIname;
+    }
 
     public CategoryIcon(Integer icon, String label, String url) {
         this.Icon = icon;
         this.Label = label;
         this.isChecked = false;
         this.uri = Uri.parse(url);
-        this.databaseName = null;
         this.downloadId = null;
     }
 
@@ -26,16 +34,8 @@ public class CategoryIcon {
         this.Label = label;
         this.isChecked = false;
         this.uri = null;
-        this.databaseName = null;
     }
 
-    public CategoryIcon(Integer icon, String label, String url, String databaseName) {
-        this.Icon = icon;
-        this.Label = label;
-        this.isChecked = false;
-        this.uri = Uri.parse(url);
-        this.databaseName = databaseName;
-    }
 
     public boolean isChecked() {
         return this.isChecked;
