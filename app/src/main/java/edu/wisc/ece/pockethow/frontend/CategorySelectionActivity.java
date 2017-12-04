@@ -57,7 +57,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int numCategoriesSelected = 0;
     private int numCategoriesDownloaded = 0;
     private ArrayList<Long> downloadIdList = new ArrayList<>();
-
+    ArrayList<Long> list = new ArrayList<>();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,9 +72,10 @@ public class CategorySelectionActivity extends AppCompatActivity {
             // action with ID action_refresh was selected
             case R.id.action_download:
                 Context context = gridView.getContext();
+                list = fetchCurrentCategories();
                 for (CategoryIcon icon : listCategories )
                 {
-                    if(icon.isChecked()) {
+                    if(icon.isChecked() && !isInDatabase(icon.Icon)) {
                         Uri uri = icon.getUri();
                         if (uri != null) {
                             DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -348,5 +349,41 @@ public class CategorySelectionActivity extends AppCompatActivity {
             // other 'case' line to check fosr other
             // permissions this app might request
         }
+    }
+
+    public Boolean isInDatabase(int id)
+    {
+        for(Long item: list)
+        {
+            if(id == item)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Long> fetchCurrentCategories()
+    {
+        ArrayList<Long> databaseCategoryList = new ArrayList<>();
+        DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
+        dbOperations.open();
+        SQLiteDatabase database = dbOperations.getDatabase();
+        Cursor cursorAll = database.rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
+
+        for (cursorAll.moveToFirst(); !cursorAll.isAfterLast(); cursorAll.moveToNext()) {
+
+            // do what you need with the cursor here
+            try {
+                String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
+                Long categoryLong = Long.getLong(columnTitle);
+                databaseCategoryList.add(categoryLong);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        cursorAll.close();
+        return databaseCategoryList;
     }
 }
