@@ -8,6 +8,7 @@ public class CategoryIcon {
     private boolean isChecked;
     private Uri uri;
     private String databaseName;
+    private Long downloadId;
 
     public CategoryIcon(Integer icon, String label, String url) {
         this.Icon = icon;
@@ -15,6 +16,7 @@ public class CategoryIcon {
         this.isChecked = false;
         this.uri = Uri.parse(url);
         this.databaseName = null;
+        this.downloadId = null;
     }
 
     public CategoryIcon(Integer icon, String label) {
@@ -47,6 +49,21 @@ public class CategoryIcon {
 
     public String getDatabaseName() {
         return this.databaseName;
+    }
+
+    public void addDownloadId(Long input)
+    {
+        this.downloadId = input;
+    }
+
+    public Long getDownloadId()
+    {
+        return this.downloadId;
+    }
+
+    public void removeDownloadId()
+    {
+        this.downloadId = null;
     }
 
 }

@@ -50,8 +50,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private GridView gridView;
     private DownloadManager dlm;
     private BroadcastReceiver downloadReceiver;
-    private long downloadId = 0;
-    //temp for testing purposes
     private ArrayList<String> listLabel;
     private int globalposition = 0;
     private ArrayList<Integer> categoryIdList;
@@ -61,9 +59,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int numCategoriesSelected = 0;
     private int numCategoriesDownloaded = 0;
     private ArrayList<Long> downloadIdList = new ArrayList<>();
-    public final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //private ArrayList<URI> uriArrayList = new ArrayList<>();
-    //
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -93,7 +89,9 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
                             //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
                             numCategoriesSelected++;
-                            downloadId = dlm.enqueue(request);
+                            //downloadId = dlm.enqueue(request);
+                            //requestedIdList.add(dlm.enqueue(request));
+                            icon.addDownloadId(dlm.enqueue(request));
                         }
                     }
                 }
@@ -125,7 +123,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
             //check if the broadcast message is for our enqueued download
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            if(downloadId == referenceId){
+            for(CategoryIcon categoryIcon: listCategories)
+            {
+                Long downloadId = categoryIcon.getDownloadId();
+
+
+            if(downloadId != null && downloadId == referenceId) {
 
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(downloadId);
@@ -138,20 +141,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
                         String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
                         if (uriString.substring(0, 7).matches("file://")) {
-                            uriString =  uriString.substring(7);
+                            uriString = uriString.substring(7);
                         }
 
                         File file = new File(uriString);
-                        if(file.exists())
-                        {
+                        if (file.exists()) {
                             Log.d("addCategory", "huzzah");
-                        }
-                        else
-                        {
+                        } else {
                             Log.d("addCategory", "fuck this shit");
                         }
-                        try
-                        {
+                        try {
                             DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
                             SQLiteDatabase downloadedDB = SQLiteDatabase.openDatabase(file.getPath(), null, 0);
                             //I think we are prioritizing speed over memory space
@@ -162,8 +161,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             downloadedDB.execSQL("END TRANSACTION");
                             //downloadedDB.close();
                             dbOperations.open();
-                            if(dbOperations.getDatabase() == null)
-                            {
+                            if (dbOperations.getDatabase() == null) {
                                 Log.d("addCategory", "dbOperations doesn't exist");
                             }
                             dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
@@ -210,9 +208,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             }
                             dbOperations.getDatabase().execSQL("END TRANSACTION");
                             dbOperations.close();
-                        }
-                        catch(Exception e)
-                        {
+                        } catch (Exception e) {
 
                             e.printStackTrace();
                             Log.d("addCategory", "ERROR");
@@ -221,7 +217,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     }
                 }
                 cursor.close();
-
 
 
                 Toast toast = Toast.makeText(CategorySelectionActivity.this,
@@ -233,13 +228,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 pathList.add(file.getAbsolutePath());
 
 
-
                 //ArrayList<String> selectedCategories = new ArrayList<>();
                 //selectedCategories.add("Arts and Entertainment");
                 //categoryIdList.add(listCategories.get(globalposition).Icon);
                 numCategoriesDownloaded++;
-                if(numCategoriesDownloaded == numCategoriesSelected)
-                {
+                if (numCategoriesDownloaded == numCategoriesSelected) {
+                    downloadIdList.clear();
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     startActivity(goToNextActivity);
                     /*
@@ -259,7 +253,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     */
                 }
 
-
+            }
             }
             }
         };
