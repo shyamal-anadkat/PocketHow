@@ -210,30 +210,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             }
                             dbOperations.getDatabase().execSQL("END TRANSACTION");
                             dbOperations.close();
-                            //SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0, null);
-                            /*String dbName = downloadedDB.toString();
-                            for(int i = dbName.length()-1; i > 0; i--)
-                            {
-                                if(dbName.charAt(i) == '/')
-                                {
-                                    dbName = dbName.substring(i+1);
-                                    i = -21;
-                                }
-                            }
-                            String sql = "ATTACH DATABASE '" + dbName + "' as 'DownloadedAlias'";
-                            dbOperations.open();
-                            dbOperations.getDatabase().execSQL(sql);
-
-                            //sql = "INSERT INTO X.TABLE SELECT * FROM Y.TABLE";
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_PHARTICLE + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_PHARTICLE;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.searchWordTable + " SELECT * FROM DownloadedAlias." + PHDBHandler.searchWordTable;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "DETACH DATABASE 'DownloadedAlias'";
-                            dbOperations.getDatabase().execSQL(sql);
-                            */
                         }
                         catch(Exception e)
                         {

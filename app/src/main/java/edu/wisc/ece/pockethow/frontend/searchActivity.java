@@ -202,9 +202,6 @@ public class searchActivity extends AppCompatActivity {
         writeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //sendEmail();
-                //checkExternalMedia();
-                //writeToSDFile();
                 File root = android.os.Environment.getExternalStorageDirectory();
                 //File dir = new File (root.getAbsolutePath() + "/download");
                 File dir = new File(root.getAbsoluteFile() + "/pockethowdatabases");
@@ -246,41 +243,6 @@ public class searchActivity extends AppCompatActivity {
                 }
             }
         });
-        //************************8
-        /*
-        dbOperations.open();
-        Cursor cursor = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
-        if(cursor == null)
-        {
-            Log.d("cursor", "cursor is null");
-        }
-        else
-        {
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                try {
-                    Long columnID = cursor.getLong(cursor.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-                    String columnTitle = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-                    byte[] columnContent = cursor.getBlob(cursor.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
-                    String dateTimeString = cursor.getString(cursor.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                    Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        Cursor cursor1 = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
-        if(cursor1 == null)
-        {
-            Log.d("cursor", "cursor1 is null");
-        }
-        Cursor cursor2 = dbOperations.getDatabase().rawQuery("select * from " + PHDBHandler.searchWordTable, null);
-        if(cursor2 == null)
-        {
-            Log.d("cursor", "cursor2 is null");
-        }
-        //********************
-        */
     }
     @Override // android recommended class to handle permissions
     public void onRequestPermissionsResult(int requestCode,
@@ -358,28 +320,6 @@ public class searchActivity extends AppCompatActivity {
                     dbOperations.addArticlesToDb();
                     dbOperations.close();
                     categoryArrayList.clear();
-                } else //Add downloaded db file into PocketHow.db
-                {
-                    if (downloadedFilePathList != null) {
-                        for (String downloadedFilePath : downloadedFilePathList) {
-
-                            SQLiteDatabase db = SQLiteDatabase.openDatabase(downloadedFilePath, null, 0, null);
-                            String sql = "ATTACH DATABASE '" + db.toString() + "' as 'DownloadedAlias'";
-
-                            dbOperations.getDatabase().execSQL(sql);
-
-                            //sql = "INSERT INTO X.TABLE SELECT * FROM Y.TABLE";
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_PHARTICLE + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_PHARTICLE;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + " SELECT * FROM DownloadedAlias." + PHDBHandler.TABLE_CATEGORY_TO_PAGEID;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "INSERT INTO PocketHow." + PHDBHandler.searchWordTable + " SELECT * FROM DownloadedAlias." + PHDBHandler.searchWordTable;
-                            dbOperations.getDatabase().execSQL(sql);
-                            sql = "DETACH DATABASE 'DownloadedAlias'";
-                            dbOperations.getDatabase().execSQL(sql);
-                        }
-                        downloadedFilePathList.clear();
-                    }
                 }
             }
         }).start();
