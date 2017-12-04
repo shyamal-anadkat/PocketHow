@@ -332,25 +332,25 @@ public class CategorySelectionActivity extends AppCompatActivity {
         downloadedDatabaseNameList = new ArrayList<>();
         pathList = new ArrayList<>();
         listCategories.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db", "art.db"));
-        listCategories.add(new CategoryIcon(R.drawable.automotive, "Auto"));
-        listCategories.add(new CategoryIcon(R.drawable.education, "Education"));
-        listCategories.add(new CategoryIcon(R.drawable.elec, "Electronics"));
-        listCategories.add(new CategoryIcon(R.drawable.family, "Family"));
-        listCategories.add(new CategoryIcon(R.drawable.finance, "Finance"));
-        listCategories.add(new CategoryIcon(R.drawable.food, "Food"));
-        listCategories.add(new CategoryIcon(R.drawable.garden, "Garden"));
-        listCategories.add(new CategoryIcon(R.drawable.health, "Health"));
-        listCategories.add(new CategoryIcon(R.drawable.hobbies, "Hobbies"));
-        listCategories.add(new CategoryIcon(R.drawable.holidays, "Holidays"));
-        listCategories.add(new CategoryIcon(R.drawable.personal_care, "Personal Care"));
-        listCategories.add(new CategoryIcon(R.drawable.pets, "Pets"));
-        listCategories.add(new CategoryIcon(R.drawable.relationships, "Relationships"));
-        listCategories.add(new CategoryIcon(R.drawable.religion, "Religion"));
-        listCategories.add(new CategoryIcon(R.drawable.sports, "Sports"));
-        listCategories.add(new CategoryIcon(R.drawable.travel, "Travel"));
-        listCategories.add(new CategoryIcon(R.drawable.wikihow, "Wikihow"));
-        listCategories.add(new CategoryIcon(R.drawable.work, "Work"));
-        listCategories.add(new CategoryIcon(R.drawable.youth, "Youth"));
+        listCategories.add(new CategoryIcon(R.drawable.automotive, "Auto", "https://storage.googleapis.com/pockethow-database-archive/auto.db"));
+        listCategories.add(new CategoryIcon(R.drawable.education, "Education","https://storage.googleapis.com/pockethow-database-archive/education.db"));
+        listCategories.add(new CategoryIcon(R.drawable.elec, "Electronics","https://storage.googleapis.com/pockethow-database-archive/electronics.db"));
+        listCategories.add(new CategoryIcon(R.drawable.family, "Family", "https://storage.googleapis.com/pockethow-database-archive/family.db"));
+        listCategories.add(new CategoryIcon(R.drawable.finance, "Finance","https://storage.googleapis.com/pockethow-database-archive/finance.db"));
+        listCategories.add(new CategoryIcon(R.drawable.food, "Food","https://storage.googleapis.com/pockethow-database-archive/food.db"));
+        listCategories.add(new CategoryIcon(R.drawable.garden, "Garden","https://storage.googleapis.com/pockethow-database-archive/garden.db"));
+        listCategories.add(new CategoryIcon(R.drawable.health, "Health","https://storage.googleapis.com/pockethow-database-archive/health.db"));
+        listCategories.add(new CategoryIcon(R.drawable.hobbies, "Hobbies","https://storage.googleapis.com/pockethow-database-archive/hobby.db"));
+        listCategories.add(new CategoryIcon(R.drawable.holidays, "Holidays","https://storage.googleapis.com/pockethow-database-archive/holiday.db"));
+        listCategories.add(new CategoryIcon(R.drawable.personal_care, "Personal Care","https://storage.googleapis.com/pockethow-database-archive/personal_care.db"));
+        listCategories.add(new CategoryIcon(R.drawable.pets, "Pets","https://storage.googleapis.com/pockethow-database-archive/pets.db"));
+        listCategories.add(new CategoryIcon(R.drawable.relationships, "Relationships","https://storage.googleapis.com/pockethow-database-archive/relationships.db"));
+        listCategories.add(new CategoryIcon(R.drawable.religion, "Religion","https://storage.googleapis.com/pockethow-database-archive/religion.db"));
+        listCategories.add(new CategoryIcon(R.drawable.sports, "Sports","https://storage.googleapis.com/pockethow-database-archive/sports.db"));
+        listCategories.add(new CategoryIcon(R.drawable.travel, "Travel","https://storage.googleapis.com/pockethow-database-archive/travel.db"));
+        listCategories.add(new CategoryIcon(R.drawable.wikihow, "Wikihow","https://storage.googleapis.com/pockethow-database-archive/wikihow.db"));
+        listCategories.add(new CategoryIcon(R.drawable.work, "Work","https://storage.googleapis.com/pockethow-database-archive/work.db"));
+        listCategories.add(new CategoryIcon(R.drawable.youth, "Youth","https://storage.googleapis.com/pockethow-database-archive/youth.db"));
     }
 
 
