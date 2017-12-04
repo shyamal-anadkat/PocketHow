@@ -2,6 +2,8 @@ package edu.wisc.ece.pockethow.entity;
 
 import android.net.Uri;
 
+import java.util.List;
+
 public class CategoryIcon {
     public Integer Icon;
     public String Label;
@@ -48,7 +50,8 @@ public class CategoryIcon {
     }
 
     public String getDatabaseName() {
-        return this.databaseName;
+        List<String> pathSegs = this.uri.getPathSegments();
+        return pathSegs.get(pathSegs.size() - 1);
     }
 
     public void addDownloadId(Long input)
