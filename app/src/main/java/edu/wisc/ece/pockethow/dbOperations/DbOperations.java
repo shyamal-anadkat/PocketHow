@@ -88,9 +88,30 @@ public class DbOperations {
         contentValues.put(PHDBHandler.COLUMN_CATEGORY, category.getCategory());
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_ID, category.getId());
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST, category.getPageIdList());
-        contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, "");
+        //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //String timeString = timestamp.toString();
+        long i = System.currentTimeMillis();
+        String timeString = String.valueOf(i);
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, timeString);
+//TODO
+        //String pageIdList = category.getPageIdList().replace(',', '.');
+        String categoryStrig = "\"" + category.getCategory() + "\"";
+        String pageIdList = "\"" + category.getPageIdList() + "\"";
+        //category.getPageIdList().replace(',', '+')
+        String sql = "INSERT INTO " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + "(" + PHDBHandler.COLUMN_CATEGORY_ID + ", " + PHDBHandler.COLUMN_CATEGORY
+                + ", " + PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST + ", " + PHDBHandler.COLUMN_CATEGORY_LASTACCESS + ") VALUES ("
+                + category.getId() + ", " + categoryStrig + ", " + pageIdList + ", " + timeString + ");";
+        try
+        {
+            database.execSQL(sql);
 
-        /*if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        /*
+        if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
             Log.e("DbOperations", "PHCategory: database insert failed");
         }
 */
