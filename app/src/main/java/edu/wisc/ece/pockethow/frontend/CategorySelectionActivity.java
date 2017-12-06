@@ -57,7 +57,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int numCategoriesSelected = 0;
     private int numCategoriesDownloaded = 0;
     private ArrayList<Long> downloadIdList = new ArrayList<>();
-    ArrayList<Long> list = new ArrayList<>();
+    ArrayList<String> list = new ArrayList<>();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,7 +112,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         //requestPermissions();
         prepareList();
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-
+        list = fetchCurrentCategories();
         dlm = this.getSystemService(DownloadManager.class);
 
         downloadReceiver = new BroadcastReceiver() {
@@ -157,6 +157,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             Cursor cursorPharticle = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
                             Cursor cursorCategory = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
                             Cursor cursorSearchWord = downloadedDB.rawQuery("select * from " + PHDBHandler.searchWordTable, null);
+
+                            Log.d("CategorySelectionActivity", "# or rows in cursorPharticle = " + cursorPharticle.getCount());
+                            Log.d("CategorySelectionActivity", "# of rows in category = " + cursorCategory.getCount());
+                            Log.d("CategorySelectionActivity", "# of rows in searchWord = " + cursorSearchWord.getCount());
+
                             downloadedDB.execSQL("END TRANSACTION");
                             //downloadedDB.close();
                             dbOperations.open();
@@ -183,10 +188,13 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                 try {
                                     String category = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY));
                                     int id = cursorCategory.getInt(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
+                                    //TODO: issue: pageIdList was suppposed to be a string with commas in between numbers, but all punctuation disappeared
+                                    //
                                     String pageIdList = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
                                     String dateTimeString = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                                    Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-                                    //TODO: Make insert query
+
+                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                    //Timestamp timestamp = Timestamp.valueOf(dateTimeString);
                                     dbOperations.addCategoryToPageID(new PHCategory(id, category, pageIdList, timestamp));
                                     //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
                                 } catch (Exception e) {
@@ -351,11 +359,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean isInDatabase(int id)
+    public Boolean isInDatabase(Integer id)
     {
-        for(Long item: list)
+        for(String item: list)
         {
-            if(id == item)
+            if(id.toString().equals(item))
             {
                 return true;
             }
@@ -363,21 +371,23 @@ public class CategorySelectionActivity extends AppCompatActivity {
         return false;
     }
 
-    public ArrayList<Long> fetchCurrentCategories()
+    public ArrayList<String> fetchCurrentCategories()
     {
-        ArrayList<Long> databaseCategoryList = new ArrayList<>();
+        ArrayList<String> databaseCategoryList = new ArrayList<>();
         DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
         dbOperations.open();
         SQLiteDatabase database = dbOperations.getDatabase();
         Cursor cursorAll = database.rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
 
+        Log.d("CategorySelectionActivity", "# of rows retrieved = " + cursorAll.getCount());
         for (cursorAll.moveToFirst(); !cursorAll.isAfterLast(); cursorAll.moveToNext()) {
 
             // do what you need with the cursor here
             try {
                 String columnTitle = cursorAll.getString(cursorAll.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
-                Long categoryLong = Long.getLong(columnTitle);
-                databaseCategoryList.add(categoryLong);
+                //int categoryLong = Integer.getInteger(columnTitle);
+                //databaseCategoryList.add(categoryLong);
+                databaseCategoryList.add(columnTitle);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -385,5 +395,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
         cursorAll.close();
         return databaseCategoryList;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        //list = fetchCurrentCategories();
     }
 }
