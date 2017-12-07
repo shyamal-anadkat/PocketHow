@@ -376,9 +376,9 @@ public class DbOperations {
      * @return
      */
     public ArrayList<String> getSearchWords() {
-        //TODO: error here
         try
         {
+            open();
             Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
 
 

@@ -47,6 +47,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
     private GridviewAdapter mAdapter;
     private ArrayList<CategoryIcon> listCategories;
+    private ArrayList<CategoryIcon> categoryListPermanent = new ArrayList<>();
     private GridView gridView;
     private DownloadManager dlm;
     private BroadcastReceiver downloadReceiver;
@@ -308,26 +309,34 @@ public class CategorySelectionActivity extends AppCompatActivity {
         categoryIdList = new ArrayList<>();
         downloadedDatabaseNameList = new ArrayList<>();
         pathList = new ArrayList<>();
-        listCategories.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db", "Arts and Entertainment"));
-        listCategories.add(new CategoryIcon(R.drawable.automotive, "Auto", "https://storage.googleapis.com/pockethow-database-archive/auto.db", "Cars & Other Vehicles"));
-        listCategories.add(new CategoryIcon(R.drawable.education, "Education","https://storage.googleapis.com/pockethow-database-archive/education.db", "Education and Communications"));
-        listCategories.add(new CategoryIcon(R.drawable.elec, "Electronics","https://storage.googleapis.com/pockethow-database-archive/electronics.db", "Computers and Electronics"));
-        listCategories.add(new CategoryIcon(R.drawable.family, "Family", "https://storage.googleapis.com/pockethow-database-archive/family.db", "Family Life"));
-        listCategories.add(new CategoryIcon(R.drawable.finance, "Finance","https://storage.googleapis.com/pockethow-database-archive/finance.db", "Finance and Business"));
-        listCategories.add(new CategoryIcon(R.drawable.food, "Food","https://storage.googleapis.com/pockethow-database-archive/food.db", "Food and Entertaining"));
-        listCategories.add(new CategoryIcon(R.drawable.garden, "Garden","https://storage.googleapis.com/pockethow-database-archive/garden.db", "Home and Garden"));
-        listCategories.add(new CategoryIcon(R.drawable.health, "Health","https://storage.googleapis.com/pockethow-database-archive/health.db", "Health"));
-        listCategories.add(new CategoryIcon(R.drawable.hobbies, "Hobbies","https://storage.googleapis.com/pockethow-database-archive/hobby.db", "Hobbies and Crafts"));
-        listCategories.add(new CategoryIcon(R.drawable.holidays, "Holidays","https://storage.googleapis.com/pockethow-database-archive/holiday.db", "Holidays and Traditions"));
-        listCategories.add(new CategoryIcon(R.drawable.personal_care, "Personal Care","https://storage.googleapis.com/pockethow-database-archive/personal_care.db", "Personal Care and Style"));
-        listCategories.add(new CategoryIcon(R.drawable.pets, "Pets","https://storage.googleapis.com/pockethow-database-archive/pets.db", "Pets and Animals"));
-        listCategories.add(new CategoryIcon(R.drawable.relationships, "Relationships","https://storage.googleapis.com/pockethow-database-archive/relationships.db", "Relationships"));
-        listCategories.add(new CategoryIcon(R.drawable.religion, "Religion","https://storage.googleapis.com/pockethow-database-archive/religion.db", "Philosophy and Religion"));
-        listCategories.add(new CategoryIcon(R.drawable.sports, "Sports","https://storage.googleapis.com/pockethow-database-archive/sports.db", "Sports and Fitness"));
-        listCategories.add(new CategoryIcon(R.drawable.travel, "Travel","https://storage.googleapis.com/pockethow-database-archive/travel.db", "Travel"));
-        listCategories.add(new CategoryIcon(R.drawable.wikihow, "Wikihow","https://storage.googleapis.com/pockethow-database-archive/wikihow.db", "Wikihow"));
-        listCategories.add(new CategoryIcon(R.drawable.work, "Work","https://storage.googleapis.com/pockethow-database-archive/work.db", "Work World"));
-        listCategories.add(new CategoryIcon(R.drawable.youth, "Youth","https://storage.googleapis.com/pockethow-database-archive/youth.db", "Youth"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db", "Arts and Entertainment"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.automotive, "Auto", "https://storage.googleapis.com/pockethow-database-archive/auto.db", "Cars & Other Vehicles"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.education, "Education","https://storage.googleapis.com/pockethow-database-archive/education.db", "Education and Communications"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.elec, "Electronics","https://storage.googleapis.com/pockethow-database-archive/electronics.db", "Computers and Electronics"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.family, "Family", "https://storage.googleapis.com/pockethow-database-archive/family.db", "Family Life"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.finance, "Finance","https://storage.googleapis.com/pockethow-database-archive/finance.db", "Finance and Business"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.food, "Food","https://storage.googleapis.com/pockethow-database-archive/food.db", "Food and Entertaining"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.garden, "Garden","https://storage.googleapis.com/pockethow-database-archive/garden.db", "Home and Garden"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.health, "Health","https://storage.googleapis.com/pockethow-database-archive/health.db", "Health"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.hobbies, "Hobbies","https://storage.googleapis.com/pockethow-database-archive/hobby.db", "Hobbies and Crafts"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.holidays, "Holidays","https://storage.googleapis.com/pockethow-database-archive/holiday.db", "Holidays and Traditions"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.personal_care, "Personal Care","https://storage.googleapis.com/pockethow-database-archive/personal_care.db", "Personal Care and Style"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.pets, "Pets","https://storage.googleapis.com/pockethow-database-archive/pets.db", "Pets and Animals"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.relationships, "Relationships","https://storage.googleapis.com/pockethow-database-archive/relationships.db", "Relationships"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.religion, "Religion","https://storage.googleapis.com/pockethow-database-archive/religion.db", "Philosophy and Religion"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.sports, "Sports","https://storage.googleapis.com/pockethow-database-archive/sports.db", "Sports and Fitness"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.travel, "Travel","https://storage.googleapis.com/pockethow-database-archive/travel.db", "Travel"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.wikihow, "Wikihow","https://storage.googleapis.com/pockethow-database-archive/wikihow.db", "Wikihow"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.work, "Work","https://storage.googleapis.com/pockethow-database-archive/work.db", "Work World"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.youth, "Youth","https://storage.googleapis.com/pockethow-database-archive/youth.db", "Youth"));
+        list = fetchCurrentCategories();
+        for(CategoryIcon c: categoryListPermanent)
+        {
+            if(!isInDatabase(c.Icon))
+            {
+               listCategories.add(c);
+            }
+        }
     }
 
 

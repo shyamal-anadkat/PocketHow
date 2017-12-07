@@ -99,12 +99,13 @@ public class searchActivity extends AppCompatActivity {
                     String inputString = "";
                     //intent.putExtra("message", dbOperations.getClosestSearchWord(searchEditText.getText().toString()));
                     String originalString = searchEditText.getText().toString();
+                    /*
                     String[] tokenArray = originalString.split(" ");
                     for (int i = 0; i < tokenArray.length; i++) {
-                    /*
-                    check for 's and delete them
-                    for example: nut's becomes nut
-                     */
+
+                    //check for 's and delete them
+                    //for example: nut's becomes nut
+
                         String tempInput = tokenArray[i];
                         for (int j = 0; j < tempInput.length(); j++) {
                             if (tempInput.charAt(j) == '\'' && (j + 1) < tempInput.length() && tempInput.charAt(j + 1) == 's') {
@@ -129,6 +130,8 @@ public class searchActivity extends AppCompatActivity {
                         intent.putExtra("message", dbOperations.getClosestSearchWord(inputString));
 
                     }
+                    */
+                    intent.putExtra("message", dbOperations.getClosestSearchWord(originalString));
                     dbOperations.open();
                     dbOperations.close();
                     if (dbOperations.isOpen()) {
