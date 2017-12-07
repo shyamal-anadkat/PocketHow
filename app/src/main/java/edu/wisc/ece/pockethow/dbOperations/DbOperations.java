@@ -96,12 +96,31 @@ public class DbOperations {
         contentValues.put(PHDBHandler.COLUMN_CATEGORY, category.getCategory());
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_ID, category.getId());
         contentValues.put(PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST, category.getPageIdList());
-        contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, "");
-
+        //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //String timeString = timestamp.toString();
+        long i = System.currentTimeMillis();
+        String timeString = String.valueOf(i);
+        contentValues.put(PHDBHandler.COLUMN_CATEGORY_LASTACCESS, timeString);
+        //String pageIdList = category.getPageIdList().replace(',', '.');
+        String categoryStrig = "\"" + category.getCategory() + "\"";
+        String pageIdList = "\"" + category.getPageIdList() + "\"";
+        //category.getPageIdList().replace(',', '+')
+        String sql = "INSERT INTO " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + "(" + PHDBHandler.COLUMN_CATEGORY_ID + ", " + PHDBHandler.COLUMN_CATEGORY
+                + ", " + PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST + ", " + PHDBHandler.COLUMN_CATEGORY_LASTACCESS + ") VALUES ("
+                + category.getId() + ", " + categoryStrig + ", " + pageIdList + ", " + timeString + ");";
+        try
+        {
+            database.execSQL(sql);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        /*
         if (database.insert(PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null, contentValues) == -1) {
             Log.e("DbOperations", "PHCategory: database insert failed");
         }
-
+*/
         return category;
     }
 
@@ -391,7 +410,12 @@ public class DbOperations {
      * @return
      */
     public ArrayList<String> getSearchWords() {
-        Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+        try
+        {
+            open();
+            Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
+
+
         ArrayList<String> returnValue = new ArrayList<>();
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 
@@ -404,8 +428,15 @@ public class DbOperations {
             }
         }
 
-        cursor.close();
-        return returnValue;
+            cursor.close();
+            return returnValue;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Log.d(TAG, "error");
+        }
+        return  null;
     }
 
     /**
@@ -415,6 +446,15 @@ public class DbOperations {
      * @return
      */
     public String getClosestSearchWord(String input) {
+        if(input.equals("") || input.equals(" "))
+        {
+            return "";
+        }
+
+        if(input.length() == 0)
+        {
+            return input;
+        }
         if (searchWordList.size() == 0) {
             searchWordList = getSearchWords();
         }
