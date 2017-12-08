@@ -11,13 +11,13 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:visibility="invisible">
 
         <SearchView
+            android:id="@+id/pageListSearchView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/pageListSearchView"/>
+            android:layout_height="match_parent" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -28,7 +28,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/page_list"/>
+        <include layout="@layout/page_list" />
 
     </FrameLayout>
 
@@ -38,8 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:tint="@android:color/white"
         android:backgroundTint="@android:color/black"
+        android:tint="@android:color/white"
         app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
 
