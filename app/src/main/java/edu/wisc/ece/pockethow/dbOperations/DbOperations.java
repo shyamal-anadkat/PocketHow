@@ -10,20 +10,12 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.safety.Cleaner;
-import org.jsoup.select.Elements;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import edu.wisc.ece.pockethow.compression.PHDeflater;
 import edu.wisc.ece.pockethow.contentParser.markupParser;
@@ -108,12 +100,9 @@ public class DbOperations {
         String sql = "INSERT INTO " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID + "(" + PHDBHandler.COLUMN_CATEGORY_ID + ", " + PHDBHandler.COLUMN_CATEGORY
                 + ", " + PHDBHandler.COLUMN_CATEGORY_PAGEIDLIST + ", " + PHDBHandler.COLUMN_CATEGORY_LASTACCESS + ") VALUES ("
                 + category.getId() + ", " + categoryStrig + ", " + pageIdList + ", " + timeString + ");";
-        try
-        {
+        try {
             database.execSQL(sql);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         /*
@@ -285,28 +274,7 @@ public class DbOperations {
                         doc.select("a").remove();
 
                         /// further cleanup ///
-                        try {
-                            Element e1 = doc.getElementById("Related_wikiHows");
-                            if (e1 != null) {
-                                e1.remove();
-                            }
-                            Element e2 = doc.getElementById("Sources_and_Citations");
-                            if (e2 != null) {
-                                e2.remove();
-                            }
-                            // Names of the elements to remove if empty
-                            Set<String> removable = new HashSet<>(Arrays.asList("li", "ol", "p"));
-
-                            for (Element el : doc.getAllElements()) {
-
-                                if (el.children().isEmpty() && !el.hasText()) {
-                                    // Element is empty, check if should be removed
-                                    if (removable.contains(el.tagName())) el.remove();
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        markupParser.relatedWikiAndFurtherCleanup(doc);
 
 
                         byte[] contentDeflated = phDeflater.deflate(doc.toString());
@@ -410,33 +378,30 @@ public class DbOperations {
      * @return
      */
     public ArrayList<String> getSearchWords() {
-        try
-        {
+        try {
             open();
             Cursor cursor = database.rawQuery("select * from " + searchWordTable, null);
 
 
-        ArrayList<String> returnValue = new ArrayList<>();
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            ArrayList<String> returnValue = new ArrayList<>();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
 
-            // do what you need with the cursor here
-            try {
-                String columnID = cursor.getString(cursor.getColumnIndex(searchWordColumn));
-                returnValue.add(columnID);
-            } catch (Exception e) {
-                e.printStackTrace();
+                // do what you need with the cursor here
+                try {
+                    String columnID = cursor.getString(cursor.getColumnIndex(searchWordColumn));
+                    returnValue.add(columnID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
             cursor.close();
             return returnValue;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "error");
         }
-        return  null;
+        return null;
     }
 
     /**
@@ -446,13 +411,11 @@ public class DbOperations {
      * @return
      */
     public String getClosestSearchWord(String input) {
-        if(input.equals("") || input.equals(" "))
-        {
+        if (input.equals("") || input.equals(" ")) {
             return "";
         }
 
-        if(input.length() == 0)
-        {
+        if (input.length() == 0) {
             return input;
         }
         if (searchWordList.size() == 0) {

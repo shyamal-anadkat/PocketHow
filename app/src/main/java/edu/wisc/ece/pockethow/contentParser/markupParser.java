@@ -2,6 +2,11 @@ package edu.wisc.ece.pockethow.contentParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class markupParser {
 
@@ -18,6 +23,33 @@ public class markupParser {
         return Jsoup.parse(html);
     }
 
+
+    /**
+     * @param doc
+     */
+    public void relatedWikiAndFurtherCleanup(Document doc) {
+        try {
+            Element e1 = doc.getElementById("Related_wikiHows");
+            if (e1 != null) {
+                e1.remove();
+            }
+            Element e2 = doc.getElementById("Sources_and_Citations");
+            if (e2 != null) {
+                e2.remove();
+            }
+            // Names of the elements to remove if empty
+            Set<String> removable = new HashSet<>(Arrays.asList("li", "ol", "p"));
+
+            for (Element el : doc.getAllElements()) {
+                if (el.children().isEmpty() && !el.hasText()) {
+                    // Element is empty, check if should be removed
+                    if (removable.contains(el.tagName())) el.remove();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Parse the content of the given PHArticle to prettify it up
@@ -66,25 +98,11 @@ public class markupParser {
                 if ((i + "<ref>".length() < content.length()) && content.substring(i, i + "<ref>".length()).equals("<ref>")) {
                     int j = i + "<ref>".length();
                     refTagFound = true;
-                /*
-                while ((j+"</ref>".length() < content.length()) &&  !content.substring(j, j+"</ref>".length()).equals("</ref>") )
-                {
-                    j++;
-                }
-                */
                     char char1 = content.charAt(j);
                     while (j < content.length() && content.charAt(j) != '>') {
                         j++;
                         char1 = content.charAt(j);
                     }
-                /*
-                if(content.substring(j, j+"</ref>".length()).equals("</ref>"))
-                {
-                    String string1 = content.substring(0, i);
-                    String string2 = content.substring(j+"</ref>".length());
-                    content = string1 + string2;
-                }
-                */
                     if (content.charAt(j) == '>') {
                         j++;
                         String string1 = content.substring(0, i);
@@ -96,36 +114,7 @@ public class markupParser {
                 }
             } while (refTagFound);
 
-            /*
-            //delete everything that is in [[trash]]
-            int leftBracketNum = 0;
-            //int rightBracketNum = 0;
-            if(content.charAt(i) == '[')
-            {
-                leftBracketNum++;
-                int j = i+1;
-                while(leftBracketNum > 0)
-                {
-                    if(content.charAt(j) == '[')
-                    {
-                        leftBracketNum++;
-                    }
-                    else if(content.charAt(j) == ']')
-                    {
-                        leftBracketNum--;
-                    }
-                    j++;
-                }
-                String string1 = content.substring(0, i);
-                String string2 = content.substring(j);
-                string1 += "\n";
-                content = string1 + string2;
-            }
-            */
-            //{{reflist}}
 
-            //get ride of [[Image: ...]]
-            //for example: [[Image:Convince People You Are a local step1.jpg|center]]
             boolean imageTagFound = false;
             do {
 
@@ -153,9 +142,7 @@ public class markupParser {
             } while (imageTagFound);
             //get rid of more stuff
             //more parsing
-
         }
         return content;
     }
-
 }

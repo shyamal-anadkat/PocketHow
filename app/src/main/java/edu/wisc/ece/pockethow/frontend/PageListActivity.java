@@ -134,6 +134,7 @@ public class PageListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(searchResults));
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(getResources()));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -175,6 +176,8 @@ public class PageListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, PageDetailActivity.class);
                         //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
+                        //Document doc =  mp.getDocFromString(new String(holder.mItem.getContent()));
+                        //mp.relatedWikiAndFurtherCleanup(doc);
                         //TODO: send the content of the selected article
                         intent.putExtra(PageDetailFragment.ARG_ITEM_ID, new String(holder.mItem.getContent()));
                         intent.putExtra(PageDetailFragment.ARG_ITEM_TITLE, holder.mItem.getTitle());
