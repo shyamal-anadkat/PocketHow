@@ -74,24 +74,38 @@ public class CategorySelectionActivity extends AppCompatActivity {
             case R.id.action_download:
                 Context context = gridView.getContext();
                 list = fetchCurrentCategories();
-                for (CategoryIcon icon : listCategories )
+                int numSelected = 0;
+                for(CategoryIcon icon: listCategories)
                 {
-                    if(icon.isChecked() && !isInDatabase(icon.Icon)) {
-                        Uri uri = icon.getUri();
-                        if (uri != null) {
-                            DownloadManager.Request request = new DownloadManager.Request(uri);
-                            request.setTitle("Archive Download: " + icon.Label);
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
-                            Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                                    "Download Started: " + icon.Label, Toast.LENGTH_LONG);
-                            toast.show();
-                            //TODO
-                            //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
-                            //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
-                            numCategoriesSelected++;
-                            //downloadId = dlm.enqueue(request);
-                            //requestedIdList.add(dlm.enqueue(request));
-                            icon.addDownloadId(dlm.enqueue(request));
+                    if(icon.isChecked())
+                    {
+                        numSelected++;
+                    }
+                }
+                if(numSelected == 0)
+                {
+                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                    startActivity(goToNextActivity);
+                }
+                else {
+                    for (CategoryIcon icon : listCategories) {
+                        if (icon.isChecked() && !isInDatabase(icon.Icon)) {
+                            Uri uri = icon.getUri();
+                            if (uri != null) {
+                                DownloadManager.Request request = new DownloadManager.Request(uri);
+                                request.setTitle("Archive Download: " + icon.Label);
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
+                                Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                                        "Download Started: " + icon.Label, Toast.LENGTH_LONG);
+                                toast.show();
+                                //TODO
+                                //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
+                                //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
+                                numCategoriesSelected++;
+                                //downloadId = dlm.enqueue(request);
+                                //requestedIdList.add(dlm.enqueue(request));
+                                icon.addDownloadId(dlm.enqueue(request));
+                            }
                         }
                     }
                 }
@@ -123,8 +137,13 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
             //check if the broadcast message is for our enqueued download
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            for(CategoryIcon categoryIcon: listCategories)
-            {
+            ArrayList<CategoryIcon> categoryIconArrayList = new ArrayList<>();
+            //for(CategoryIcon categoryIcon: listCategories)
+
+                for(int willow = 0; willow < listCategories.size(); willow++)
+                {
+                    CategoryIcon categoryIcon = listCategories.get(willow);
+                CategoryIcon c = listCategories.get(0);
                 Long downloadId = categoryIcon.getDownloadId();
 
 
@@ -197,6 +216,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                                     //Timestamp timestamp = Timestamp.valueOf(dateTimeString);
                                     dbOperations.addCategoryToPageID(new PHCategory(id, category, pageIdList, timestamp));
+                                    for(int index = 0; index < listCategories.size(); index++)
+                                    {
+                                        CategoryIcon categoryIcon1 = listCategories.get(index);
+                                        if(categoryIcon1.Icon == id )
+                                        {
+                                            categoryIconArrayList.add(categoryIcon1);
+                                        }
+                                    }
+
+
                                     //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -216,6 +245,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
                             }
                             dbOperations.getDatabase().execSQL("END TRANSACTION");
                             dbOperations.close();
+                            listCategories.remove(willow);
+                            willow--;
+                            mAdapter.notifyDataSetChanged();
+                            gridView.invalidateViews();
+                            gridView.setAdapter(mAdapter);
                         } catch (Exception e) {
 
                             e.printStackTrace();
@@ -263,6 +297,19 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
             }
             }
+
+            for(CategoryIcon categoryIcon: categoryIconArrayList) {
+                int id = categoryIcon.Icon;
+                for (int index = 0; index < listCategories.size(); index++) {
+                    CategoryIcon categoryIcon1 = listCategories.get(index);
+                    if (categoryIcon1.Icon == id) {
+                        listCategories.remove(index);
+                        index = listCategories.size() + 50;
+                    }
+                }
+            }
+            Toast.makeText(CategorySelectionActivity.this, "Finished downloading all categories", Toast.LENGTH_SHORT).show();
+
             }
         };
         registerReceiver(downloadReceiver, filter);
@@ -410,6 +457,9 @@ public class CategorySelectionActivity extends AppCompatActivity {
     public void onResume()
     {
         super.onResume();
+        mAdapter.notifyDataSetChanged();
+        gridView.invalidateViews();
+        gridView.setAdapter(mAdapter);
         //list = fetchCurrentCategories();
     }
 }
