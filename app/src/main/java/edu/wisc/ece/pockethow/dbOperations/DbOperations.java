@@ -42,9 +42,7 @@ public class DbOperations {
     //for cleaning pages
     public static ArrayList<PHArticle> washrack = new ArrayList<>();
     //******
-/*
-    searchWordList for spelling correction
- */
+    /*searchWordList for spelling correction*/
     public ArrayList<String> searchWordList = new ArrayList<>();
 
     public DbOperations(Context context) {
