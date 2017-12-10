@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import edu.wisc.ece.pockethow.R;
 
@@ -18,7 +20,7 @@ public class SplashScreen extends AppCompatActivity {
         Intent intent = null;
 
         try {
-            if (isInternetAvailable())
+            if(isInternetAvailable())
                 intent = new Intent(this, CategorySelectionActivity.class);
             else
                 intent = new Intent(this, searchActivity.class);
@@ -46,9 +48,10 @@ public class SplashScreen extends AppCompatActivity {
     }
 
 
-    public boolean isInternetAvailable() throws InterruptedException, IOException {
+    public boolean isInternetAvailable() throws InterruptedException, IOException
+    {
         String command = "ping -c 1 google.com";
-        return (Runtime.getRuntime().exec(command).waitFor() == 0);
+        return (Runtime.getRuntime().exec (command).waitFor() == 0);
     }
 //
 //    public boolean isInternetAvailable2() {

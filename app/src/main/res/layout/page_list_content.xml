@@ -9,18 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:background="@drawable/badge"
-        android:fontFamily="@font/roboto_regular"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:fontFamily="@font/roboto_regular"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceListItem" />
 </LinearLayout>

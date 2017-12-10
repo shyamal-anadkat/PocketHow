@@ -3,10 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PocketHow.iml" filepath="$PROJECT_DIR$/PocketHow.iml" />
-      <module fileurl="file://C:\Users\zosta\Desktop\PocketHow\PocketHow.iml" filepath="C:\Users\zosta\Desktop\PocketHow\PocketHow.iml" />
       <module fileurl="file://C:\Users\onglp\OneDrive\Documents\GitHub\PocketHow\.idea\PocketHow.iml" filepath="C:\Users\onglp\OneDrive\Documents\GitHub\PocketHow\.idea\PocketHow.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\zosta\Desktop\PocketHow\app\app.iml" filepath="C:\Users\zosta\Desktop\PocketHow\app\app.iml" />
     </modules>
   </component>
 </project>
