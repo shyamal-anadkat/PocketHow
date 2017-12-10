@@ -50,6 +50,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int numCategoriesDownloaded = 0;
     private ArrayList<Long> downloadIdList = new ArrayList<>();
     ArrayList<String> list = new ArrayList<>();
+    public static Boolean deleteButtonPressed = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -422,6 +423,20 @@ public class CategorySelectionActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        if(deleteButtonPressed)
+        {
+            deleteButtonPressed = false;
+            list.clear();
+            listCategories.clear();
+            for(CategoryIcon categoryIcon: categoryListPermanent)
+            {
+                categoryIcon.toggleReset();
+                listCategories.add(categoryIcon);
+            }
+            mAdapter.notifyDataSetChanged();
+            gridView.invalidateViews();
+            gridView.setAdapter(mAdapter);
+        }
         //list = fetchCurrentCategories();
     }
 }

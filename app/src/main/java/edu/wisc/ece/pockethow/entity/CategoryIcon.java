@@ -45,6 +45,11 @@ public class CategoryIcon {
         isChecked = !isChecked;
     }
 
+    public void toggleReset()
+    {
+        isChecked = false;
+    }
+
     public Uri getUri() {
         return this.uri;
     }

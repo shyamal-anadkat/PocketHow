@@ -73,6 +73,8 @@ public class searchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar)));
 
+        dbOperations.open();
+        dbOperations.close();
         button = (Button) findViewById(R.id.main_search_btn);
         searchEditText = (EditText) findViewById(R.id.main_search_bar);
         loadingTextView = (TextView) findViewById(R.id.textViewLoading);
@@ -165,7 +167,16 @@ public class searchActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteDatabase("PocketHow.db");
+                if(dbOperations.isOpen())
+                {
+                    Toast.makeText(searchActivity.this, "Please wait after downloading the databases or the search is completed", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    deleteDatabase("PocketHow.db");
+                    CategorySelectionActivity.deleteButtonPressed = true;
+                }
+
             }
         });
         Intent intent = getIntent();
