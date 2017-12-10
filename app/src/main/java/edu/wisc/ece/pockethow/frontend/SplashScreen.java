@@ -50,16 +50,6 @@ public class SplashScreen extends AppCompatActivity {
         String command = "ping -c 1 google.com";
         return (Runtime.getRuntime().exec(command).waitFor() == 0);
     }
-//
-//    public boolean isInternetAvailable2() {
-//        try {
-//            final InetAddress address = InetAddress.getByName("www.google.com");
-//            return !address.equals("");
-//        } catch (UnknownHostException e) {
-//            // Log error
-//        }
-//        return false;
-//    }
 
 }
 

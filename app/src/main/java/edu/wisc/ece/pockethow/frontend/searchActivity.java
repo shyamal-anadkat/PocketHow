@@ -1,16 +1,11 @@
 package edu.wisc.ece.pockethow.frontend;
 
 import android.Manifest;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,28 +16,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edu.wisc.ece.pockethow.dbHandler.PHDBHandler.searchWordTable;
-import static java.nio.file.StandardCopyOption.*;
 import edu.wisc.ece.pockethow.R;
-import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
-import edu.wisc.ece.pockethow.entity.PHArticle;
 import edu.wisc.ece.pockethow.entity.PHCategory;
 import edu.wisc.ece.pockethow.httpRequests.PHWikihowFetches;
 
@@ -65,6 +51,7 @@ public class searchActivity extends AppCompatActivity {
     final DbOperations dbOperations = new DbOperations(this);
     private int requestCode;
     private int grantResults[];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -167,12 +154,9 @@ public class searchActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dbOperations.isOpen())
-                {
+                if (dbOperations.isOpen()) {
                     Toast.makeText(searchActivity.this, "Please wait after downloading the databases or the search is completed", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
+                } else {
                     deleteDatabase("PocketHow.db");
                     CategorySelectionActivity.deleteButtonPressed = true;
                 }
@@ -182,13 +166,11 @@ public class searchActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         try {
-            if(bundle.getBoolean(databaseFromServer))
-            {
+            if (bundle.getBoolean(databaseFromServer)) {
                 //used for downloading from server
                 downloadedFilePathList = bundle.getStringArrayList(downloadDatabase);
                 populateDB();
-            }
-            else{
+            } else {
                 //used for scraping WikiHow
                 categoryArrayList = bundle.getStringArrayList(codeword);
                 categoryIdList = bundle.getIntegerArrayList(categoryIntIdCodeword);
@@ -198,17 +180,16 @@ public class searchActivity extends AppCompatActivity {
                 populateDB();
             }
 
-        }
-        catch (Exception e) {
-         e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         //categoryIdGlobal = bundle.getInt(categoryIntIdCodeword);
         //deleteDatabase("PocketHow.db");
         //populateDB();
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},requestCode);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
 
 
-        onRequestPermissionsResult(requestCode,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},grantResults);
+        onRequestPermissionsResult(requestCode, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, grantResults);
 
 
         /*
@@ -260,6 +241,22 @@ public class searchActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        try {
+            String command = "ping -c 1 google.com";
+            boolean isInternetAvailable = (Runtime.getRuntime().exec(command).waitFor() == 0);
+            if (!isInternetAvailable) {
+                return;
+            } else {
+                super.onBackPressed();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override // android recommended class to handle permissions
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -287,6 +284,7 @@ public class searchActivity extends AppCompatActivity {
             // permissions this app might request
         }
     }
+
     public void populateDB() {
         //deleteDatabase("PocketHow.db");
         dbOperations.searchWordList.clear();
