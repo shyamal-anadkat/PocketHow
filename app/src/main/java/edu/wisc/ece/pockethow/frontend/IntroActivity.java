@@ -1,6 +1,5 @@
 package edu.wisc.ece.pockethow.frontend;
 
-import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
