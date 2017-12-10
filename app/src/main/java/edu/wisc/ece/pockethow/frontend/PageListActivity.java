@@ -16,10 +16,13 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import org.jsoup.nodes.Document;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.wisc.ece.pockethow.R;
+import edu.wisc.ece.pockethow.contentParser.markupParser;
 import edu.wisc.ece.pockethow.dbOperations.DbOperations;
 import edu.wisc.ece.pockethow.entity.PHArticle;
 
@@ -40,6 +43,7 @@ public class PageListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     DbOperations dbOperations;
     String searchStr;
+    markupParser mp = new markupParser();
     ArrayList<PHArticle> searchResults = new ArrayList<>(); //PHArticle arraylist to store the results of search query;
 
     @Override
@@ -177,10 +181,10 @@ public class PageListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, PageDetailActivity.class);
                         //intent.putExtra(PageDetailFragment.ARG_ITEM_ID, Long.toString(holder.mItem.getID()));
-                        //Document doc =  mp.getDocFromString(new String(holder.mItem.getContent()));
-                        //mp.relatedWikiAndFurtherCleanup(doc);
+                        Document doc = mp.getDocFromString(new String(holder.mItem.getContent()));
+                        mp.relatedWikiAndFurtherCleanup(doc);
                         //TODO: send the content of the selected article
-                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, new String(holder.mItem.getContent()));
+                        intent.putExtra(PageDetailFragment.ARG_ITEM_ID, doc.toString());
                         intent.putExtra(PageDetailFragment.ARG_ITEM_TITLE, holder.mItem.getTitle());
                         //intent.putExtra(PHDBHandler.COLUMN_CONTENT, holder.mView.mContextView.toString());
                         context.startActivity(intent);

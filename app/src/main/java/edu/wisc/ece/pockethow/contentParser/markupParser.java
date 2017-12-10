@@ -29,6 +29,7 @@ public class markupParser {
      */
     public void relatedWikiAndFurtherCleanup(Document doc) {
         try {
+            doc.select("div.references-small").remove();
             Element e1 = doc.getElementById("Related_wikiHows");
             if (e1 != null) {
                 e1.remove();
@@ -38,12 +39,12 @@ public class markupParser {
                 e2.remove();
             }
             // Names of the elements to remove if empty
-            Set<String> removable = new HashSet<>(Arrays.asList("li", "ol", "p"));
+            Set<String> removable = new HashSet<>(Arrays.asList("li", "ol", "p", "ul"));
 
-            for (Element el : doc.getAllElements()) {
-                if (el.children().isEmpty() && !el.hasText()) {
+            for (Element e : doc.getAllElements()) {
+                if (e.children().isEmpty() && !e.hasText()) {
                     // Element is empty, check if should be removed
-                    if (removable.contains(el.tagName())) el.remove();
+                    if (removable.contains(e.tagName())) e.remove();
                 }
             }
         } catch (Exception e) {
