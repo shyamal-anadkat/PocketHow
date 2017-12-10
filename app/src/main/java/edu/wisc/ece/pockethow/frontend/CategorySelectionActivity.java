@@ -54,7 +54,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     private int globalposition = 0;
     private ArrayList<Integer> categoryIdList;
     private ArrayList<String> downloadedDatabaseNameList;
-    private ArrayList<String> pathList;
+    //private ArrayList<String> pathList;
     private int numCategoriesSelected = 0;
     private int numCategoriesDownloaded = 0;
     private ArrayList<Long> downloadIdList = new ArrayList<>();
@@ -226,7 +226,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 }
                 cursor.close();
 
-
+/*
                 Toast toast = Toast.makeText(CategorySelectionActivity.this,
                         "Download Complete", Toast.LENGTH_LONG);
                 toast.show();
@@ -234,7 +234,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 Uri uri = dlm.getUriForDownloadedFile(referenceId);
                 File file = new File(uri.getPath());
                 pathList.add(file.getAbsolutePath());
-
+*/
 
                 //ArrayList<String> selectedCategories = new ArrayList<>();
                 //selectedCategories.add("Arts and Entertainment");
@@ -308,7 +308,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
         listCategories = new ArrayList<CategoryIcon>();
         categoryIdList = new ArrayList<>();
         downloadedDatabaseNameList = new ArrayList<>();
-        pathList = new ArrayList<>();
+        //pathList = new ArrayList<>();
         categoryListPermanent.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db", "Arts and Entertainment"));
         categoryListPermanent.add(new CategoryIcon(R.drawable.automotive, "Auto", "https://storage.googleapis.com/pockethow-database-archive/auto.db", "Cars & Other Vehicles"));
         categoryListPermanent.add(new CategoryIcon(R.drawable.education, "Education","https://storage.googleapis.com/pockethow-database-archive/education.db", "Education and Communications"));
