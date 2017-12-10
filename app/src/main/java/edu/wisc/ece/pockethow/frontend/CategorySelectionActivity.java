@@ -64,39 +64,23 @@ public class CategorySelectionActivity extends AppCompatActivity {
             case R.id.action_download:
                 Context context = gridView.getContext();
                 list = fetchCurrentCategories();
-
-                int numSelected = 0;
-                for(CategoryIcon icon: listCategories)
-                {
-                    if(icon.isChecked())
-                    {
-                        numSelected++;
-                    }
-                }
-                if(numSelected == 0)
-                {
-                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
-                    startActivity(goToNextActivity);
-                }
-                else {
-                    for (CategoryIcon icon : listCategories) {
-                        if (icon.isChecked() && !isInDatabase(icon.Icon)) {
-                            Uri uri = icon.getUri();
-                            if (uri != null) {
-                                DownloadManager.Request request = new DownloadManager.Request(uri);
-                                request.setTitle("Archive Download: " + icon.Label);
-                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
-                                Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                                        "Download Started: " + icon.Label, Toast.LENGTH_LONG);
-                                toast.show();
-                                //TODO
-                                //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
-                                //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
-                                numCategoriesSelected++;
-                                //downloadId = dlm.enqueue(request);
-                                //requestedIdList.add(dlm.enqueue(request));
-                                icon.addDownloadId(dlm.enqueue(request));
-                            }
+                for (CategoryIcon icon : listCategories) {
+                    if (icon.isChecked() && !isInDatabase(icon.Icon)) {
+                        Uri uri = icon.getUri();
+                        if (uri != null) {
+                            DownloadManager.Request request = new DownloadManager.Request(uri);
+                            request.setTitle("Archive Download: " + icon.Label);
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
+                            Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                                    "Download Started: " + icon.Label, Toast.LENGTH_LONG);
+                            toast.show();
+                            //TODO
+                            //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
+                            //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
+                            numCategoriesSelected++;
+                            //downloadId = dlm.enqueue(request);
+                            //requestedIdList.add(dlm.enqueue(request));
+                            icon.addDownloadId(dlm.enqueue(request));
                         }
                     }
                 }
@@ -126,18 +110,13 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-            //check if the broadcast message is for our enqueued download
-            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            ArrayList<CategoryIcon> categoryIconArrayList = new ArrayList<>();
-            //for(CategoryIcon categoryIcon: listCategories)
+                //check if the broadcast message is for our enqueued download
+                long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                for (CategoryIcon categoryIcon : listCategories) {
+                    Long downloadId = categoryIcon.getDownloadId();
 
-                for(int willow = 0; willow < listCategories.size(); willow++)
-                {
-                    CategoryIcon categoryIcon = listCategories.get(willow);
-                CategoryIcon c = listCategories.get(0);
-                Long downloadId = categoryIcon.getDownloadId();
 
-  		if (downloadId != null && downloadId == referenceId) {
+                    if (downloadId != null && downloadId == referenceId) {
 
                         DownloadManager.Query query = new DownloadManager.Query();
                         query.setFilterById(downloadId);
@@ -152,34 +131,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                 if (uriString.substring(0, 7).matches("file://")) {
                                     uriString = uriString.substring(7);
                                 }
-                            }
-                            dbOperations.getDatabase().execSQL("END TRANSACTION");
-                            dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
-                            for (cursorCategory.moveToFirst(); !cursorCategory.isAfterLast(); cursorCategory.moveToNext()) {
-                                try {
-                                    String category = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY));
-                                    int id = cursorCategory.getInt(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
-                                    //TODO: issue: pageIdList was suppposed to be a string with commas in between numbers, but all punctuation disappeared
-                                    //
-                                    String pageIdList = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                                    String dateTimeString = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
 
-                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                                    //Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-                                    dbOperations.addCategoryToPageID(new PHCategory(id, category, pageIdList, timestamp));
-                                    for(int index = 0; index < listCategories.size(); index++)
-                                    {
-                                        CategoryIcon categoryIcon1 = listCategories.get(index);
-                                        if(categoryIcon1.Icon == id )
-                                        {
-                                            categoryIconArrayList.add(categoryIcon1);
-                                        }
-                                    }
-
-
-                                    //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                File file = new File(uriString);
+                                if (file.exists()) {
+                                    Log.d("addCategory", "huzzah");
+                                } else {
+                                    Log.d("addCategory", "fuck this shit");
                                 }
                                 try {
                                     DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
@@ -252,15 +209,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                     Log.d("addCategory", "ERROR");
                                 }
-                            }
-                            dbOperations.getDatabase().execSQL("END TRANSACTION");
-                            dbOperations.close();
-                            listCategories.remove(willow);
-                            willow--;
-                            mAdapter.notifyDataSetChanged();
-                            gridView.invalidateViews();
-                            gridView.setAdapter(mAdapter);
-                        } catch (Exception e) {
 
                             }
                         }
@@ -301,21 +249,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     */
                         }
 
-            }
-            }
-
-            for(CategoryIcon categoryIcon: categoryIconArrayList) {
-                int id = categoryIcon.Icon;
-                for (int index = 0; index < listCategories.size(); index++) {
-                    CategoryIcon categoryIcon1 = listCategories.get(index);
-                    if (categoryIcon1.Icon == id) {
-                        listCategories.remove(index);
-                        index = listCategories.size() + 50;
                     }
                 }
-            }
-            Toast.makeText(CategorySelectionActivity.this, "Finished downloading all categories", Toast.LENGTH_SHORT).show();
-
             }
         };
         registerReceiver(downloadReceiver, filter);
@@ -456,9 +391,6 @@ public class CategorySelectionActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter.notifyDataSetChanged();
-        gridView.invalidateViews();
-        gridView.setAdapter(mAdapter);
         //list = fetchCurrentCategories();
     }
 }
