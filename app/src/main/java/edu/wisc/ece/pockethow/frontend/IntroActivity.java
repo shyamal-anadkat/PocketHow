@@ -29,10 +29,12 @@ public class IntroActivity extends AppIntro {
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
         addSlide(AppIntroFragment.newInstance("Welcome to PocketHow!",
-                "category selection description",
-                R.drawable.paper, getResources().getColor(R.color.colorPrimary)));
-        addSlide(AppIntroFragment.newInstance("Search Offline", "search feature",
-                R.drawable.paper, getResources().getColor(R.color.colorPrimary)));
+                "Our mission to provide offline search. " +
+                        "We have implemented and offline first WikiHow.",
+                R.drawable.icon, getResources().getColor(R.color.colorPrimary)));
+        addSlide(AppIntroFragment.newInstance("Select Categories and Search",
+                "Please select desired categories on the next screen and happy searching !",
+                R.drawable.icon, getResources().getColor(R.color.colorPrimary)));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

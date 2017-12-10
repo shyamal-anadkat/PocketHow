@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".frontend.IntroActivity"
-            android:label="App Intro" />
+            android:label="Tutorial" />
         <activity
             android:name=".frontend.PageDetailActivity"
             android:label=""
