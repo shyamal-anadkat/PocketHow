@@ -64,24 +64,38 @@ public class CategorySelectionActivity extends AppCompatActivity {
             // action with ID action_refresh was selected
             case R.id.action_download:
                 Context context = gridView.getContext();
-                list = fetchCurrentCategories();
-                for (CategoryIcon icon : listCategories) {
-                    if (icon.isChecked() && !isInDatabase(icon.Icon)) {
-                        Uri uri = icon.getUri();
-                        if (uri != null) {
-                            DownloadManager.Request request = new DownloadManager.Request(uri);
-                            request.setTitle("Archive Download: " + icon.Label);
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
-                            Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                                    "Download Started: " + icon.Label, Toast.LENGTH_LONG);
-                            toast.show();
-                            //TODO
-                            //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
-                            //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
-                            numCategoriesSelected++;
-                            //downloadId = dlm.enqueue(request);
-                            //requestedIdList.add(dlm.enqueue(request));
-                            icon.addDownloadId(dlm.enqueue(request));
+                list = fetchCurrentCategories(); int numSelected = 0;
+                for(CategoryIcon icon: listCategories)
+                {
+                    if(icon.isChecked())
+                    {
+                        numSelected++;
+                    }
+                }
+                if(numSelected == 0)
+                {
+                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                    startActivity(goToNextActivity);
+                }
+                else {
+                    for (CategoryIcon icon : listCategories) {
+                        if (icon.isChecked() && !isInDatabase(icon.Icon)) {
+                            Uri uri = icon.getUri();
+                            if (uri != null) {
+                                DownloadManager.Request request = new DownloadManager.Request(uri);
+                                request.setTitle("Archive Download: " + icon.Label);
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
+                                Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                                        "Download Started: " + icon.Label, Toast.LENGTH_LONG);
+                                toast.show();
+                                //TODO
+                                //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
+                                //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
+                                numCategoriesSelected++;
+                                //downloadId = dlm.enqueue(request);
+                                //requestedIdList.add(dlm.enqueue(request));
+                                icon.addDownloadId(dlm.enqueue(request));
+                            }
                         }
                     }
                 }
