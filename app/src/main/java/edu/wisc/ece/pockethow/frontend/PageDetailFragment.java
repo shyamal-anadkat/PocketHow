@@ -1,6 +1,7 @@
 package edu.wisc.ece.pockethow.frontend;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -64,8 +65,12 @@ public class PageDetailFragment extends Fragment {
             String mime = "text/html";
             String encoding = "utf-8";
 
+            Typeface fnt = Typeface.SANS_SERIF;
             WebView myWebView = ((WebView) rootView.findViewById(R.id.page_detail));
             myWebView.getSettings().setJavaScriptEnabled(true);
+            myWebView.getSettings().setDefaultFontSize(17);
+            //myWebView.getSettings().setBuiltInZoomControls(true);
+            //myWebView.getSettings().setDisplayZoomControls(true);
             myWebView.loadDataWithBaseURL(null, content, mime, encoding, null);
             //((TextView) rootView.findViewById(R.id.page_detail)).setText(content);
         }
