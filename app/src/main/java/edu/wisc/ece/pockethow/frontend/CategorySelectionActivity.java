@@ -74,9 +74,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
             case R.id.action_download:
                 Context context = gridView.getContext();
                 list = fetchCurrentCategories();
-                for (CategoryIcon icon : listCategories )
-                {
-                    if(icon.isChecked() && !isInDatabase(icon.Icon)) {
+                for (CategoryIcon icon : listCategories) {
+                    if (icon.isChecked() && !isInDatabase(icon.Icon)) {
                         Uri uri = icon.getUri();
                         if (uri != null) {
                             DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -121,110 +120,109 @@ public class CategorySelectionActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-            //check if the broadcast message is for our enqueued download
-            long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            for(CategoryIcon categoryIcon: listCategories)
-            {
-                Long downloadId = categoryIcon.getDownloadId();
+                //check if the broadcast message is for our enqueued download
+                long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                for (CategoryIcon categoryIcon : listCategories) {
+                    Long downloadId = categoryIcon.getDownloadId();
 
 
-            if(downloadId != null && downloadId == referenceId) {
+                    if (downloadId != null && downloadId == referenceId) {
 
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadId);
-                Cursor cursor = dlm.query(query);
-                if (cursor.moveToFirst()) {
-                    int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    String downloadLocalUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                    String downloadMimeType = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE));
-                    if ((downloadStatus == DownloadManager.STATUS_SUCCESSFUL) && downloadLocalUri != null) {
-                        String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        DownloadManager.Query query = new DownloadManager.Query();
+                        query.setFilterById(downloadId);
+                        Cursor cursor = dlm.query(query);
+                        if (cursor.moveToFirst()) {
+                            int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                            String downloadLocalUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                            String downloadMimeType = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE));
+                            if ((downloadStatus == DownloadManager.STATUS_SUCCESSFUL) && downloadLocalUri != null) {
+                                String uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-                        if (uriString.substring(0, 7).matches("file://")) {
-                            uriString = uriString.substring(7);
-                        }
-
-                        File file = new File(uriString);
-                        if (file.exists()) {
-                            Log.d("addCategory", "huzzah");
-                        } else {
-                            Log.d("addCategory", "fuck this shit");
-                        }
-                        try {
-                            DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
-                            SQLiteDatabase downloadedDB = SQLiteDatabase.openDatabase(file.getPath(), null, 0);
-                            //I think we are prioritizing speed over memory space
-                            downloadedDB.execSQL("BEGIN TRANSACTION");
-                            Cursor cursorPharticle = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
-                            Cursor cursorCategory = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
-                            Cursor cursorSearchWord = downloadedDB.rawQuery("select * from " + PHDBHandler.searchWordTable, null);
-
-                            Log.d("CategorySelectionActivity", "# or rows in cursorPharticle = " + cursorPharticle.getCount());
-                            Log.d("CategorySelectionActivity", "# of rows in category = " + cursorCategory.getCount());
-                            Log.d("CategorySelectionActivity", "# of rows in searchWord = " + cursorSearchWord.getCount());
-
-                            downloadedDB.execSQL("END TRANSACTION");
-                            //downloadedDB.close();
-                            dbOperations.open();
-                            if (dbOperations.getDatabase() == null) {
-                                Log.d("addCategory", "dbOperations doesn't exist");
-                            }
-                            dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
-                            for (cursorPharticle.moveToFirst(); !cursorPharticle.isAfterLast(); cursorPharticle.moveToNext()) {
-                                try {
-                                    Long columnID = cursorPharticle.getLong(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
-                                    String columnTitle = cursorPharticle.getString(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_TITLE));
-                                    byte[] columnContent = cursorPharticle.getBlob(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
-                                    String dateTimeString = cursorPharticle.getString(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                                    Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-                                    //TODO: Make insert query
-                                    dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                if (uriString.substring(0, 7).matches("file://")) {
+                                    uriString = uriString.substring(7);
                                 }
-                            }
-                            dbOperations.getDatabase().execSQL("END TRANSACTION");
-                            dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
-                            for (cursorCategory.moveToFirst(); !cursorCategory.isAfterLast(); cursorCategory.moveToNext()) {
-                                try {
-                                    String category = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY));
-                                    int id = cursorCategory.getInt(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
-                                    //TODO: issue: pageIdList was suppposed to be a string with commas in between numbers, but all punctuation disappeared
-                                    //
-                                    String pageIdList = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
-                                    String dateTimeString = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
 
-                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                                    //Timestamp timestamp = Timestamp.valueOf(dateTimeString);
-                                    dbOperations.addCategoryToPageID(new PHCategory(id, category, pageIdList, timestamp));
-                                    //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                File file = new File(uriString);
+                                if (file.exists()) {
+                                    Log.d("addCategory", "huzzah");
+                                } else {
+                                    Log.d("addCategory", "fuck this shit");
                                 }
-                            }
-                            dbOperations.getDatabase().execSQL("END TRANSACTION");
-                            dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
-                            for (cursorSearchWord.moveToFirst(); !cursorSearchWord.isAfterLast(); cursorSearchWord.moveToNext()) {
                                 try {
-                                    String word = cursorSearchWord.getString(cursorSearchWord.getColumnIndex(PHDBHandler.searchWordColumn));
-                                    //TODO: Make insert query
-                                    dbOperations.addSearchWord(word);
-                                    //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            dbOperations.getDatabase().execSQL("END TRANSACTION");
-                            dbOperations.close();
-                        } catch (Exception e) {
+                                    DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
+                                    SQLiteDatabase downloadedDB = SQLiteDatabase.openDatabase(file.getPath(), null, 0);
+                                    //I think we are prioritizing speed over memory space
+                                    downloadedDB.execSQL("BEGIN TRANSACTION");
+                                    Cursor cursorPharticle = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_PHARTICLE, null);
+                                    Cursor cursorCategory = downloadedDB.rawQuery("select * from " + PHDBHandler.TABLE_CATEGORY_TO_PAGEID, null);
+                                    Cursor cursorSearchWord = downloadedDB.rawQuery("select * from " + PHDBHandler.searchWordTable, null);
 
-                            e.printStackTrace();
-                            Log.d("addCategory", "ERROR");
+                                    Log.d("CategorySelectionActivity", "# or rows in cursorPharticle = " + cursorPharticle.getCount());
+                                    Log.d("CategorySelectionActivity", "# of rows in category = " + cursorCategory.getCount());
+                                    Log.d("CategorySelectionActivity", "# of rows in searchWord = " + cursorSearchWord.getCount());
+
+                                    downloadedDB.execSQL("END TRANSACTION");
+                                    //downloadedDB.close();
+                                    dbOperations.open();
+                                    if (dbOperations.getDatabase() == null) {
+                                        Log.d("addCategory", "dbOperations doesn't exist");
+                                    }
+                                    dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
+                                    for (cursorPharticle.moveToFirst(); !cursorPharticle.isAfterLast(); cursorPharticle.moveToNext()) {
+                                        try {
+                                            Long columnID = cursorPharticle.getLong(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_PHARTICLE_ID));
+                                            String columnTitle = cursorPharticle.getString(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_TITLE));
+                                            byte[] columnContent = cursorPharticle.getBlob(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_CONTENT));
+                                            String dateTimeString = cursorPharticle.getString(cursorPharticle.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                                            Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+                                            //TODO: Make insert query
+                                            dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    dbOperations.getDatabase().execSQL("END TRANSACTION");
+                                    dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
+                                    for (cursorCategory.moveToFirst(); !cursorCategory.isAfterLast(); cursorCategory.moveToNext()) {
+                                        try {
+                                            String category = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY));
+                                            int id = cursorCategory.getInt(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_CATEGORY_ID));
+                                            //TODO: issue: pageIdList was suppposed to be a string with commas in between numbers, but all punctuation disappeared
+                                            //
+                                            String pageIdList = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+                                            String dateTimeString = cursorCategory.getString(cursorCategory.getColumnIndex(PHDBHandler.COLUMN_ARTICLE_LASTACCESS));
+
+                                            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                            //Timestamp timestamp = Timestamp.valueOf(dateTimeString);
+                                            dbOperations.addCategoryToPageID(new PHCategory(id, category, pageIdList, timestamp));
+                                            //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    dbOperations.getDatabase().execSQL("END TRANSACTION");
+                                    dbOperations.getDatabase().execSQL("BEGIN TRANSACTION");
+                                    for (cursorSearchWord.moveToFirst(); !cursorSearchWord.isAfterLast(); cursorSearchWord.moveToNext()) {
+                                        try {
+                                            String word = cursorSearchWord.getString(cursorSearchWord.getColumnIndex(PHDBHandler.searchWordColumn));
+                                            //TODO: Make insert query
+                                            dbOperations.addSearchWord(word);
+                                            //dbOperations.addArticle(new PHArticle(columnID, columnTitle, columnContent, timestamp));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    dbOperations.getDatabase().execSQL("END TRANSACTION");
+                                    dbOperations.close();
+                                } catch (Exception e) {
+
+                                    e.printStackTrace();
+                                    Log.d("addCategory", "ERROR");
+                                }
+
+                            }
                         }
-
-                    }
-                }
-                cursor.close();
+                        cursor.close();
 
 /*
                 Toast toast = Toast.makeText(CategorySelectionActivity.this,
@@ -236,14 +234,14 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 pathList.add(file.getAbsolutePath());
 */
 
-                //ArrayList<String> selectedCategories = new ArrayList<>();
-                //selectedCategories.add("Arts and Entertainment");
-                //categoryIdList.add(listCategories.get(globalposition).Icon);
-                numCategoriesDownloaded++;
-                if (numCategoriesDownloaded == numCategoriesSelected) {
-                    downloadIdList.clear();
-                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
-                    startActivity(goToNextActivity);
+                        //ArrayList<String> selectedCategories = new ArrayList<>();
+                        //selectedCategories.add("Arts and Entertainment");
+                        //categoryIdList.add(listCategories.get(globalposition).Icon);
+                        numCategoriesDownloaded++;
+                        if (numCategoriesDownloaded == numCategoriesSelected) {
+                            downloadIdList.clear();
+                            Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                            startActivity(goToNextActivity);
                     /*
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     goToNextActivity.putExtra(searchActivity.databaseFromServer, true);
@@ -259,16 +257,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
                     numCategoriesDownloaded=0;
                     numCategoriesSelected=0;
                     */
-                }
+                        }
 
-            }
-            }
+                    }
+                }
             }
         };
         registerReceiver(downloadReceiver, filter);
 
         // prepared arraylist and passed it to the Adapter class
-        mAdapter = new GridviewAdapter(this, listCategories, getResources().getColor(R.color.colorPrimary));
+        mAdapter = new GridviewAdapter(this, listCategories, getResources().getColor(R.color.category_select));
 
         // Set custom adapter to gridview
         gridView = (GridView) findViewById(R.id.gridView1);
@@ -311,30 +309,28 @@ public class CategorySelectionActivity extends AppCompatActivity {
         //pathList = new ArrayList<>();
         categoryListPermanent.add(new CategoryIcon(R.drawable.arts_entertainment, "Arts", "https://storage.googleapis.com/pockethow-database-archive/art.db", "Arts and Entertainment"));
         categoryListPermanent.add(new CategoryIcon(R.drawable.automotive, "Auto", "https://storage.googleapis.com/pockethow-database-archive/auto.db", "Cars & Other Vehicles"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.education, "Education","https://storage.googleapis.com/pockethow-database-archive/education.db", "Education and Communications"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.elec, "Electronics","https://storage.googleapis.com/pockethow-database-archive/electronics.db", "Computers and Electronics"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.education, "Education", "https://storage.googleapis.com/pockethow-database-archive/education.db", "Education and Communications"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.elec, "Electronics", "https://storage.googleapis.com/pockethow-database-archive/electronics.db", "Computers and Electronics"));
         categoryListPermanent.add(new CategoryIcon(R.drawable.family, "Family", "https://storage.googleapis.com/pockethow-database-archive/family.db", "Family Life"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.finance, "Finance","https://storage.googleapis.com/pockethow-database-archive/finance.db", "Finance and Business"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.food, "Food","https://storage.googleapis.com/pockethow-database-archive/food.db", "Food and Entertaining"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.garden, "Garden","https://storage.googleapis.com/pockethow-database-archive/garden.db", "Home and Garden"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.health, "Health","https://storage.googleapis.com/pockethow-database-archive/health.db", "Health"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.hobbies, "Hobbies","https://storage.googleapis.com/pockethow-database-archive/hobby.db", "Hobbies and Crafts"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.holidays, "Holidays","https://storage.googleapis.com/pockethow-database-archive/holiday.db", "Holidays and Traditions"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.personal_care, "Personal Care","https://storage.googleapis.com/pockethow-database-archive/personal_care.db", "Personal Care and Style"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.pets, "Pets","https://storage.googleapis.com/pockethow-database-archive/pets.db", "Pets and Animals"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.relationships, "Relationships","https://storage.googleapis.com/pockethow-database-archive/relationships.db", "Relationships"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.religion, "Religion","https://storage.googleapis.com/pockethow-database-archive/religion.db", "Philosophy and Religion"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.sports, "Sports","https://storage.googleapis.com/pockethow-database-archive/sports.db", "Sports and Fitness"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.travel, "Travel","https://storage.googleapis.com/pockethow-database-archive/travel.db", "Travel"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.wikihow, "Wikihow","https://storage.googleapis.com/pockethow-database-archive/wikihow.db", "Wikihow"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.work, "Work","https://storage.googleapis.com/pockethow-database-archive/work.db", "Work World"));
-        categoryListPermanent.add(new CategoryIcon(R.drawable.youth, "Youth","https://storage.googleapis.com/pockethow-database-archive/youth.db", "Youth"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.finance, "Finance", "https://storage.googleapis.com/pockethow-database-archive/finance.db", "Finance and Business"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.food, "Food", "https://storage.googleapis.com/pockethow-database-archive/food.db", "Food and Entertaining"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.garden, "Garden", "https://storage.googleapis.com/pockethow-database-archive/garden.db", "Home and Garden"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.health, "Health", "https://storage.googleapis.com/pockethow-database-archive/health.db", "Health"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.hobbies, "Hobbies", "https://storage.googleapis.com/pockethow-database-archive/hobby.db", "Hobbies and Crafts"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.holidays, "Holidays", "https://storage.googleapis.com/pockethow-database-archive/holiday.db", "Holidays and Traditions"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.personal_care, "Personal Care", "https://storage.googleapis.com/pockethow-database-archive/personal_care.db", "Personal Care and Style"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.pets, "Pets", "https://storage.googleapis.com/pockethow-database-archive/pets.db", "Pets and Animals"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.relationships, "Relationships", "https://storage.googleapis.com/pockethow-database-archive/relationships.db", "Relationships"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.religion, "Religion", "https://storage.googleapis.com/pockethow-database-archive/religion.db", "Philosophy and Religion"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.sports, "Sports", "https://storage.googleapis.com/pockethow-database-archive/sports.db", "Sports and Fitness"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.travel, "Travel", "https://storage.googleapis.com/pockethow-database-archive/travel.db", "Travel"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.wikihow, "Wikihow", "https://storage.googleapis.com/pockethow-database-archive/wikihow.db", "Wikihow"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.work, "Work", "https://storage.googleapis.com/pockethow-database-archive/work.db", "Work World"));
+        categoryListPermanent.add(new CategoryIcon(R.drawable.youth, "Youth", "https://storage.googleapis.com/pockethow-database-archive/youth.db", "Youth"));
         list = fetchCurrentCategories();
-        for(CategoryIcon c: categoryListPermanent)
-        {
-            if(!isInDatabase(c.Icon))
-            {
-               listCategories.add(c);
+        for (CategoryIcon c : categoryListPermanent) {
+            if (!isInDatabase(c.Icon)) {
+                listCategories.add(c);
             }
         }
     }
@@ -368,20 +364,16 @@ public class CategorySelectionActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean isInDatabase(Integer id)
-    {
-        for(String item: list)
-        {
-            if(id.toString().equals(item))
-            {
+    public Boolean isInDatabase(Integer id) {
+        for (String item : list) {
+            if (id.toString().equals(item)) {
                 return true;
             }
         }
         return false;
     }
 
-    public ArrayList<String> fetchCurrentCategories()
-    {
+    public ArrayList<String> fetchCurrentCategories() {
         ArrayList<String> databaseCategoryList = new ArrayList<>();
         DbOperations dbOperations = new DbOperations(CategorySelectionActivity.this);
         dbOperations.open();
@@ -407,8 +399,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         //list = fetchCurrentCategories();
     }
