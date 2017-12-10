@@ -129,12 +129,20 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
                 //check if the broadcast message is for our enqueued download
                 long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                for (CategoryIcon categoryIcon : listCategories) {
+                //for (CategoryIcon categoryIcon : listCategories) {
+                CategoryIcon tempIcon = null;
+                int tempIndex = 0;
+                for(int i = 0; i < listCategories.size(); i++)
+                 {
+                    CategoryIcon categoryIcon = listCategories.get(i);
                     Long downloadId = categoryIcon.getDownloadId();
 
 
                     if (downloadId != null && downloadId == referenceId) {
-
+                        tempIcon = categoryIcon;
+                        listCategories.remove(i);
+                        mAdapter.notifyDataSetChanged();
+                        gridView.invalidateViews();
                         DownloadManager.Query query = new DownloadManager.Query();
                         query.setFilterById(downloadId);
                         Cursor cursor = dlm.query(query);
@@ -221,8 +229,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     }
                                     dbOperations.getDatabase().execSQL("END TRANSACTION");
                                     dbOperations.close();
-                                } catch (Exception e) {
+                                    i--;
 
+                                } catch (Exception e) {
+                                    listCategories.add(i, tempIcon);
+                                    mAdapter.notifyDataSetChanged();
+                                    gridView.invalidateViews();
                                     e.printStackTrace();
                                     Log.d("addCategory", "ERROR");
                                 }
@@ -247,6 +259,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
                         numCategoriesDownloaded++;
                         if (numCategoriesDownloaded == numCategoriesSelected) {
                             downloadIdList.clear();
+                            Toast.makeText(CategorySelectionActivity.this, "Done downloading databases", Toast.LENGTH_SHORT).show();
+
                             Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                             startActivity(goToNextActivity);
                     /*
