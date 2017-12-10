@@ -2,25 +2,18 @@ package edu.wisc.ece.pockethow.frontend;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,11 +23,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 
 import edu.wisc.ece.pockethow.R;
 import edu.wisc.ece.pockethow.dbHandler.PHDBHandler;
