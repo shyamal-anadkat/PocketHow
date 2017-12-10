@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -95,12 +96,14 @@ public class CategorySelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_selection);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar)));
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         requestPermissions(permissions, 43); //write_request_code?
         //requestPermissions(permissions, WRITE_REQUEST_CODE);
         //requestPermissions();
         prepareList();
+
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         list = fetchCurrentCategories();
         dlm = this.getSystemService(DownloadManager.class);
