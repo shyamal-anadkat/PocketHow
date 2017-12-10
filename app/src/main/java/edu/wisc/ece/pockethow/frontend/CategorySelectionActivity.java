@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -65,20 +67,17 @@ public class CategorySelectionActivity extends AppCompatActivity {
             // action with ID action_refresh was selected
             case R.id.action_download:
                 Context context = gridView.getContext();
-                list = fetchCurrentCategories(); int numSelected = 0;
-                for(CategoryIcon icon: listCategories)
-                {
-                    if(icon.isChecked())
-                    {
+                list = fetchCurrentCategories();
+                int numSelected = 0;
+                for (CategoryIcon icon : listCategories) {
+                    if (icon.isChecked()) {
                         numSelected++;
                     }
                 }
-                if(numSelected == 0)
-                {
+                if (numSelected == 0) {
                     Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                     startActivity(goToNextActivity);
-                }
-                else {
+                } else {
                     for (CategoryIcon icon : listCategories) {
                         if (icon.isChecked() && !isInDatabase(icon.Icon)) {
                             Uri uri = icon.getUri();
@@ -110,6 +109,45 @@ public class CategorySelectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //  Declare a new thread to do a preference check
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  Initialize SharedPreferences
+                SharedPreferences getPrefs = PreferenceManager
+                        .getDefaultSharedPreferences(getBaseContext());
+
+                //  Create a new boolean and preference and set it to true
+                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
+
+                //  If the activity has never started before...
+                if (isFirstStart) {
+
+                    //  Launch app intro
+                    final Intent i = new Intent(CategorySelectionActivity.this, IntroActivity.class);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startActivity(i);
+                        }
+                    });
+
+                    //  Make a new preferences editor
+                    SharedPreferences.Editor e = getPrefs.edit();
+
+                    //  Edit preference to make it false because we don't want this to run again
+                    e.putBoolean("firstStart", false);
+
+                    //  Apply changes
+                    e.apply();
+                }
+            }
+        });
+
+        // Start the thread
+        t.start();
+        // unregisterReceiver(); ???
         setContentView(R.layout.activity_category_selection);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.action_bar)));
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -133,8 +171,7 @@ public class CategorySelectionActivity extends AppCompatActivity {
                 //for (CategoryIcon categoryIcon : listCategories) {
                 CategoryIcon tempIcon = null;
                 int tempIndex = 0;
-                for(int i = 0; i < listCategories.size(); i++)
-                 {
+                for (int i = 0; i < listCategories.size(); i++) {
                     CategoryIcon categoryIcon = listCategories.get(i);
                     Long downloadId = categoryIcon.getDownloadId();
 
@@ -306,6 +343,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
     //temp for testing
 
     public void makeRequests() {
@@ -423,13 +465,11 @@ public class CategorySelectionActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if(deleteButtonPressed)
-        {
+        if (deleteButtonPressed) {
             deleteButtonPressed = false;
             list.clear();
             listCategories.clear();
-            for(CategoryIcon categoryIcon: categoryListPermanent)
-            {
+            for (CategoryIcon categoryIcon : categoryListPermanent) {
                 categoryIcon.toggleReset();
                 listCategories.add(categoryIcon);
             }

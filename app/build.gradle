@@ -43,6 +43,8 @@ dependencies {
     compile 'me.xdrop:fuzzywuzzy:1.1.9'
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile 'org.jsoup:jsoup:1.11.2'
+    // app-onboarding intro
+    compile 'com.github.apl-devs:appintro:v4.2.2'
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:support-v4:26.+'
     compile 'com.android.support:recyclerview-v7:26.+'
