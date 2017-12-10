@@ -411,6 +411,7 @@ public class DbOperations {
      * @return
      */
     public String getClosestSearchWord(String input) {
+        input = input.toLowerCase();
         if (input.equals("") || input.equals(" ")) {
             return "";
         }
@@ -424,6 +425,7 @@ public class DbOperations {
         int ratio = 0, newRatio = 0;
         String output = input;
         for (String searchWord : searchWordList) {
+            searchWord = searchWord.toLowerCase();
             if (searchWord.equals(input)) {
                 return input;
             } else {
