@@ -81,7 +81,7 @@ public class PageListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
         dbOperations = new DbOperations(this);
-        final SearchView searchView = (SearchView) findViewById(R.id.pageListSearchView);
+        /*final SearchView searchView = (SearchView) findViewById(R.id.pageListSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -113,6 +113,7 @@ public class PageListActivity extends AppCompatActivity {
             }
         });
         searchView.setSubmitButtonEnabled(true);
+        */
         //dbOperations.open();
         //TODO: might not even be necessary
 
@@ -158,7 +159,7 @@ public class PageListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(Long.toString(position));
+            holder.mIdView.setText(Long.toString(position + 1));
             holder.mContentView.setText(mValues.get(position).getTitle()); //defines the title displayed
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
