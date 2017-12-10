@@ -30,8 +30,6 @@
         android:layout_height="54dp"
         android:layout_marginLeft="24dp"
         android:background="@drawable/search_bar"
-        android:hint="How to..."
-        android:textColorHint="@color/white"
         android:inputType="text"
         android:maxLines="1"
         android:paddingLeft="10dp"
