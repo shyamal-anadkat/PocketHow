@@ -159,12 +159,12 @@ public class DbOperations {
         ArrayList<PHArticle> articleArrayList = new ArrayList<PHArticle>();
 
         Log.i(TAG, "SEARCH WORD: " + searchWord);
-
+        searchWord = searchWord.toLowerCase();
 
         //*** @Deprecated Selection and selArgs below ***//
         String selection = PHDBHandler.COLUMN_TITLE +
-                " LIKE ? OR " + PHDBHandler.COLUMN_TITLE + " LIKE ? OR "
-                + PHDBHandler.COLUMN_TITLE + " LIKE ? ";
+                " LIKE ? OR " + PHDBHandler.COLUMN_TITLE + " LIKE ? COLLATE NOCASE OR "
+                + PHDBHandler.COLUMN_TITLE + " LIKE ? COLLATE NOCASE ";
         String[] selArgs = new String[]{"%" + searchWord + "%",
                 searchWord + "%",
                 "%" + searchWord};
@@ -185,11 +185,11 @@ public class DbOperations {
                     Timestamp timestamp = Timestamp.valueOf(dateTimeString);
 
                     Date date = dateFormat.parse(dateTimeString);
-                    if (FuzzySearch.ratio(columnTitle, searchWord) > 60
-                            || FuzzySearch.tokenSetRatio(columnTitle, searchWord) > 85 ||
-                            FuzzySearch.weightedRatio(columnTitle, searchWord) > 85
-                            || FuzzySearch.partialRatio(columnTitle, searchWord) > 85
-                            || FuzzySearch.tokenSortRatio(columnTitle, searchWord) > 85) {
+                    if (FuzzySearch.ratio(columnTitle.toLowerCase(), searchWord) > 60
+                            || FuzzySearch.tokenSetRatio(columnTitle.toLowerCase(), searchWord.toLowerCase()) > 85 ||
+                            FuzzySearch.weightedRatio(columnTitle.toLowerCase(), searchWord) > 85
+                            || FuzzySearch.partialRatio(columnTitle.toLowerCase(), searchWord) > 85
+                            || FuzzySearch.tokenSortRatio(columnTitle.toLowerCase(), searchWord) > 85) {
 
                         if (!pageIdList.contains(columnID)) {
                             pageIdList.add(columnID);
@@ -212,7 +212,7 @@ public class DbOperations {
                     + PHDBHandler.TABLE_PHARTICLE, null);
         } else {
             cursor = database.rawQuery("select * from "
-                    + PHDBHandler.TABLE_PHARTICLE + " where title match " + searchQuery, null);
+                    + PHDBHandler.TABLE_PHARTICLE + " where title match " + searchQuery + " COLLATE NOCASE", null);
         }
 
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
