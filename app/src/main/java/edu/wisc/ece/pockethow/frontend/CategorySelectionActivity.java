@@ -64,24 +64,38 @@ public class CategorySelectionActivity extends AppCompatActivity {
             // action with ID action_refresh was selected
             case R.id.action_download:
                 Context context = gridView.getContext();
-                list = fetchCurrentCategories();
-                for (CategoryIcon icon : listCategories) {
-                    if (icon.isChecked() && !isInDatabase(icon.Icon)) {
-                        Uri uri = icon.getUri();
-                        if (uri != null) {
-                            DownloadManager.Request request = new DownloadManager.Request(uri);
-                            request.setTitle("Archive Download: " + icon.Label);
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
-                            Toast toast = Toast.makeText(CategorySelectionActivity.this,
-                                    "Download Started: " + icon.Label, Toast.LENGTH_LONG);
-                            toast.show();
-                            //TODO
-                            //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
-                            //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
-                            numCategoriesSelected++;
-                            //downloadId = dlm.enqueue(request);
-                            //requestedIdList.add(dlm.enqueue(request));
-                            icon.addDownloadId(dlm.enqueue(request));
+                list = fetchCurrentCategories(); int numSelected = 0;
+                for(CategoryIcon icon: listCategories)
+                {
+                    if(icon.isChecked())
+                    {
+                        numSelected++;
+                    }
+                }
+                if(numSelected == 0)
+                {
+                    Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
+                    startActivity(goToNextActivity);
+                }
+                else {
+                    for (CategoryIcon icon : listCategories) {
+                        if (icon.isChecked() && !isInDatabase(icon.Icon)) {
+                            Uri uri = icon.getUri();
+                            if (uri != null) {
+                                DownloadManager.Request request = new DownloadManager.Request(uri);
+                                request.setTitle("Archive Download: " + icon.Label);
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, icon.getDatabaseName());
+                                Toast toast = Toast.makeText(CategorySelectionActivity.this,
+                                        "Download Started: " + icon.Label, Toast.LENGTH_LONG);
+                                toast.show();
+                                //TODO
+                                //request.setDestinationInExternalFilesDir(CategorySelectionActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath(), icon.getDatabaseName());
+                                //pathList.add(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + icon.getDatabaseName());
+                                numCategoriesSelected++;
+                                //downloadId = dlm.enqueue(request);
+                                //requestedIdList.add(dlm.enqueue(request));
+                                icon.addDownloadId(dlm.enqueue(request));
+                            }
                         }
                     }
                 }
@@ -115,12 +129,20 @@ public class CategorySelectionActivity extends AppCompatActivity {
 
                 //check if the broadcast message is for our enqueued download
                 long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                for (CategoryIcon categoryIcon : listCategories) {
+                //for (CategoryIcon categoryIcon : listCategories) {
+                CategoryIcon tempIcon = null;
+                int tempIndex = 0;
+                for(int i = 0; i < listCategories.size(); i++)
+                 {
+                    CategoryIcon categoryIcon = listCategories.get(i);
                     Long downloadId = categoryIcon.getDownloadId();
 
 
                     if (downloadId != null && downloadId == referenceId) {
-
+                        tempIcon = categoryIcon;
+                        listCategories.remove(i);
+                        mAdapter.notifyDataSetChanged();
+                        gridView.invalidateViews();
                         DownloadManager.Query query = new DownloadManager.Query();
                         query.setFilterById(downloadId);
                         Cursor cursor = dlm.query(query);
@@ -207,8 +229,12 @@ public class CategorySelectionActivity extends AppCompatActivity {
                                     }
                                     dbOperations.getDatabase().execSQL("END TRANSACTION");
                                     dbOperations.close();
-                                } catch (Exception e) {
+                                    i--;
 
+                                } catch (Exception e) {
+                                    listCategories.add(i, tempIcon);
+                                    mAdapter.notifyDataSetChanged();
+                                    gridView.invalidateViews();
                                     e.printStackTrace();
                                     Log.d("addCategory", "ERROR");
                                 }
@@ -233,6 +259,8 @@ public class CategorySelectionActivity extends AppCompatActivity {
                         numCategoriesDownloaded++;
                         if (numCategoriesDownloaded == numCategoriesSelected) {
                             downloadIdList.clear();
+                            Toast.makeText(CategorySelectionActivity.this, "Done downloading databases", Toast.LENGTH_SHORT).show();
+
                             Intent goToNextActivity = new Intent(getApplicationContext(), searchActivity.class);
                             startActivity(goToNextActivity);
                     /*
